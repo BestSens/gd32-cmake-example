@@ -1,0 +1,5 @@
+add_subdirectory(I2S_fullduplex_dma)
+add_subdirectory(Master_slave_fullduplex_dma)
+add_subdirectory(Master_slave_fullduplex_polling)
+add_subdirectory(Master_slave_fullduplex_ti_mode)
+add_subdirectory(Master_transmit_slave_receive_interrupt)

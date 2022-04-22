@@ -8,6 +8,8 @@ Currently it's just a copy of the Demo Suites package with added CMake files, a 
 
 I've also commented out the documentation building for lwip in the ENET example to don't require doxygen to configure.
 
+I've removed '&'s from USART Example paths as they are note compatible with CMake.
+
 ## Dependencies
 To build this package you need a working GNU Arm Embedded Toolchain (tested with 10.3-2021.10), CMake and a build system installed. I'm using Ninja in my examples.
 
