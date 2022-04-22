@@ -1,0 +1,17 @@
+cmake_minimum_required(VERSION 3.17.0)
+
+include(example_set_name)
+
+add_executable(${EXEC_NAME}
+	dci_ov2640.c
+	gd32f4xx_it.c
+	main.c
+	sccb.c
+	systick.c
+)
+
+target_include_directories(${EXEC_NAME} PRIVATE
+	.
+)
+
+include(example_add_libs)

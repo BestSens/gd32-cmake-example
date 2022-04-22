@@ -80,6 +80,7 @@ add_library(${EXEC_NAME}_usb_library_device_iap EXCLUDE_FROM_ALL
 
 target_include_directories(${EXEC_NAME}_usb_library_device_iap PUBLIC
 	class/iap/Include
+	../ustd/class/hid
 )
 
 target_link_libraries(${EXEC_NAME}_usb_library_device_iap ${EXEC_NAME}_usb_library_device)

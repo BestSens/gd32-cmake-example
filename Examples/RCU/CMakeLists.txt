@@ -1,0 +1,1 @@
+add_subdirectory(CKOUT_pin_clock_output)

@@ -1,0 +1,3 @@
+add_subdirectory(Program_erase)
+add_subdirectory(Security_protection)
+add_subdirectory(Write_protection)

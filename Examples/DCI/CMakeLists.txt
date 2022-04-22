@@ -1,0 +1,1 @@
+add_subdirectory(DCI_OV2640)

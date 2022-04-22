@@ -22,6 +22,7 @@ add_library(${EXEC_NAME}_usb_library_host_hid EXCLUDE_FROM_ALL
 
 target_include_directories(${EXEC_NAME}_usb_library_host_hid PUBLIC
 	class/hid/Include
+	../ustd/class/hid
 )
 
 target_link_libraries(${EXEC_NAME}_usb_library_host_hid ${EXEC_NAME}_usb_library_host)
@@ -36,6 +37,7 @@ add_library(${EXEC_NAME}_usb_library_host_msc EXCLUDE_FROM_ALL
 
 target_include_directories(${EXEC_NAME}_usb_library_host_msc PUBLIC
 	class/msc/Include
+	../ustd/class/msc
 )
 
 target_link_libraries(${EXEC_NAME}_usb_library_host_msc ${EXEC_NAME}_usb_library_host)

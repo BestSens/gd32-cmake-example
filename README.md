@@ -8,7 +8,7 @@ Currently it's just a copy of the Demo Suites package with added CMake files, a 
 
 I've also commented out the documentation building for lwip in the ENET example to don't require doxygen to configure.
 
-I've removed '&'s from USART Example paths as they are note compatible with CMake.
+I've removed '&'s from various Example paths as they are note compatible with CMake.
 
 ## Dependencies
 To build this package you need a working GNU Arm Embedded Toolchain (tested with 10.3-2021.10), CMake and a build system installed. I'm using Ninja in my examples.
@@ -28,3 +28,11 @@ To build only specific examples, use the following to build:
 ```PowerShell
 cmake --build .\build\ --config Release --target Running_led
 ```
+
+## Known issues
+* As each example may add a different configuration file to the libraries every target needs to be built for each example
+* Linking and include directories are odd because of the above
+* Amount of targets get enormous because of the above, thus generating take long
+* There are errors because of too long paths
+* Definitions should be local to targets not global
+* Board should be selectable with variables instead of building everything for the gd32f450z-eval excluding the ones specifically for the gd32f450i-eval

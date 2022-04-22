@@ -1,0 +1,2 @@
+add_subdirectory(IPA_2images_blend)
+add_subdirectory(IPA_image_copy)

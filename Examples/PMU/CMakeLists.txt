@@ -1,0 +1,5 @@
+add_subdirectory(Deepsleep_wakeup_exti)
+add_subdirectory(Deepsleep_wakeup_RTC)
+add_subdirectory(Low_voltage_detector)
+add_subdirectory(Standby_wakeup_pin)
+add_subdirectory(Standby_wakeup_RTC)
