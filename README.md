@@ -13,7 +13,7 @@ I've removed '&'s from various Example paths as they are note compatible with CM
 ## Dependencies
 To build this package you need a working GNU Arm Embedded Toolchain (tested with 10.3-2021.10), CMake and a build system installed. I'm using Ninja in my examples.
 
-I'm using this on windows but it may work on Linux or macOS as well.
+I've tested this on Windows and Linux but with a bit of you're lucky it may work macOS as well.
 
 ## Usage
 All demo applications can be built with the following commands:
