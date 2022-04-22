@@ -32,6 +32,7 @@ add_library(${EXEC_NAME}_usb_library_device_cdc EXCLUDE_FROM_ALL
 
 target_include_directories(${EXEC_NAME}_usb_library_device_cdc PUBLIC
 	class/cdc/Include
+	../ustd/class/cdc
 )
 
 target_link_libraries(${EXEC_NAME}_usb_library_device_cdc ${EXEC_NAME}_usb_library_device)
@@ -48,17 +49,29 @@ target_include_directories(${EXEC_NAME}_usb_library_device_dfu PUBLIC
 
 target_link_libraries(${EXEC_NAME}_usb_library_device_dfu ${EXEC_NAME}_usb_library_device)
 
-# hid
-add_library(${EXEC_NAME}_usb_library_device_hid EXCLUDE_FROM_ALL
+# custom_hid
+add_library(${EXEC_NAME}_usb_library_device_custom_hid EXCLUDE_FROM_ALL
 	class/hid/Source/custom_hid_core.c
+)
+
+target_include_directories(${EXEC_NAME}_usb_library_device_custom_hid PUBLIC
+	class/hid/Include
+	../ustd/class/hid
+)
+
+target_link_libraries(${EXEC_NAME}_usb_library_device_custom_hid ${EXEC_NAME}_usb_library_device)
+
+# standard_hid
+add_library(${EXEC_NAME}_usb_library_device_standard_hid EXCLUDE_FROM_ALL
 	class/hid/Source/standard_hid_core.c
 )
 
-target_include_directories(${EXEC_NAME}_usb_library_device_hid PUBLIC
+target_include_directories(${EXEC_NAME}_usb_library_device_standard_hid PUBLIC
 	class/hid/Include
+	../ustd/class/hid
 )
 
-target_link_libraries(${EXEC_NAME}_usb_library_device_hid ${EXEC_NAME}_usb_library_device)
+target_link_libraries(${EXEC_NAME}_usb_library_device_standard_hid ${EXEC_NAME}_usb_library_device)
 
 # iap
 add_library(${EXEC_NAME}_usb_library_device_iap EXCLUDE_FROM_ALL
@@ -80,6 +93,7 @@ add_library(${EXEC_NAME}_usb_library_device_msc EXCLUDE_FROM_ALL
 
 target_include_directories(${EXEC_NAME}_usb_library_device_msc PUBLIC
 	class/msc/Include
+	../ustd/class/msc
 )
 
 target_link_libraries(${EXEC_NAME}_usb_library_device_msc ${EXEC_NAME}_usb_library_device)
