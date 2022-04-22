@@ -13,5 +13,5 @@ The demo applications can be built with the following commands:
 
 ```PowerShell
 cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE="cmake/arm-none-eabi-gcc.cmake" -DCMAKE_GENERATOR="Ninja Multi-Config"
-cmake --build .\build\ --config Release --target Running_led
+cmake --build .\build\ --config Release
 ```
