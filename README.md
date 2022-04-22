@@ -1,4 +1,7 @@
 # GD32 CMake example
+
+** THIS PROJECT IS CURRENTLY IN A NON-WORKING STATE AS I DON'T YET HAVE HARDWARE TO TEST THE BUILDS **
+
 Goal of this repo is to provide an example CMake project to build the GigaDevice Demo suites provided for the GD32F4xx derivates with the standard GNU Arm Embedded Toolchain.
 
 Currently it's just a copy of the Demo Suites package with added CMake files, a toolchain configuration and a converted startup asm to be compatible with the GNU compiler.
