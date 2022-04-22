@@ -6,6 +6,8 @@ Goal of this repo is to provide an example CMake project to build the GigaDevice
 
 Currently it's just a copy of the Demo Suites package with added CMake files, a toolchain configuration and a converted startup asm to be compatible with the GNU compiler.
 
+I've also commented out the documentation building for lwip in the ENET example to don't require doxygen to configure.
+
 ## Dependencies
 To build this package you need a working GNU Arm Embedded Toolchain (tested with 10.3-2021.10), CMake and a build system installed. I'm using Ninja in my examples.
 
