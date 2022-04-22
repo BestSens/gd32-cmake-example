@@ -30,7 +30,7 @@ endif ()
 
 add_definitions(
 	-DGD32F450
-	-DGD32F450Z_EVAL
+	-DGD32F450I_EVAL
 )
 
 add_compile_options(
