@@ -1,4 +1,4 @@
-add_library(CMSIS
+add_library(CMSIS EXCLUDE_FROM_ALL
 	GD/GD32F4xx/Source/GNU/startup_gd32f450_470.s
 	GD/GD32F4xx/Source/system_gd32f4xx.c
 )

@@ -1,4 +1,4 @@
-add_library(standard_peripherals
+add_library(standard_peripherals EXCLUDE_FROM_ALL
 	Source/gd32f4xx_adc.c
 	Source/gd32f4xx_can.c
 	Source/gd32f4xx_crc.c
