@@ -1,2 +1,2 @@
-add_subdirectory(GPIO/Running_led)
-add_subdirectory(GPIO/Keyboard_polling_mode)
+add_subdirectory(GPIO)
+add_subdirectory(ADC)
