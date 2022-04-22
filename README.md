@@ -16,9 +16,15 @@ To build this package you need a working GNU Arm Embedded Toolchain (tested with
 I'm using this on windows but it may work on Linux or macOS as well.
 
 ## Usage
-The demo applications can be built with the following commands:
+All demo applications can be built with the following commands:
 
 ```PowerShell
 cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE="cmake/arm-none-eabi-gcc.cmake" -DCMAKE_GENERATOR="Ninja Multi-Config"
 cmake --build .\build\ --config Release
+```
+
+To build only specific examples, use the following to build:
+
+```PowerShell
+cmake --build .\build\ --config Release --target Running_led
 ```
