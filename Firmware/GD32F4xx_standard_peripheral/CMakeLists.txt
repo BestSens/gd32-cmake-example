@@ -1,4 +1,4 @@
-add_library(standard_peripherals EXCLUDE_FROM_ALL
+add_library(${EXEC_NAME}_standard_peripherals EXCLUDE_FROM_ALL
 	Source/gd32f4xx_adc.c
 	Source/gd32f4xx_can.c
 	Source/gd32f4xx_crc.c
@@ -30,8 +30,8 @@ add_library(standard_peripherals EXCLUDE_FROM_ALL
 	Source/gd32f4xx_wwdgt.c
 )
 
-target_include_directories(standard_peripherals PUBLIC
+target_include_directories(${EXEC_NAME}_standard_peripherals PUBLIC
 	Include
 )
 
-target_link_libraries(standard_peripherals CMSIS)
+target_link_libraries(${EXEC_NAME}_standard_peripherals ${EXEC_NAME}_CMSIS)

@@ -46,4 +46,4 @@ add_link_options(
 	-mcpu=cortex-m4
 )
 
-add_subdirectory(Examples/GPIO/Running_led)
+add_subdirectory(Examples)

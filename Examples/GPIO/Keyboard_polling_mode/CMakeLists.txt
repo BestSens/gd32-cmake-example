@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.17.0)
 
-set(EXEC_NAME Running_led)
+set(EXEC_NAME Keyboard_polling_mode)
 
 add_executable(${EXEC_NAME}
 	gd32f4xx_it.c
