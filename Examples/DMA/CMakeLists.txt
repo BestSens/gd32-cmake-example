@@ -1,0 +1,4 @@
+add_subdirectory(multi_data_ram_to_ram)
+add_subdirectory(Reload_exti)
+add_subdirectory(single_data_flash_to_ram)
+add_subdirectory(switch_buffer_mode)
