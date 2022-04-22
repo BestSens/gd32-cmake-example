@@ -1,0 +1,7 @@
+-xc++ -std=gnu++17 --target=arm-arm-none-eabi -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -c
+-fno-rtti -funsigned-char -fshort-enums -fshort-wchar -fno-exceptions
+-D__EVAL -D__MICROLIB -gdwarf-4 -O3 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -I ../../Firmware/CMSIS/GD/GD32F4xx/Include -I ../../Utilities -I ../../Firmware/CMSIS -I ../../Template -I ../../Firmware/CMSIS/GD/GD32F4xx/Source/ARM -I ../../Firmware/GD32F4xx_standard_peripheral/Include
+-IC:/Keil_v5/ARM/RV31/INC
+-IC:/Keil_v5/ARM/INC/GD/GD32F4xx
+-D__UVISION_VERSION="536" -DUSE_STDPERIPH_DRIVER -DGD32F450
+-o ./output/test.o -MD "test.cpp"

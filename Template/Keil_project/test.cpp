@@ -1,0 +1,3 @@
+auto test() -> void {
+	return;
+}
