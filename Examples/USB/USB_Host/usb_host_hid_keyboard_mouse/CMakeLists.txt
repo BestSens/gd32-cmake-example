@@ -3,12 +3,7 @@ cmake_minimum_required(VERSION 3.17.0)
 include(example_set_name)
 
 add_definitions(
-	-DGD32F450I_EVAL
 	-DUSE_USB_HS
-)
-
-remove_definitions(
-	-DGD32F450Z_EVAL
 )
 
 add_executable(${EXEC_NAME}
