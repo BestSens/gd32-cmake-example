@@ -26,7 +26,7 @@ cmake --build .\build\ --config Release
 To build only specific examples, use the following to build:
 
 ```PowerShell
-cmake --build .\build\ --config Release --target Running_led
+cmake --build .\build\ --config Release --target Running_led.bin
 ```
 
 ## Known issues
