@@ -1,14 +1,11 @@
 # GD32 CMake example
-
-**THIS PROJECT IS CURRENTLY IN A NON-WORKING STATE AS I DON'T YET HAVE HARDWARE TO TEST THE BUILDS**
-
 Goal of this repo is to provide an example CMake project to build the GigaDevice Demo suites provided for the GD32F4xx derivates with the standard GNU Arm Embedded Toolchain.
 
-Currently it's just a copy of the Demo Suites package with added CMake files, a toolchain configuration and a converted startup asm to be compatible with the GNU compiler.
+Currently it's just a copy of the Demo Suites package with added CMake files, a toolchain configuration, a converted startup asm to be compatible with the GNU compiler and a linker script.
 
 I've also commented out the documentation building for lwip in the ENET example to don't require doxygen to configure.
 
-I've removed '&'s from various Example paths as they are note compatible with CMake.
+I've removed '&'s from various Example paths as they are note compatible with CMake and did some fixes that break compilation on Unix based systems.
 
 ## Dependencies
 To build this package you need a working GNU Arm Embedded Toolchain (tested with 11.3-rel1), CMake and a build system installed. I'm using Ninja in my examples.
@@ -33,6 +30,6 @@ cmake --build .\build\ --config Release --target Running_led.bin
 * As each example may add a different configuration file to the libraries every target needs to be built for each example
 * Linking and include directories are odd because of the above
 * Amount of targets get enormous because of the above, thus generating take long
-* There are errors because of too long paths
+* There may be errors because of too long paths
 * Definitions should be local to targets not global
 * Board should be selectable with variables instead of building everything for the gd32f450z-eval excluding the ones specifically for the gd32f450i-eval
