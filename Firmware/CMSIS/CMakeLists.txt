@@ -1,5 +1,5 @@
 add_library(${EXEC_NAME}_CMSIS EXCLUDE_FROM_ALL
-	GD/GD32F4xx/Source/GNU/startup_gd32f450_470.s
+	GD/GD32F4xx/Source/GNU/startup_stm32f446xx.s
 	GD/GD32F4xx/Source/system_gd32f4xx.c
 )
 
