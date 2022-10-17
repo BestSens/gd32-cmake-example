@@ -11,7 +11,7 @@ I've also commented out the documentation building for lwip in the ENET example 
 I've removed '&'s from various Example paths as they are note compatible with CMake.
 
 ## Dependencies
-To build this package you need a working GNU Arm Embedded Toolchain (tested with 10.3-2021.10), CMake and a build system installed. I'm using Ninja in my examples.
+To build this package you need a working GNU Arm Embedded Toolchain (tested with 11.3-rel1), CMake and a build system installed. I'm using Ninja in my examples.
 
 I've tested this on Windows and Linux but with a bit of you're lucky it may work macOS as well.
 
