@@ -36,7 +36,7 @@ OF SUCH DAMAGE.
 */
 
 #include "gd32f4xx_it.h"
-#include "i2c_ie.h"
+#include "I2C_IE.h"
 
 /*!
     \brief      this function handles NMI exception

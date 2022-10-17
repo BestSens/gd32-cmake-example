@@ -38,7 +38,7 @@ OF SUCH DAMAGE.
 #include "gd32f4xx.h"
 #include <stdio.h>
 #include "gd32f450i_eval.h"
-#include "i2c_ie.h"
+#include "I2C_IE.h"
 
 uint8_t i2c_buffer_transmitter[16];
 uint8_t i2c_buffer_receiver[16];
