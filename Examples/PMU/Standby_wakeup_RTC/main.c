@@ -63,7 +63,7 @@ int main(void)
     /* configure RTC */
     rtc_configuration();
     /* PMU enters standby mode */
-    pmu_to_standbymode(WFI_CMD);
+    pmu_to_standbymode();
 
     while(1) {
     }

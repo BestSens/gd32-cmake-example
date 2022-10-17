@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -100,7 +101,7 @@ typedef struct _hid_process
     __IO uint32_t        timer;
     usb_desc_hid         hid_desc;
 
-    hid_state            state; 
+    hid_state            state;
     hid_ctlstate         ctl_state;
 
     usbh_status          (*init)(usb_core_driver *udev, usbh_host *uhost);

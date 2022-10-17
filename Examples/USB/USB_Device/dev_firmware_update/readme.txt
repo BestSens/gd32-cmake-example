@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -42,22 +43,27 @@ the GD32 USB device.
   It follows the DFU class specification defined by the USB Implementers Forum for 
 reprogramming an application through USB-FS/HS-Device.
 
-  The DFU principle is particularly well suited to USB-FS-Device applications that 
+  The DFU principle is particularly well suited to USB-FS/HS-Device applications that 
 need to be reprogrammed in the field.
 
-  To test the demo, you need a configuration hex image or bin image . The hex image 
-and the bin image should set application address at 0x8004000. You can refer to 
-"../Utilities/Binary/gd32f450i" folder and use the hex images and bin images in it.
+  The supported memorys of this example are the internal flash memory, the external 
+nand flash memory and the external nor flash memory.
 
-  You need install the corresponding GD DFU Driver with your PC operation system. 
+  To test the demo, the internal flash is used as an example:
 
-  Once the configuration *.hex image is generated, it can be downloaded into 
-internal flash memory using the GD tool "GD MCU DFU Tool" available for download 
-from http://www.gd32mcu.com/cn/download.
+  Step 1: User need a configuration hex image or bin image. The hex image and the bin image 
+should set application address at APP_LOADED_ADDR in the internal flash memory. User can refer to
+"../Test_Images" folder and use the hex images and bin images in it.
 
-  The GD tool "GD MCU DFU Tool" also can operate the option Byte.
+  Step 2: User need install the corresponding GD DFU Driver with your PC operation system. 
 
-  The supported memory for this example is the internal flash memory, you can also
-add a new memory interface if you have external memory.
+  Step 3: Once the configuration *.hex image is generated, it can be downloaded into the 
+internal flash memory or the external falsh memory using the GD tool "GD32 MCU DFUEx Tool
+" available for download from http://www.gd32mcu.com/cn/download.
 
-  After each device reset, hold down the TAMPER key on the GD32450i-EVAL-V1.1 board.
+  The GD tool "GD32AllInOneProgrammer" can operate the option Byte in the internal flash.
+
+  Step 4: After each device reset, hold down the TAMPER key on the GD32450i-EVAL board into app 
+routine in the internal flash.
+
+  JP12,JP13,JP20 must be fitted to SPI ports.

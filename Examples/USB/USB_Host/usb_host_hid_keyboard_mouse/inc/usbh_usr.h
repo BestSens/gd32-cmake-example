@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -45,42 +46,40 @@ extern usbh_user_cb usr_cb;
 
 /* function declarations */
 /* user operation for host-mode initialization */
-void usbh_user_init                          (void);
+void usbh_user_init(void);
 /* deinitialize user state and associated variables */
-void usbh_user_deinit                        (void);
+void usbh_user_deinit(void);
 /* user operation for device attached */
-void usbh_user_device_connected              (void);
+void usbh_user_device_connected(void);
 /* user operation for unrecovered error happens */
-void usbh_user_unrecovered_error             (void);
+void usbh_user_unrecovered_error(void);
 /* user operation for device disconnect event */
-void usbh_user_device_disconnected           (void);
+void usbh_user_device_disconnected(void);
 /* user operation for reset USB Device */
-void usbh_user_device_reset                  (void);
+void usbh_user_device_reset(void);
 /* user action for device over current detection event */
-void usbh_user_over_current_detected         (void);
+void usbh_user_over_current_detected(void);
 /* user operation for detecting device speed */
-void usbh_user_device_speed_detected         (uint32_t DeviceSpeed);
+void usbh_user_device_speed_detected(uint32_t DeviceSpeed);
 /* user operation when device descriptor is available */
-void usbh_user_device_desc_available         (void *);
+void usbh_user_device_desc_available(void *);
 /* USB device is successfully assigned the address */
-void usbh_user_device_address_assigned       (void);
+void usbh_user_device_address_assigned(void);
 /* user operation when configuration descriptor is available */
-void usbh_user_configuration_descavailable   (usb_desc_config *cfgDesc,
-                                              usb_desc_itf *itfDesc,
-                                              usb_desc_ep *epDesc);
+void usbh_user_configuration_descavailable(usb_desc_config *cfgDesc, usb_desc_itf *itfDesc, usb_desc_ep *epDesc);
 /* user operation when manufacturer string exists */
-void usbh_user_manufacturer_string           (void *);
+void usbh_user_manufacturer_string(void *);
 /* user operation when product string exists */
-void usbh_user_product_string                (void *);
+void usbh_user_product_string(void *);
 /* user operation when serial string exists */
-void usbh_user_serialnum_string              (void *);
+void usbh_user_serialnum_string(void *);
 /* user response request is displayed to ask for application jump to class */
-void usbh_user_enumeration_finish            (void);
+void usbh_user_enumeration_finish(void);
 /* user action for application state entry */
-usbh_user_status usbh_user_userinput         (void);
+usbh_user_status usbh_user_userinput(void);
 /* user operation when device is not supported */
-void usbh_user_device_not_supported          (void);
+void usbh_user_device_not_supported(void);
 /* user operation for unrecovered error happens */
-void usbh_user_unrecovered_error             (void);
+void usbh_user_unrecovered_error(void);
 
 #endif /*__USBH_USR_H */

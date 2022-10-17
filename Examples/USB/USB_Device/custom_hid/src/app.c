@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -41,7 +42,7 @@ usb_core_driver custom_hid;
 extern hid_fop_handler fop_handler;
 
 /*!
-    \brief      main routine will construct a USB custom HID device
+    \brief      main routine will construct a USB custom hid device
     \param[in]  none
     \param[out] none
     \retval     none
@@ -65,18 +66,6 @@ int main(void)
 
     usb_intr_config();
 
-#ifdef USE_IRC48M
-    /* CTC peripheral clock enable */
-    rcu_periph_clock_enable(RCU_CTC);
-
-    /* CTC configure */
-    ctc_config();
-
-    while (ctc_flag_get(CTC_FLAG_CKOK) == RESET) {
-    }
-#endif
-
-    /* Main loop */
     while (1) {
     }
 }

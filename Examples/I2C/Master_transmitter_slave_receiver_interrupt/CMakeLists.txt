@@ -5,8 +5,8 @@ include(example_set_name)
 add_executable(${EXEC_NAME}
 	gd32f4xx_it.c
 	main.c
-	I2C0_IE.c
-	I2C1_IE.c
+	i2c0_ie.c
+	i2c1_ie.c
 )
 
 target_include_directories(${EXEC_NAME} PRIVATE

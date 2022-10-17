@@ -9,6 +9,11 @@ add_definitions(
 add_executable(${EXEC_NAME}
 	src/app.c
 	src/flash_if.c
+	src/exmc_nandflash.c
+	src/gd25qxx.c
+	src/inter_flash_if.c
+	src/nand_flash_if.c
+	src/nor_flash_if.c
 	src/gd32f4xx_hw.c
 	src/gd32f4xx_it.c
 	src/system_gd32f4xx.c

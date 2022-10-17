@@ -44,7 +44,7 @@ OF SUCH DAMAGE.
 
 uint8_t i2c_transmitter[16];
 uint8_t i2c_receiver[16];
-ErrStatus state = ERROR;
+__IO ErrStatus state = ERROR;
 
 void rcu_config(void);
 void gpio_config(void);
@@ -184,12 +184,12 @@ void gpio_config(void)
     /* connect PB11 to I2C1_SDA */
     gpio_af_set(GPIOB, GPIO_AF_4, GPIO_PIN_11);
 
-    /* configure I2C0 GPIO */
+    /* configure GPIO pins of I2C0 */
     gpio_mode_set(GPIOB, GPIO_MODE_AF, GPIO_PUPD_PULLUP, GPIO_PIN_6);
     gpio_output_options_set(GPIOB, GPIO_OTYPE_OD, GPIO_OSPEED_50MHZ, GPIO_PIN_6);
     gpio_mode_set(GPIOB, GPIO_MODE_AF, GPIO_PUPD_PULLUP, GPIO_PIN_7);
     gpio_output_options_set(GPIOB, GPIO_OTYPE_OD, GPIO_OSPEED_50MHZ, GPIO_PIN_7);
-    /* configure I2C1 GPIO */
+    /* configure GPIO pins of I2C1 */
     gpio_mode_set(GPIOB, GPIO_MODE_AF, GPIO_PUPD_PULLUP, GPIO_PIN_10);
     gpio_output_options_set(GPIOB, GPIO_OTYPE_OD, GPIO_OSPEED_50MHZ, GPIO_PIN_10);
     gpio_mode_set(GPIOB, GPIO_MODE_AF, GPIO_PUPD_PULLUP, GPIO_PIN_11);

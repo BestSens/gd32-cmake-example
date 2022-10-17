@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -116,7 +117,7 @@ usbh_status usbh_cfgdesc_get (usbh_host *uhost, uint16_t len)
     pdata = uhost->dev_prop.cfgdesc_rawdata;
 #else
     pdata = uhost->dev_prop.data;
-#endif /* USBH_CFG_DESC_KEEP */
+#endif /* (USBH_CFG_DESC_KEEP == 1U) */
 
     if (CTL_IDLE == usb_ctl->ctl_state) {
         usb_ctl->setup.req = (usb_req) {
@@ -677,13 +678,13 @@ static void usbh_strdesc_parse (uint8_t *psrc, uint8_t *pdest, uint16_t len)
     if (USB_DESCTYPE_STR == psrc[1]) {
         /* make sure the descriptor is string type */
 
-        /* psrc[0] contains Size of Descriptor, subtract 2 to get the length of string */      
+        /* psrc[0] contains size of descriptor, subtract 2 to get the length of string */
         str_len = USB_MIN((uint16_t)psrc[0] - 2U, len);
 
-        psrc += 2U; /* adjust the offset ignoring the string len and descriptor type */
+        psrc += 2U; /* adjust the offset ignoring the string length and descriptor type */
 
-        for (index = 0U; index < str_len; index += 2U) {
-            /* copy only the string and ignore the unicode id, hence add the src */
+        for(index = 0U; index < str_len; index += 2U) {
+            /* copy only the string and ignore the unicode id, hence add the source */
             *pdest = psrc[index];
 
             pdest++;

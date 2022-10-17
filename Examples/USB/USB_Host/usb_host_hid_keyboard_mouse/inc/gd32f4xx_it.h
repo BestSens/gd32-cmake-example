@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -57,11 +58,21 @@ void DebugMon_Handler(void);
 void PendSV_Handler(void);
 /* this function handles SysTick exception */
 void SysTick_Handler(void);
-/* this function handles external line 1 interrupt request */
-void EXTI1_IRQHandler(void);
 /* this function handles Timer2 Handler */
 void TIMER2_IRQHandler(void);
-/* this function handles USBFS global interrupt request */
+/* this function handles external line 0 interrupt handler */
+void EXTI0_IRQHandler(void);
+#ifdef USE_USB_FS
+/* this function handles USBFS wakeup interrupt handler */
+void USBFS_WKUP_IRQHandler(void);
+/* this function handles USBFS IRQ Handler */
 void USBFS_IRQHandler(void);
+#endif /* USE_USB_FS */
+#ifdef USE_USB_HS
+/* this function handles USBHS wakeup interrupt handler */
+void USBHS_WKUP_IRQHandler(void);
+/* this function handles USBHS IRQ Handler */
+void USBHS_IRQHandler(void);
+#endif /* USE_USB_HS */
 
 #endif /* GD32F4XX_IT_H */

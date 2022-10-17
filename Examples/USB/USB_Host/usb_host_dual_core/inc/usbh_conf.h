@@ -1,9 +1,10 @@
 /*!
     \file    usbh_conf.h
-    \brief   general low level driver configuration
+    \brief   USB host driver configuration
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -36,12 +37,12 @@ OF SUCH DAMAGE.
 #ifndef __USBH_CONF_H
 #define __USBH_CONF_H
 
-#define USBH_MAX_EP_NUM                         2
-#define USBH_MAX_INTERFACES_NUM                 2
-#define USBH_MAX_ALT_SETTING                    2
-#define USBH_MAX_SUPPORTED_CLASS                2
+#define USBH_MAX_EP_NUM                         2U
+#define USBH_MAX_INTERFACES_NUM                 2U
+#define USBH_MAX_ALT_SETTING                    2U
+#define USBH_MAX_SUPPORTED_CLASS                2U
 
-#define USBH_DATA_BUF_MAX_LEN                   0x200
-#define USBH_CFGSET_MAX_LEN                     0x200
+#define USBH_DATA_BUF_MAX_LEN                   0x200U
+#define USBH_CFGSET_MAX_LEN                     0x200U
 
 #endif /* __USBH_CONF_H */

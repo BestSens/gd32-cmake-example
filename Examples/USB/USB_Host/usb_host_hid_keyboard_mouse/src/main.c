@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -45,7 +46,7 @@ usb_core_driver usbh_core;
     \brief      main routine
     \param[in]  none
     \param[out] none
-    \retval     none
+    \retval     int
 */
 int main(void)
 {
@@ -71,7 +72,7 @@ int main(void)
     /* enable interrupts */
     usb_intr_config();
 
-    while(1){
+    while (1) {
         /* Host state handler */
         usbh_core_task(&usb_host);
     }

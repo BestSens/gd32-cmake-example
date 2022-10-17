@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -43,13 +44,13 @@ typedef union {
     msc_bbb_cbw field;
 
     uint8_t CBWArray[31];
-}usbh_cbw_pkt;
+} usbh_cbw_pkt;
 
 typedef union {
     msc_bbb_csw field;
 
     uint8_t CSWArray[13];
-}usbh_csw_pkt;
+} usbh_csw_pkt;
 
 enum usbh_msc_state {
     USBH_MSC_BBB_INIT_STATE = 0U,
@@ -77,7 +78,7 @@ typedef enum
 {
     BBB_CMD_IDLE = 0U,
     BBB_CMD_SEND,
-    BBB_CMD_WAIT,
+    BBB_CMD_WAIT
 } bbb_cmd_state;
 
 /* csw status definitions */
@@ -85,7 +86,7 @@ typedef enum
 {
     BBB_CSW_CMD_PASSED = 0U,
     BBB_CSW_CMD_FAILED,
-    BBB_CSW_PHASE_ERROR,
+    BBB_CSW_PHASE_ERROR
 } bbb_csw_status;
 
 typedef enum
@@ -139,11 +140,11 @@ typedef struct
 /* function declarations */
 /* initialize the mass storage parameters */
 void usbh_msc_bbb_init (usbh_host *uhost);
-/* manage the different states of BOT transfer and updates the status to upper layer */
+/* manage the different states of BBB transfer and updates the status to upper layer */
 usbh_status usbh_msc_bbb_process (usbh_host *uhost, uint8_t lun);
 /* manages the different error handling for stall */
 usbh_status usbh_msc_bbb_abort (usbh_host *uhost, uint8_t direction);
-/* reset MSC bot request structure */
+/* reset MSC BBB request structure */
 usbh_status usbh_msc_bbb_reset (usbh_host *uhost);
 /* decode the CSW received by the device and updates the same to upper layer */
 bbb_csw_status usbh_msc_csw_decode (usbh_host *uhost);

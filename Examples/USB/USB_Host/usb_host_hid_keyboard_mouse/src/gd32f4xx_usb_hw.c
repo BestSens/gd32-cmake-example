@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -146,43 +147,14 @@ void usb_gpio_config (void)
 void usb_rcu_config (void)
 {
 #ifdef USE_USB_FS
-
-    #ifndef USE_IRC48M
-        rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLQ);
-
-        rcu_ck48m_clock_config(RCU_CK48MSRC_PLL48M);
-    #else
-        /* enable IRC48M clock */
-        rcu_osci_on(RCU_IRC48M);
-
-        /* wait till IRC48M is ready */
-        while (SUCCESS != rcu_osci_stab_wait(RCU_IRC48M)) {
-        }
-
-        rcu_ck48m_clock_config(RCU_CK48MSRC_IRC48M);
-    #endif /* USE_IRC48M */
+    rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLQ);
+    rcu_ck48m_clock_config(RCU_CK48MSRC_PLL48M);
 
     rcu_periph_clock_enable(RCU_USBFS);
-
 #elif defined(USE_USB_HS)
-
     #ifdef USE_EMBEDDED_PHY
-
-        #ifndef USE_IRC48M
-            rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLQ);
-
-            rcu_ck48m_clock_config(RCU_CK48MSRC_PLL48M);
-        #else
-            /* enable IRC48M clock */
-            rcu_osci_on(RCU_IRC48M);
-
-            /* wait till IRC48M is ready */
-            while (SUCCESS != rcu_osci_stab_wait(RCU_IRC48M)) {
-            }
-
-            rcu_ck48m_clock_config(RCU_CK48MSRC_IRC48M);
-        #endif /* USE_IRC48M */
-
+        rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLQ);
+        rcu_ck48m_clock_config(RCU_CK48MSRC_PLL48M);
     #elif defined(USE_ULPI_PHY)
         rcu_periph_clock_enable(RCU_USBHSULPI);
     #endif /* USE_EMBEDDED_PHY */
@@ -203,36 +175,39 @@ void usb_intr_config (void)
 
 #ifdef USE_USB_FS
     nvic_irq_enable((uint8_t)USBFS_IRQn, 2U, 0U);
-#elif defined(USE_USB_HS)
+
+    #if USBFS_LOW_POWER
+        /* enable the power module clock */
+        rcu_periph_clock_enable(RCU_PMU);
+
+        /* USB wakeup EXTI line configuration */
+        exti_interrupt_flag_clear(EXTI_18);
+        exti_init(EXTI_18, EXTI_INTERRUPT, EXTI_TRIG_RISING);
+        exti_interrupt_enable(EXTI_18);
+
+        nvic_irq_enable((uint8_t)USBFS_WKUP_IRQn, 0U, 0U);
+    #endif /* USBFS_LOW_POWER */
+#endif /* USE_USB_FS */
+
+#ifdef USE_USB_HS
     nvic_irq_enable((uint8_t)USBHS_IRQn, 2U, 0U);
-#endif /* USE_USBFS */
 
-#ifdef USB_LOW_POWER
+    #if USBHS_LOW_POWER
+        /* enable the power module clock */
+        rcu_periph_clock_enable(RCU_PMU);
 
-    /* enable the power module clock */
-    rcu_periph_clock_enable(RCU_PMU);
-#ifdef USE_USB_FS
-    /* USB wakeup EXTI line configuration */
-    exti_interrupt_flag_clear(EXTI_18);
-    exti_init(EXTI_18, EXTI_INTERRUPT, EXTI_TRIG_RISING);
-    exti_interrupt_enable(EXTI_18);
+        /* USB wakeup EXTI line configuration */
+        exti_interrupt_flag_clear(EXTI_20);
+        exti_init(EXTI_20, EXTI_INTERRUPT, EXTI_TRIG_RISING);
+        exti_interrupt_enable(EXTI_20);
 
-    nvic_irq_enable((uint8_t)USBFS_WKUP_IRQn, 1U, 0U);
-#elif defined(USE_USB_HS)
-
-    exti_interrupt_flag_clear(EXTI_20);
-    exti_init(EXTI_20, EXTI_INTERRUPT, EXTI_TRIG_RISING);
-    exti_interrupt_enable(EXTI_20);
-
-    nvic_irq_enable((uint8_t)USBHS_WKUP_IRQn, 1U, 0U);
-#endif
-
-#endif /* USB_LOW_POWER */
-
+        nvic_irq_enable((uint8_t)USBHS_WKUP_IRQn, 0U, 0U);
+    #endif /* USBHS_LOW_POWER */
+#endif /* USE_USB_HS */
 }
 
 /*!
-    \brief      drives the VBUS signal through GPIO
+    \brief      drives the VBUS signal through gpio
     \param[in]  state: VBUS states
     \param[out] none
     \retval     none
@@ -240,10 +215,10 @@ void usb_intr_config (void)
 void usb_vbus_drive (uint8_t state)
 {
     if (0U == state) {
-        /* disable is needed on output of the power switch */
+        /* disable the power switch by driving the GPIO low */
         gpio_bit_reset(HOST_POWERSW_PORT, HOST_POWERSW_VBUS);
     } else {
-        /* enable the power switch by driving the enable high */
+        /* enable the power switch by driving the GPIO high */
         gpio_bit_set(HOST_POWERSW_PORT, HOST_POWERSW_VBUS);
     }
 }
@@ -318,8 +293,8 @@ void usb_mdelay (const uint32_t msec)
 */
 void usb_timer_irq (void)
 {
-    if (RESET != timer_interrupt_flag_get(TIMER2, TIMER_INT_UP)) {
-        timer_interrupt_flag_clear(TIMER2, TIMER_INT_UP);
+    if (RESET != timer_interrupt_flag_get(TIMER2, TIMER_INT_FLAG_UP)) {
+        timer_interrupt_flag_clear(TIMER2, TIMER_INT_FLAG_UP);
 
         if (delay_time > 0x00U){
             delay_time--;
@@ -330,7 +305,7 @@ void usb_timer_irq (void)
 }
 
 /*!
-    \brief      delay routine based on TIM2
+    \brief      delay routine based on Timer2
     \param[in]  ntime: delay Time 
     \param[in]  unit: delay Time unit = milliseconds / microseconds
     \param[out] none
@@ -347,7 +322,7 @@ static void hwp_delay(uint32_t ntime, uint8_t unit)
 }
 
 /*!
-    \brief      configures TIMER2 for delay routine based on TIMER2
+    \brief      configures TIMER for delay routine based on Timer2
     \param[in]  unit: msec /usec
     \param[out] none
     \retval     none
@@ -356,13 +331,15 @@ static void hwp_time_set(uint8_t unit)
 {
     timer_parameter_struct  timer_basestructure;
 
+    timer_prescaler = ((rcu_clock_freq_get(CK_APB1)/1000000*2)/12) - 1;
+
     timer_disable(TIMER2);
     timer_interrupt_disable(TIMER2, TIMER_INT_UP);
 
-    if (TIM_USEC_DELAY == unit) {
-        timer_basestructure.period = 13U;
-    } else if (TIM_MSEC_DELAY == unit) {
-        timer_basestructure.period = 13999U;
+    if(TIM_USEC_DELAY == unit) {
+        timer_basestructure.period = 11U;
+    } else if(TIM_MSEC_DELAY == unit) {
+        timer_basestructure.period = 11999U;
     } else {
         /* no operation */
     }
@@ -375,7 +352,7 @@ static void hwp_time_set(uint8_t unit)
 
     timer_init(TIMER2, &timer_basestructure);
 
-    timer_interrupt_flag_clear(TIMER2, TIMER_INT_UP);
+    timer_interrupt_flag_clear(TIMER2, TIMER_INT_FLAG_UP);
 
     timer_auto_reload_shadow_enable(TIMER2);
 

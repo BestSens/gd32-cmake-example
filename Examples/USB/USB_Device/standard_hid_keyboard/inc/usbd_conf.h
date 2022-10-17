@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -38,12 +39,12 @@ OF SUCH DAMAGE.
 
 #include "usb_conf.h"
 
-#define USBD_CFG_MAX_NUM                    1
-#define USBD_ITF_MAX_NUM                    1
+#define USBD_CFG_MAX_NUM                    1U
+#define USBD_ITF_MAX_NUM                    1U
 
-#define USBD_HID_INTERFACE                  0
+#define USBD_HID_INTERFACE                  0U
 
-#define USB_STR_DESC_MAX_SIZE               64
+#define USB_STR_DESC_MAX_SIZE               64U
 
 /* USB user string supported */
 /* #define USB_SUPPORT_USER_STRING_DESC */
@@ -52,6 +53,6 @@ OF SUCH DAMAGE.
 
 #define HID_IN_EP                           EP1_IN
 
-#define HID_IN_PACKET                       8
+#define HID_IN_PACKET                       8U
 
 #endif /* __USBD_CONF_H */

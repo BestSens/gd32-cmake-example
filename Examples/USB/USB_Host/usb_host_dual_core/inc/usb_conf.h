@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -61,8 +62,8 @@ OF SUCH DAMAGE.
  *                                high-bandwidth channel or multiple isochronous 
  *                                channels are enabled
  *
- *  (ii) For the host nonperiodic Transmit FIFO is the largest maximum packet size 
- *       for all supported nonperiodic OUT channels. Typically, a space 
+ *  (ii) For the host non-periodic Transmit FIFO is the largest maximum packet size 
+ *       for all supported non-periodic OUT channels. Typically, a space 
  *       corresponding to two Largest Packet Size is recommended.
  *
  *  (iii) The minimum amount of RAM required for Host periodic Transmit FIFO is 
@@ -77,6 +78,9 @@ OF SUCH DAMAGE.
     #define USB_RX_FIFO_FS_SIZE                            128
     #define USB_HTX_NPFIFO_FS_SIZE                         96
     #define USB_HTX_PFIFO_FS_SIZE                          96
+
+    #define USBFS_SOF_OUTPUT                               0
+    #define USBFS_LOW_POWER                                0
 #endif
 
 #ifdef USB_HS_CORE
@@ -93,12 +97,10 @@ OF SUCH DAMAGE.
     #endif
 
 //    #define USB_HS_INTERNAL_DMA_ENABLED
+
+    #define USBHS_SOF_OUTPUT                               0
+    #define USBHS_LOW_POWER                                0
 #endif
-
-#define USB_SOF_OUTPUT                                     0
-#define USB_LOW_POWER                                      0
-
-//#define USB_LOW_PWR_ENABLE
 
 /****************** USB OTG MODE CONFIGURATION ********************************/
 #define USE_HOST_MODE

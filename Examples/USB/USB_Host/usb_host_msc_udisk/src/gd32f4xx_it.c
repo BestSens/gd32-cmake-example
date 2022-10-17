@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -37,18 +38,16 @@ OF SUCH DAMAGE.
 #include "usbh_core.h"
 #include "gd32f4xx_it.h"
 
-extern usbh_host usb_host;
+extern usbh_host usb_host_msc;
 extern usb_core_driver usbh_core;
 
 void usb_timer_irq (void);
 
-#ifdef USB_LOW_PWR_ENABLE
 /* local function prototypes ('static') */
 static void resume_mcu_clk(void);
-#endif /* USB_LOW_PWR_ENABLE */
 
 /*!
-    \brief      this function handles NMI exception.
+    \brief      this function handles NMI exception
     \param[in]  none
     \param[out] none
     \retval     none
@@ -66,7 +65,8 @@ void NMI_Handler(void)
 void HardFault_Handler(void)
 {
     /* if Hard Fault exception occurs, go to infinite loop */
-    while (1);
+    while (1){
+    }
 }
 
 /*!
@@ -78,7 +78,8 @@ void HardFault_Handler(void)
 void MemManage_Handler(void)
 {
     /* if Memory Manage exception occurs, go to infinite loop */
-    while (1);
+    while (1){
+    }
 }
 
 /*!
@@ -90,7 +91,8 @@ void MemManage_Handler(void)
 void BusFault_Handler(void)
 {
     /* if Bus Fault exception occurs, go to infinite loop */
-    while (1);
+    while (1){
+    }
 }
 
 /*!
@@ -102,7 +104,8 @@ void BusFault_Handler(void)
 void UsageFault_Handler(void)
 {
     /* if Usage Fault exception occurs, go to infinite loop */
-    while (1);
+    while (1){
+    }
 }
 
 /*!
@@ -136,7 +139,17 @@ void PendSV_Handler(void)
 }
 
 /*!
-    \brief      this function handles Timer2 Handler.
+    \brief      this function handles Systick exception
+    \param[in]  none
+    \param[out] none
+    \retval     none
+*/
+void SysTick_Handler(void)
+{
+}
+
+/*!
+    \brief      this function handles Timer2 interrupt Handler
     \param[in]  none
     \param[out] none
     \retval     none
@@ -146,64 +159,24 @@ void TIMER2_IRQHandler(void)
     usb_timer_irq();
 }
 
-/*!
-    \brief      this function handles SysTick Handler.
-    \param[in]  none
-    \param[out] none
-    \retval     none
-*/
-void SysTick_Handler(void)
-{
-}
-
-#ifdef USB_LOW_PWR_ENABLE
-
-/*!
-    \brief      this function handles external line 10_15 interrupt request.
-    \param[in]  none
-    \param[out] none
-    \retval     none
-*/
-void EXTI10_15_IRQHandler(void)
-{
-    if (exti_interrupt_flag_get(USER_KEY_EXTI_LINE) != RESET) {
-        if (usb_host.suspend_flag == 1) {
-            usb_host.suspend_flag = 0;
-
-            /* configure system clock */
-            resume_mcu_clk();
-
-            /* resume from suspend mode */
-            usb_hwp_resume(&usbh_core);
-        }
-
-        /* clear the EXTI line pending bit */
-        exti_interrupt_flag_clear(USER_KEY_EXTI_LINE);
-    }
-}
-
-#endif
-
-#ifdef USB_LOW_PWR_ENABLE
-
 #ifdef USE_USB_FS
 
 /*!
-    \brief      this function handles USBFS wakeup interrupt handler
+    \brief      this function handles USBFS wakeup interrupt Handler
     \param[in]  none
     \param[out] none
     \retval     none
 */
 void USBFS_WKUP_IRQHandler(void)
 {
-    if (usb_host.suspend_flag == 1) {
-        usb_host.suspend_flag = 0;
+    if (usb_host_msc.suspend_flag == 1) {
+        usb_host_msc.suspend_flag = 0;
 
         /* configure system clock */
         resume_mcu_clk();
 
-        /* resume from suspend mode */
-        usb_hwp_resume(&usbh_core);
+        /* remote wakeup mode */
+        usb_host_msc.wakeup_mode = REMOTE_WAKEUP;
     }
 
     exti_interrupt_flag_clear(EXTI_18);
@@ -212,21 +185,21 @@ void USBFS_WKUP_IRQHandler(void)
 #elif defined(USE_USB_HS)
 
 /*!
-    \brief      this function handles USBHS wakeup interrupt handler
+    \brief      this function handles USBHS wakeup interrupt Handler
     \param[in]  none
     \param[out] none
     \retval     none
 */
 void USBHS_WKUP_IRQHandler(void)
 {
-    if (usb_host.suspend_flag == 1) {
-        usb_host.suspend_flag = 0;
+    if (usb_host_msc.suspend_flag == 1) {
+        usb_host_msc.suspend_flag = 0;
 
         /* configure system clock */
         resume_mcu_clk();
 
-        /* resume from suspend mode */
-        usb_hwp_resume(&usbh_core);
+        /* remote wakeup mode */
+        usb_host_msc.wakeup_mode = REMOTE_WAKEUP;
     }
 
     exti_interrupt_flag_clear(EXTI_20);
@@ -234,12 +207,10 @@ void USBHS_WKUP_IRQHandler(void)
 
 #endif /* USE_USBFS */
 
-#endif /* USB_LOW_PWR_ENABLE */
-
 #ifdef USE_USB_FS
 
 /*!
-    \brief      this function handles USBFS IRQ Handler
+    \brief      this function handles USBFS interrupt Handler
     \param[in]  none
     \param[out] none
     \retval     none
@@ -264,8 +235,6 @@ void USBHS_IRQHandler(void)
 
 #endif /* USE_USBFS */
 
-#ifdef USB_LOW_PWR_ENABLE
-
 /*!
     \brief      resume mcu clock
     \param[in]  none
@@ -274,10 +243,10 @@ void USBHS_IRQHandler(void)
 */
 static void resume_mcu_clk(void)
 {
-    /* enable HSE */
+    /* enable HXTAL */
     rcu_osci_on(RCU_HXTAL);
 
-    /* wait till HSE is ready */
+    /* wait till HXTAL is ready */
     while(RESET == rcu_flag_get(RCU_FLAG_HXTALSTB)){
     }
 
@@ -295,5 +264,3 @@ static void resume_mcu_clk(void)
     while(RCU_SCSS_PLLP != rcu_system_clock_source_get()){
     }
 }
-
-#endif /* USB_LOW_PWR_ENABLE */

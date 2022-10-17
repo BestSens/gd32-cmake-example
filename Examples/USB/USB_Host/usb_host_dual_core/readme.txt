@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -33,7 +34,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-  This demo is based on the GD32450i-EVAL-V1.1 board, and it provides a description of how 
+  This demo is based on the GD32450i-EVAL-V1.2 board, and it provides a description of how 
 to use the USBFS/USBHS host peripheral on the GD32F4xx devices.
 
   It describes how to use the USB host application based on GD32F4xx dual-core support 
@@ -44,4 +45,4 @@ device is HID one, when the user press the user key, the mouse or the keyboard a
 is launched. The USBHS port behave as a mass storage Host that can enumerate, show content 
 and write file in the attached USB flash disk.
 
-  The running result will be printed by COM1, and JP5 must be fitted to USART0.
+  The running result will be printed by COM0, and JP5 must be fitted to USART0.

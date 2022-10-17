@@ -260,14 +260,12 @@ static void enet_gpio_config(void)
     gpio_af_set(GPIOH, GPIO_AF_11, GPIO_PIN_7);
 
     /* PI8: ETH_INT */
-    gpio_mode_set(GPIOI, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO_PIN_8);
-    gpio_output_options_set(GPIOI, GPIO_OTYPE_PP, GPIO_OSPEED_MAX, GPIO_PIN_8);
+    gpio_mode_set(GPIOI, GPIO_MODE_INPUT, GPIO_PUPD_NONE, GPIO_PIN_8);
 
     /* PI10: ETH_MII_RX_ER */
     gpio_mode_set(GPIOI, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO_PIN_10);
     gpio_output_options_set(GPIOI, GPIO_OTYPE_PP, GPIO_OSPEED_MAX, GPIO_PIN_10);
 
-    gpio_af_set(GPIOI, GPIO_AF_11, GPIO_PIN_8);
     gpio_af_set(GPIOI, GPIO_AF_11, GPIO_PIN_10);
 
     /* PB8: ETH_MII_TXD3 */

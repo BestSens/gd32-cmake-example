@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -255,7 +256,7 @@ static usbh_status usbh_hid_itf_init (usbh_host *uhost)
             hid_handler.poll = HID_MIN_POLL;
         }
 
-        /* check fifo available number of endpoints */
+        /* check for available number of endpoints */
         /* find the number of endpoints in the interface descriptor */
         /* choose the lower number in order not to overrun the buffer allocated */
         ep_num = USB_MIN(uhost->dev_prop.cfg_desc_set.itf_desc_set[uhost->dev_prop.cur_itf][0].itf_desc.bNumEndpoints, USBH_MAX_EP_NUM);
@@ -365,7 +366,7 @@ static usbh_status usbh_hid_class_req (usbh_host *uhost)
 }
 
 /*!
-    \brief      manage state machine for HID data transfers 
+    \brief      manage state machine for HID data transfers
     \param[in]  uhost: pointer to USB host
     \param[out] none
     \retval     operation status
@@ -409,7 +410,8 @@ static usbh_status usbh_hid_handle (usbh_host *uhost)
                 hid->decode(hid->pdata);
             }
         } else {
-            if (URB_STALL == usbh_urbstate_get (uhost->data, hid->pipe_in)) { /* IN endpoint stalled */
+            /* check IN endpoint stall status */
+            if (URB_STALL == usbh_urbstate_get (uhost->data, hid->pipe_in)) {
                 /* issue clear feature on interrupt in endpoint */ 
                 if (USBH_OK == (usbh_clrfeature (uhost, hid->ep_addr, hid->pipe_in))) {
                     /* change state to issue next in token */
@@ -570,7 +572,7 @@ static usbh_status usbh_set_protocol (usbh_host *uhost, uint8_t protocol)
     \param[out] none
     \retval     none
 */
-static void  usbh_hiddesc_parse (usb_desc_hid *hid_desc, uint8_t *buf)
+static void usbh_hiddesc_parse (usb_desc_hid *hid_desc, uint8_t *buf)
 {
     hid_desc->header.bLength         = *(uint8_t *)(buf + 0U);
     hid_desc->header.bDescriptorType = *(uint8_t *)(buf + 1U);

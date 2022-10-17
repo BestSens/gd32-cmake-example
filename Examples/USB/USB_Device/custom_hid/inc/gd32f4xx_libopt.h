@@ -6,6 +6,7 @@
     \version 2018-12-12, V2.0.0, firmware for GD32F4xx
     \version 2020-09-30, V2.1.0, firmware for GD32F4xx
     \version 2022-03-09, V3.0.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -38,7 +39,7 @@ OF SUCH DAMAGE.
 #ifndef GD32F4XX_LIBOPT_H
 #define GD32F4XX_LIBOPT_H
 
-#if defined (GD32F450) || defined (GD32F405) || defined (GD32F407) || (GD32F470) || defined (GD32F425) || defined (GD32F427)
+#if defined (GD32F450) || defined (GD32F405) || defined (GD32F407) || defined (GD32F470) || defined (GD32F425) || defined (GD32F427)
 #include "gd32f4xx_rcu.h"
 #include "gd32f4xx_adc.h"
 #include "gd32f4xx_can.h"
@@ -66,7 +67,7 @@ OF SUCH DAMAGE.
 #include "gd32f4xx_misc.h"
 #endif
 
-#if defined (GD32F450) || (GD32F470)
+#if defined (GD32F450) || defined (GD32F470)
 #include "gd32f4xx_enet.h"
 #include "gd32f4xx_exmc.h"
 #include "gd32f4xx_ipa.h"

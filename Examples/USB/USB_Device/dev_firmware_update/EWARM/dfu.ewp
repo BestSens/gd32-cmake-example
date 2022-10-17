@@ -326,7 +326,7 @@
         </option>
         <option>
           <name>CCOptLevel</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>CCOptStrategy</name>
@@ -335,7 +335,7 @@
         </option>
         <option>
           <name>CCOptLevelSlave</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>CompilerMisraRules98</name>
@@ -1911,13 +1911,25 @@
       <name>$PROJ_DIR$\..\src\app.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\src\flash_if.c</name>
+      <name>$PROJ_DIR$\..\src\exmc_nandflash.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\src\gd25qxx.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\src\gd32f4xx_hw.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\src\gd32f4xx_it.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\src\inter_flash_if.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\src\nand_flash_if.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\src\nor_flash_if.c</name>
     </file>
   </group>
   <group>
@@ -1945,6 +1957,9 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\Firmware\GD32F4xx_standard_peripheral\Source\gd32f4xx_dma.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\Firmware\GD32F4xx_standard_peripheral\Source\gd32f4xx_exmc.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\Firmware\GD32F4xx_standard_peripheral\Source\gd32f4xx_exti.c</name>

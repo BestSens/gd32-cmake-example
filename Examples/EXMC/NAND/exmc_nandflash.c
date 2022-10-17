@@ -64,7 +64,7 @@ static uint8_t exmc_nand_readstatus(void);
 
 /*!
     \brief      nand flash peripheral initialize
-    \param[in]  sdram_device: specify the SDRAM device
+    \param[in]  nand_bank: specify the NAND bank
     \param[out] none
     \retval     none
 */
@@ -80,22 +80,31 @@ void exmc_nandflash_init(uint32_t nand_bank)
     rcu_periph_clock_enable(RCU_GPIOF);
     rcu_periph_clock_enable(RCU_GPIOG);
 
-    /* config GPIO D[0-7] */
+    /* common GPIO configuration */
+    /* D2(PD0),D3(PD1),D0(PD14),D1(PD15) pin configuration */
     gpio_af_set(GPIOD, GPIO_AF_12, GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_14 | GPIO_PIN_15);
     gpio_mode_set(GPIOD, GPIO_MODE_AF, GPIO_PUPD_PULLUP, GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_14 | GPIO_PIN_15);
     gpio_output_options_set(GPIOD, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_14 | GPIO_PIN_15);
+
+    /* D4(PE7),D5(PE8),D6(PE9),D7(PE10) pin configuration */
     gpio_af_set(GPIOE, GPIO_AF_12, GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10);
     gpio_mode_set(GPIOE, GPIO_MODE_AF, GPIO_PUPD_PULLUP, GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10);
     gpio_output_options_set(GPIOE, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10);
-    /* config GPIO ALE CLE */
+
+    /* CLE(PD11),ALE(PD12) pin configuration */
     gpio_af_set(GPIOD, GPIO_AF_12, GPIO_PIN_11 | GPIO_PIN_12);
     gpio_mode_set(GPIOD, GPIO_MODE_AF, GPIO_PUPD_PULLUP, GPIO_PIN_11 | GPIO_PIN_12);
     gpio_output_options_set(GPIOD, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_11 | GPIO_PIN_12);
-    /* config NOE NWE NWAIT */
-    gpio_af_set(GPIOD, GPIO_AF_12, GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6);
-    gpio_mode_set(GPIOD, GPIO_MODE_AF, GPIO_PUPD_PULLUP, GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6);
-    gpio_output_options_set(GPIOD, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_6);
-    /* config NCE1 */
+
+    /* NOE(PD4),NWE(PD5) pin configuration */
+    gpio_af_set(GPIOD, GPIO_AF_12, GPIO_PIN_4 | GPIO_PIN_5);
+    gpio_mode_set(GPIOD, GPIO_MODE_AF, GPIO_PUPD_PULLUP, GPIO_PIN_4 | GPIO_PIN_5);
+    gpio_output_options_set(GPIOD, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_4 | GPIO_PIN_5);
+
+    /* NWAIT(PD6) pin configuration */
+    gpio_mode_set(GPIOD, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP, GPIO_PIN_6);
+
+    /* NCE1(PD7) pin configuration */
     gpio_af_set(GPIOD, GPIO_AF_12, GPIO_PIN_7);
     gpio_mode_set(GPIOD, GPIO_MODE_AF, GPIO_PUPD_PULLUP, GPIO_PIN_7);
     gpio_output_options_set(GPIOD, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_7);
@@ -121,7 +130,6 @@ void exmc_nandflash_init(uint32_t nand_bank)
     /* enable EXMC NAND bank1 */
     exmc_nand_enable(EXMC_BANK1_NAND);
 }
-
 
 /*!
     \brief      read NAND flash ID
@@ -192,7 +200,7 @@ static uint8_t exmc_nand_writepage(uint8_t *pbuffer, nand_address_struct address
 
 /*!
     \brief      read a set of data from nand flash for the specified pages addresses
-    \param[in]  pbuffer: Pointer on the buffer filling data to be read
+    \param[in]  pbuffer: pointer on the buffer filling data to be read
     \param[in]  address: the address of the data to be read
     \param[in]  bytecount: byte count to be read(bytecount + address.page_in_offset <= NAND_PAGE_TOTAL_SIZE)
     \param[out] none
@@ -374,7 +382,7 @@ static uint8_t exmc_nand_eraseblock(uint32_t blocknum)
 
 /*!
     \brief      reset nand flash
-    \param[in]  None
+    \param[in]  none
     \param[out] none
     \retval     NAND_OK, NAND_FAIL
 */
@@ -392,7 +400,7 @@ uint8_t nand_reset(void)
 
 /*!
     \brief      reads the NAND memory status
-    \param[in]  None
+    \param[in]  none
     \param[out] none
     \retval     NAND memory status
 */
@@ -419,7 +427,7 @@ static uint8_t exmc_nand_readstatus(void)
 
 /*!
     \brief      get the NAND operation status
-    \param[in]  None
+    \param[in]  none
     \param[out] none
     \retval     new status of the NAND operation
 */
@@ -499,7 +507,7 @@ uint8_t nand_write(uint32_t memaddr, uint8_t *pwritebuf, uint16_t bytecount)
 /*!
     \brief      read the main area information for the specified logic addresses
     \param[in]  memaddr: the logic address of the data to be read
-    \param[in]  pwritebuf: pointer on the buffer containing data to be read
+    \param[in]  preadbuf: pointer on the buffer containing data to be read
     \param[in]  bytecount: byte count to be reas
     \param[out] none
     \retval     NAND_OK, NAND_FAIL
@@ -550,7 +558,7 @@ uint8_t nand_read(uint32_t memaddr, uint8_t *preadbuf, uint16_t bytecount)
 
 /*!
     \brief      format nand flash
-    \param[in]  none: the logic address of the data to be read
+    \param[in]  none
     \param[out] none
     \retval     NAND_OK, NAND_FAIL
 */
@@ -570,7 +578,7 @@ uint8_t nand_format(void)
 /*!
     \brief      fill the buffer with specified value
     \param[in]  pbuffer: pointer on the buffer to fill
-    \param[in]  buffersize: size of the buffer to fill
+    \param[in]  buffer_lenght: size of the buffer to fill
     \param[in]  value: value to fill on the buffer
     \param[out] none
     \retval     none

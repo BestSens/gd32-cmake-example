@@ -33,3 +33,4 @@ cmake --build .\build\ --config Release --target Running_led.bin
 * There may be errors because of too long paths
 * Definitions should be local to targets not global
 * Board should be selectable with variables instead of building everything for the gd32f450z-eval excluding the ones specifically for the gd32f450i-eval
+* USB-Device examples are broken since firmware library update to 3.2.0 and I don't think it's my fault

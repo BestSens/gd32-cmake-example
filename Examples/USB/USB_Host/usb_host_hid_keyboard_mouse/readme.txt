@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -49,7 +50,6 @@ pressing the button will show the magenta color rectangle in the LCD screen.
   If a keyboard has been attached, pressing the keyboard will print the the char of the button
 in the LCD screen.
 
-
 Note: In the USB Host HID class, two layouts are defined in the usbh_hid_keybd.h file
       and could be used (Azerty and Querty)
         //#define QWERTY_KEYBOARD
@@ -58,8 +58,8 @@ Note: In the USB Host HID class, two layouts are defined in the usbh_hid_keybd.h
      The User can eventually add his own layout by editing the HID_KEYBRD_Key array
    in the usbh_hid_keybd.c file.
 
-  The demo support the functions of host suspend and wakup. The macro of USB_LOW_POWER can 
-be set to 1 to test the suspend and wakeup. If you want to use the general wakeup mode, please 
-press the Wakeup key. If you want to use the remote wakeup mode, please operating device, such as 
-move the mouse or press the keyboard. If you want the program to continue running, please press 
-the User key.
+  The demo support the functions of host suspend and wakeup. The macro of USBFS_LOW_POWER/USBHS_LOW_POWER 
+can be set to 1 to test the suspend and wakeup. User can press Tamper key to make the USB host enter the 
+suspended state.If you want to use the general wakeup mode, please press the Wakeup key. If you 
+want to use the remote wakeup mode, please operating device, such as move the mouse or press the 
+keyboard. And you can press the User key to keep the program running.

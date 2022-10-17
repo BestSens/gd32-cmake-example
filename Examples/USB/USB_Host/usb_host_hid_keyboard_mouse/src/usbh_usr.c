@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -49,7 +50,7 @@ uint16_t keyboard_char_ypos = 0;
 extern usbh_host usb_host;
 extern usb_core_driver usb_hid_core;
 
-/* Points to the DEVICE_PROP structure of current device */
+/* points to the DEVICE_PROP structure of current device */
 usbh_user_cb usr_cb =
 {
     usbh_user_init,
@@ -84,6 +85,12 @@ const uint8_t MSG_HOST_FOOTER[] = "USB Host Library v3.0.0";
 void usbh_user_init(void)
 {
     static uint8_t startup = 0U;
+
+#if USBFS_LOW_POWER || USBHS_LOW_POWER
+    if(usb_host.wakeup_mode){
+        startup = 0;
+    }
+#endif /* USBFS_LOW_POWER || USBHS_LOW_POWER */
 
     if(0U == startup){
         startup = 1U;
@@ -169,7 +176,7 @@ void usbh_user_device_reset(void)
 
 /*!
     \brief      user operation for detecting device speed
-    \param[in]  DeviceSpeed: device speed
+    \param[in]  device_speed: device speed
     \param[out] none
     \retval     none
 */
@@ -188,7 +195,7 @@ void usbh_user_device_speed_detected(uint32_t device_speed)
 
 /*!
     \brief      user operation when device descriptor is available
-    \param[in]  DeviceDesc: device descriptor
+    \param[in]  device_desc: device descriptor
     \param[out] none
     \retval     none
 */
@@ -208,7 +215,6 @@ void usbh_user_device_desc_available(void *device_desc)
 */
 void usbh_user_device_address_assigned(void)
 {
-
 }
 
 /*!
@@ -234,7 +240,7 @@ void usbh_user_configuration_descavailable(usb_desc_config *cfg_desc,
 
 /*!
     \brief      user operation when manufacturer string exists
-    \param[in]  ManufacturerString: manufacturer string of usb device
+    \param[in]  manufacturer_string: manufacturer string of usb device
     \param[out] none
     \retval     none
 */
@@ -245,7 +251,7 @@ void usbh_user_manufacturer_string(void *manufacturer_string)
 
 /*!
     \brief      user operation when product string exists
-    \param[in]  ProductString: product string of usb device
+    \param[in]  product_string: product string of USB device
     \param[out] none
     \retval     none
 */
@@ -255,8 +261,8 @@ void usbh_user_product_string(void *product_string)
 }
 
 /*!
-    \brief      user operation when serial string exists
-    \param[in]  SerialNumString: serialNum string of usb device
+    \brief      user operation when serialNum string exists
+    \param[in]  serial_num_string: serialNum string of USB device
     \param[out] none
     \retval     none
 */
@@ -303,31 +309,40 @@ usbh_user_status usbh_user_userinput(void)
 {
     usbh_user_status usbh_usr_status = USR_IN_NO_RESP;
 
-#if USB_LOW_POWER
+#if USBFS_LOW_POWER || USBHS_LOW_POWER
 
     if(usb_host.suspend_flag){
-        LCD_UsrLog("> Host in suspend status.\n");
-        LCD_UsrLog("> Pls press KEY_WAKEUP key (General wakeup).\n");
-        LCD_UsrLog("> Or operate device (Remote wakeup).\n");
+        LCD_UsrLog("\n> Pls press Tamper key to make the USB host enter the suspended state.\n");
+        LCD_UsrLog("\n> To wake up the USB host, pls press WAKEUP key (General wakeup) or operate device (Remote wakeup).\n");
+
+        /* wait for Tamper key pressed */
+        while(SET == gd_eval_key_state_get(KEY_TAMPER));
     }else{
-        if(usb_host.wakeup_mode == 1){
-            usb_host.wakeup_mode = 0;
-            lcd_log_header_set((uint8_t *)MSG_HOST_HEADER, 50);
+        if(usb_host.wakeup_mode == GENERAL_WAKEUP){
+            usb_host.wakeup_mode = NORMAL_WORK;
             LCD_UsrLog("> General wakeup success.\n");
-            lcd_log_footer_set((uint8_t *)MSG_HOST_FOOTER, 40);
-
-        }else if(usb_host.wakeup_mode == 2){
-            usb_host.wakeup_mode = 0;
-            lcd_log_header_set((uint8_t *)MSG_HOST_HEADER, 50);
+            
+            lcd_text_color_set(LCD_COLOR_RED);
+            lcd_vertical_string_display(LCD_HINT_LINE0, 0, (uint8_t *)"---------------------------------------");
+            lcd_text_color_set(LCD_COLOR_GREEN);
+            lcd_vertical_string_display(LCD_HINT_LINE1, 0, (uint8_t *)"To start the HID class operations:  ");
+            lcd_vertical_string_display(LCD_HINT_LINE2, 0, (uint8_t *)"Press User Key...             ");
+        }else if(usb_host.wakeup_mode == REMOTE_WAKEUP){
+            usb_host.wakeup_mode = NORMAL_WORK;
             LCD_UsrLog("> Remote wakeup success.\n");
-            lcd_log_footer_set((uint8_t *)MSG_HOST_FOOTER, 40);
 
+            lcd_text_color_set(LCD_COLOR_RED);
+            lcd_vertical_string_display(LCD_HINT_LINE0, 0, (uint8_t *)"---------------------------------------");
+            lcd_text_color_set(LCD_COLOR_GREEN);
+            lcd_vertical_string_display(LCD_HINT_LINE1, 0, (uint8_t *)"To start the HID class operations:  ");
+            lcd_vertical_string_display(LCD_HINT_LINE2, 0, (uint8_t *)"Press User Key...             ");
         }else{
         }
     }
-#endif /* USB_LOW_POWER */
 
-    /*Key User is in polling mode to detect user action */
+#endif /* USBFS_LOW_POWER || USBHS_LOW_POWER */
+
+    /*key USER is in polling mode to detect user action */
     if(RESET == gd_eval_key_state_get(KEY_USER)){
         usbh_usr_status = USR_IN_RESP_OK;
     }
@@ -470,18 +485,16 @@ void usr_keybrd_process_data (uint8_t data)
         /* increment char Y position */
         UPDATE_YP(keyboard_char_ypos);
 
-        /*check if the Y position has reached the last column*/
-        if(KYBRD_LAST_COLUMN == keyboard_char_ypos)
-        {
+        /* check if the Y position has reached the last column */
+        if(KYBRD_LAST_COLUMN == keyboard_char_ypos){
             keyboard_char_ypos = KYBRD_FIRST_COLUMN;
 
-            /*Increment char X position*/
+            /* increment char X position */
             UPDATE_XP(keyboard_char_xpos);
         }
     }
 
-    if(KYBRD_LINE_LIMIT(keyboard_char_xpos))
-    {
+    if(KYBRD_LINE_LIMIT(keyboard_char_xpos)){
         lcd_text_color_set(LCD_COLOR_GREY);
         lcd_rectangle_fill(KYBRD_WINDOW_X, KYBRD_WINDOW_Y, KYBRD_WINDOW_WIDTH, KYBRD_WINDOW_HEIGHT);
 

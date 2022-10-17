@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -45,10 +46,10 @@ static uint8_t usb_ev_sof           (usbh_host *uhost);
 static uint8_t usb_ev_connect       (usbh_host *uhost);
 static uint8_t usb_ev_disconnect    (usbh_host *uhost);
 static usbh_status usbh_enum_task   (usbh_host *uhost);
-#if USB_LOW_POWER
+#if USBFS_LOW_POWER || USBHS_LOW_POWER
 static void usb_hwp_suspend         (usb_core_driver *udev);
 static void usb_hwp_resume          (usb_core_driver *udev);
-#endif /* USB_LOW_POWER */
+#endif /* USBFS_LOW_POWER || USBHS_LOW_POWER */
 
 usbh_ev_cb usbh_int_op = 
 {
@@ -62,12 +63,18 @@ usbh_ev_cb *usbh_int_fop = &usbh_int_op;
 /*!
     \brief      USB host stack initializations
     \param[in]  uhost: pointer to USB host
+    \param[in]  udev: pointer to USB device instance
+    \param[in]  usb_core: USB core type
     \param[in]  user_cb: pointer to user callback
     \param[out] none
     \retval     none
 */
 void usbh_init (usbh_host *uhost, usb_core_driver *udev, usb_core_enum usb_core, usbh_user_cb *user_cb)
 {
+    /* link driver to the stack */
+    udev->host.data = (void *)uhost;
+    uhost->data = (void *)udev;
+
     /* host deinitialization */
     usbh_deinit(uhost);
 
@@ -99,10 +106,6 @@ void usbh_init (usbh_host *uhost, usb_core_driver *udev, usb_core_enum usb_core,
     usb_globalint_enable(&udev->regs);
 #endif /* DUAL_ROLE_MODE_ENABLED */
 
-    /* link driver to the stack */
-    udev->host.data = (void *)uhost;
-    uhost->data = (void *)udev;
-
     /* upon initialize call usr call back */
     uhost->usr_cb->dev_init();
 }
@@ -132,7 +135,7 @@ usbh_status usbh_class_register (usbh_host *uhost, usbh_class *puclass)
 }
 
 /*!
-    \brief      de-initialize USB host
+    \brief      deinitialize USB host
     \param[in]  uhost: pointer to USB host
     \param[out] none
     \retval     operation status
@@ -232,10 +235,10 @@ void usbh_core_task (usbh_host *uhost)
             /* user callback for end of device basic enumeration */
             uhost->usr_cb->dev_enumerated();
 
-#if USB_LOW_POWER
+#if USBFS_LOW_POWER || USBHS_LOW_POWER
             uhost->cur_state = HOST_SUSPEND;
 
-            /* judge device remote wakup function */
+            /* judge device remote wakeup function */
             if ((uhost->dev_prop.cfg_desc_set.cfg_desc.bmAttributes) & (1U << 5)) {
                 uhost->dev_supp_remote_wkup = 1;
             }else{
@@ -243,7 +246,7 @@ void usbh_core_task (usbh_host *uhost)
             }
 #else
             uhost->cur_state = HOST_PWR_FEATURE_SET;
-#endif /* USB_LOW_POWER */
+#endif /* USBFS_LOW_POWER || USBHS_LOW_POWER */
         }
         break;
 
@@ -288,55 +291,54 @@ void usbh_core_task (usbh_host *uhost)
         }
         break;
 
-#if USB_LOW_POWER
+#if USBFS_LOW_POWER || USBHS_LOW_POWER
     case HOST_SUSPEND:
         if(uhost->dev_supp_remote_wkup){
             /* send set feature command*/
-            if (USBH_OK == usbh_setdevfeature(uhost, FEATURE_SELECTOR_REMOTEWAKEUP, 0U)) {
+            if (USBH_OK == usbh_setdevfeature (uhost, FEATURE_SELECTOR_REMOTEWAKEUP, 0U)) {
 
-                usb_hwp_suspend(udev);
+                usb_hwp_suspend (udev);
 
-                usb_mdelay(20U);
+                usb_mdelay (20U);
                 uhost->suspend_flag = 1;
                 uhost->usr_cb->dev_user_input();
 
                 /* MCU enter deep-sleep*/
-                pmu_to_deepsleepmode(PMU_LDO_LOWPOWER, PMU_LOWDRIVER_DISABLE, WFI_CMD);
+                pmu_to_deepsleepmode (PMU_LDO_LOWPOWER, PMU_LOWDRIVER_DISABLE, WFI_CMD);
                 uhost->cur_state = HOST_WAKEUP;
             }
-        }else {
+        } else {
                 /* host suspend */
-                usb_hwp_suspend(udev);
+                usb_hwp_suspend (udev);
 
                 usb_mdelay(20U);
                 uhost->suspend_flag = 1U;
                 uhost->usr_cb->dev_user_input();
 
                 /* MCU enter deep-sleep */
-                pmu_to_deepsleepmode(PMU_LDO_LOWPOWER, PMU_LOWDRIVER_DISABLE, WFI_CMD);
+                pmu_to_deepsleepmode (PMU_LDO_LOWPOWER, PMU_LOWDRIVER_DISABLE, WFI_CMD);
                 uhost->cur_state = HOST_WAKEUP;
         }
         break;
 
     case HOST_WAKEUP:
          /* judge suspend status */
-        if (0 == uhost->suspend_flag) {
-            gd_eval_lcd_init();
+        if (0U == uhost->suspend_flag) {
             usb_hwp_resume(udev);
             usb_mdelay(500U);
     
-            if(uhost->dev_supp_remote_wkup){
-                if (USBH_OK == usbh_clrdevfeature(uhost, FEATURE_SELECTOR_DEV, 0U)) {
+            if (uhost->dev_supp_remote_wkup) {
+                if (USBH_OK == usbh_clrdevfeature (uhost, FEATURE_SELECTOR_DEV, 0U)) {
                     /* user callback for initialization */
                     uhost->usr_cb->dev_init();
                     uhost->cur_state = HOST_CLASS_CHECK;
                 }
-            } else{
+            } else {
                     uhost->cur_state = HOST_CLASS_CHECK;
             }
         }
         break;
-#endif /* USB_LOW_POWER */
+#endif /* USBFS_LOW_POWER || USBHS_LOW_POWER */
 
     case HOST_CLASS_ENUM:
         /* process class standard control requests state machine */
@@ -357,7 +359,7 @@ void usbh_core_task (usbh_host *uhost)
         break;
 
     case HOST_ERROR:
-        /* initialize host for new enumeration */
+        /* deinitialize host for new enumeration */
         usbh_deinit (uhost);
         uhost->usr_cb->dev_deinit();
         uhost->active_class->class_deinit(uhost);
@@ -368,7 +370,7 @@ void usbh_core_task (usbh_host *uhost)
         uhost->usr_cb->dev_detach();
 
         /* re-initialize host for new enumeration */
-        usbh_deinit(uhost);
+        usbh_deinit (uhost);
         uhost->usr_cb->dev_deinit();
         uhost->active_class->class_deinit(uhost);
         usbh_pipe_delete(udev);
@@ -602,7 +604,7 @@ static usbh_status usbh_enum_task (usbh_host *uhost)
     return status;
 }
 
-#if USB_LOW_POWER
+#if USBFS_LOW_POWER || USBHS_LOW_POWER
 
 /*!
     \brief      handles the USB resume from suspend mode
@@ -655,4 +657,4 @@ static void usb_hwp_suspend(usb_core_driver *udev)
     *udev->regs.PWRCLKCTL |= PWRCLKCTL_SHCLK;
 }
 
-#endif /* USB_LOW_POWER */
+#endif /* USBFS_LOW_POWER || USBHS_LOW_POWER */

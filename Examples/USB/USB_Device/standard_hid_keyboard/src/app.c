@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -64,17 +65,6 @@ int main(void)
               &usbd_hid_cb);
 
     usb_intr_config();
-
-#ifdef USE_IRC48M
-    /* CTC peripheral clock enable */
-    rcu_periph_clock_enable(RCU_CTC);
-
-    /* CTC configure */
-    ctc_config();
-
-    while (ctc_flag_get(CTC_FLAG_CKOK) == RESET) {
-    }
-#endif
 
     /* check if USB device is enumerated successfully */
     while (USBD_CONFIGURED != hid_keyboard.dev.cur_status) {

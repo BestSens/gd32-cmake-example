@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -50,7 +51,7 @@ OF SUCH DAMAGE.
 
 #ifdef USE_USB_FS
     #define USB_FS_CORE
-#endif
+#endif /* USE_USB_FS */
 
 #ifdef USE_USB_HS
     #define USB_HS_CORE
@@ -101,6 +102,9 @@ OF SUCH DAMAGE.
     #define TX1_FIFO_FS_SIZE                        128
     #define TX2_FIFO_FS_SIZE                        0
     #define TX3_FIFO_FS_SIZE                        0
+
+    #define USBFS_SOF_OUTPUT                        0
+    #define USBFS_LOW_POWER                         1
 #endif /* USB_FS_CORE */
 
 #ifdef USB_HS_CORE
@@ -122,10 +126,10 @@ OF SUCH DAMAGE.
 
 //    #define USB_HS_INTERNAL_DMA_ENABLED
 //    #define USB_HS_DEDICATED_EP1_ENABLED
-#endif /* USB_HS_CORE */
 
-#define USB_SOF_OUTPUT              1
-#define USB_LOW_POWER               1
+    #define USBHS_SOF_OUTPUT                        0
+    #define USBHS_LOW_POWER                         1
+#endif /* USB_HS_CORE */
 
 //#define VBUS_SENSING_ENABLED
 

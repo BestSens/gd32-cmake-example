@@ -201,7 +201,7 @@ static struct pbuf * low_level_input(struct netif *netif)
     buffer = (uint8_t *)(enet_desc_information_get(dma_current_rxdesc, RXDESC_BUFFER_1_ADDR));
     
     /* we allocate a pbuf chain of pbufs from the Lwip buffer pool */
-    p = pbuf_alloc(PBUF_RAW, len + 5, PBUF_POOL);
+    p = pbuf_alloc(PBUF_RAW, len, PBUF_POOL);
     
     /* copy received frame to pbuf chain */
     if (p != NULL){

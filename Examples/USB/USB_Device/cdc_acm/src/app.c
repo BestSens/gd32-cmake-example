@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -39,7 +40,7 @@ OF SUCH DAMAGE.
 usb_core_driver cdc_acm;
 
 /*!
-    \brief      main routine will construct a USB virtual ComPort device
+    \brief      main routine will construct a USB CDC device
     \param[in]  none
     \param[out] none
     \retval     none
@@ -60,17 +61,6 @@ int main(void)
               &cdc_class);
 
     usb_intr_config();
-
-#ifdef USE_IRC48M
-    /* CTC peripheral clock enable */
-    rcu_periph_clock_enable(RCU_CTC);
-
-    /* CTC configure */
-    ctc_config();
-
-    while (ctc_flag_get(CTC_FLAG_CKOK) == RESET) {
-    }
-#endif /* USE_IRC48M */
 
     /* main loop */
     while (1) {

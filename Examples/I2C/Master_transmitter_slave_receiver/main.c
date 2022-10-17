@@ -44,7 +44,7 @@ OF SUCH DAMAGE.
 
 uint8_t i2c_transmitter[16];
 uint8_t i2c_receiver[16];
-ErrStatus state = ERROR;
+__IO ErrStatus state = ERROR;
 
 void rcu_config(void);
 void gpio_config(void);

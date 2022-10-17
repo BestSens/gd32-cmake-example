@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -146,7 +147,7 @@ void SysTick_Handler(void)
 }
 
 /*!
-    \brief      this function handles timer2 Handler
+    \brief      this function handles timer2 interrupt handler
     \param[in]  none
     \param[out] none
     \retval     none
@@ -160,7 +161,7 @@ void TIMER2_IRQHandler(void)
 #ifdef USE_USB_FS
 
 /*!
-    \brief      this function handles USBFS IRQ Handler
+    \brief      this function handles USBFS interrupt handler
     \param[in]  none
     \param[out] none
     \retval     none
@@ -198,20 +199,8 @@ void USBFS_WKUP_IRQHandler(void)
     if (usb_dfu_dev.bp.low_power) {
         resume_mcu_clk();
 
-       #ifndef USE_IRC48M
-            rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLQ);
-
-            rcu_ck48m_clock_config(RCU_CK48MSRC_PLL48M);
-        #else
-            /* enable IRC48M clock */
-            rcu_osci_on(RCU_IRC48M);
-
-            /* wait till IRC48M is ready */
-            while (SUCCESS != rcu_osci_stab_wait(RCU_IRC48M)) {
-            }
-
-            rcu_ck48m_clock_config(RCU_CK48MSRC_IRC48M);
-        #endif /* USE_IRC48M */
+        rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLQ);
+        rcu_ck48m_clock_config(RCU_CK48MSRC_PLL48M);
 
         rcu_periph_clock_enable(RCU_USBFS);
 
@@ -234,24 +223,13 @@ void USBHS_WKUP_IRQHandler(void)
     if (usb_dfu_dev.bp.low_power) {
         resume_mcu_clk();
 
-       #ifndef USE_IRC48M
-            #ifdef USE_EMBEDDED_PHY
-                rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLQ);
+        #ifdef USE_EMBEDDED_PHY
+            rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLQ);
 
-                rcu_ck48m_clock_config(RCU_CK48MSRC_PLL48M);
-            #elif defined(USE_ULPI_PHY)
-                rcu_periph_clock_enable(RCU_USBHSULPI);
-            #endif
-        #else
-            /* enable IRC48M clock */
-            rcu_osci_on(RCU_IRC48M);
-
-            /* wait till IRC48M is ready */
-            while (SUCCESS != rcu_osci_stab_wait(RCU_IRC48M)) {
-            }
-
-            rcu_ck48m_clock_config(RCU_CK48MSRC_IRC48M);
-        #endif /* USE_IRC48M */
+            rcu_ck48m_clock_config(RCU_CK48MSRC_PLL48M);
+        #elif defined(USE_ULPI_PHY)
+            rcu_periph_clock_enable(RCU_USBHSULPI);
+        #endif /* USE_EMBEDDED_PHY */
 
         rcu_periph_clock_enable(RCU_USBHS);
 
@@ -266,7 +244,7 @@ void USBHS_WKUP_IRQHandler(void)
 #ifdef USB_HS_DEDICATED_EP1_ENABLED
 
 /*!
-    \brief      this function handles EP1_IN Handler
+    \brief      this function handles EP1_IN handler
     \param[in]  none
     \param[out] none
     \retval     none
@@ -277,7 +255,7 @@ void USBHS_EP1_In_IRQHandler(void)
 }
 
 /*!
-    \brief      this function handles EP1_OUT Handler
+    \brief      this function handles EP1_OUT handler
     \param[in]  none
     \param[out] none
     \retval     none
@@ -290,17 +268,17 @@ void USBHS_EP1_Out_IRQHandler(void)
 #endif /* USBHS_DEDICATED_EP1_ENABLED */
 
 /*!
-    \brief      resume MCU clock
+    \brief      resume mcu clock
     \param[in]  none
     \param[out] none
     \retval     none
 */
 static void resume_mcu_clk(void)
 {
-    /* enable HSE */
+    /* enable HXTAL */
     rcu_osci_on(RCU_HXTAL);
 
-    /* wait till HSE is ready */
+    /* wait till HXTAL is ready */
     while(RESET == rcu_flag_get(RCU_FLAG_HXTALSTB)){
     }
 

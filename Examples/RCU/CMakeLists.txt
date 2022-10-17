@@ -1,1 +1,3 @@
-add_subdirectory(CKOUT_pin_clock_output)
+add_subdirectory(Ckout_pin_clock_output)
+add_subdirectory(Reset_source_detect)
+add_subdirectory(System_clock_switch)

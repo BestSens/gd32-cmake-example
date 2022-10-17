@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -71,7 +72,7 @@ typedef enum
     MSC_REQ_ERROR,
 } msc_req_state;
 
-/* Structure for LUN */
+/* structure for LUN */
 typedef struct
 {
     msc_state               state;
@@ -83,7 +84,7 @@ typedef struct
     uint8_t                 state_changed;
 } msc_lun;
 
-/* structure for MSC process */
+/* structure for msc process */
 typedef struct _msc_process
 {
     uint8_t         pipe_in;
@@ -99,7 +100,7 @@ typedef struct _msc_process
     msc_error       error;
     msc_req_state   req_state;
     msc_req_state   prev_req_state;
-    bbb_handle      bot;
+    bbb_handle      bbb;
     msc_lun         unit[MSC_MAX_SUPPORTED_LUN];
     uint32_t        timer;
 } usbh_msc_handler;
@@ -122,4 +123,4 @@ usbh_status usbh_msc_write (usbh_host *uhost,
                             uint8_t *pbuf,
                             uint32_t length);
 
-#endif  /* __USBH_MSC_CORE_H */
+#endif /* __USBH_MSC_CORE_H */

@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -59,6 +60,7 @@ int main(void)
     /* register device class */
     usbh_class_register(&usb_host_msc, &usbh_msc);
 
+    /* initialize host library */
     usbh_init(&usb_host_msc,
               &usbh_core,
 #ifdef USE_USB_FS
@@ -71,8 +73,8 @@ int main(void)
     /* enable interrupts */
     usb_intr_config ();
 
-    while(1){
-        /* Host state handler */
+    while (1) {
+        /* host task handler */
         usbh_core_task(&usb_host_msc);
     }
 }

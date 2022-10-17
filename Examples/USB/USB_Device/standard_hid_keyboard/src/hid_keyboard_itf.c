@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -70,7 +71,7 @@ static void key_config (void)
 }
 
 /*!
-    \brief      get USB keyboard state
+    \brief      get usb keyboard state
     \param[in]  none
     \param[out] none
     \retval     the char
@@ -121,19 +122,19 @@ static void hid_key_data_send(usb_dev *udev)
     if (hid->prev_transfer_complete) {
         switch (key_state()) {
         case CHAR_A:
-            hid->data[2] = 0x04;
+            hid->data[2] = 0x04U;
             break;
         case CHAR_B:
-            hid->data[2] = 0x05;
+            hid->data[2] = 0x05U;
             break;
         case CHAR_C:
-            hid->data[2] = 0x06;
+            hid->data[2] = 0x06U;
             break;
         default:
             break;
         }
 
-        if (0 != hid->data[2]) {
+        if (0U != hid->data[2]) {
             hid_report_send(udev, hid->data, HID_IN_PACKET);
         }
     }

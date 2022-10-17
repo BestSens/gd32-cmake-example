@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -42,10 +43,8 @@ extern usb_core_driver usbh_core;
 
 void usb_timer_irq (void);
 
-#if USB_LOW_POWER
 /* local function prototypes ('static') */
 static void resume_mcu_clk(void);
-#endif /* USB_LOW_POWER */
 
 /*!
     \brief      this function handles NMI exception.
@@ -66,7 +65,8 @@ void NMI_Handler(void)
 void HardFault_Handler(void)
 {
     /* if Hard Fault exception occurs, go to infinite loop */
-    while (1);
+    while (1){
+    }
 }
 
 /*!
@@ -78,7 +78,8 @@ void HardFault_Handler(void)
 void MemManage_Handler(void)
 {
     /* if Memory Manage exception occurs, go to infinite loop */
-    while (1);
+    while (1){
+    }
 }
 
 /*!
@@ -90,7 +91,8 @@ void MemManage_Handler(void)
 void BusFault_Handler(void)
 {
     /* if Bus Fault exception occurs, go to infinite loop */
-    while (1);
+    while (1){
+    }
 }
 
 /*!
@@ -102,7 +104,8 @@ void BusFault_Handler(void)
 void UsageFault_Handler(void)
 {
     /* if Usage Fault exception occurs, go to infinite loop */
-    while (1);
+    while (1){
+    }
 }
 
 /*!
@@ -136,7 +139,17 @@ void PendSV_Handler(void)
 }
 
 /*!
-    \brief      this function handles Timer2 Handler.
+    \brief      this function handles SysTick exception
+    \param[in]  none
+    \param[out] none
+    \retval     none
+*/
+void SysTick_Handler(void)
+{
+}
+
+/*!
+    \brief      this function handles Timer2 handler
     \param[in]  none
     \param[out] none
     \retval     none
@@ -147,19 +160,7 @@ void TIMER2_IRQHandler(void)
 }
 
 /*!
-    \brief      this function handles SysTick Handler.
-    \param[in]  none
-    \param[out] none
-    \retval     none
-*/
-void SysTick_Handler(void)
-{
-}
-
-#if USB_LOW_POWER
-
-/*!
-    \brief      this function handles external line 10_15 interrupt request.
+    \brief      this function handles external line 0 interrupt handler
     \param[in]  none
     \param[out] none
     \retval     none
@@ -172,7 +173,9 @@ void EXTI0_IRQHandler(void)
 
             /* configure system clock */
             resume_mcu_clk();
-            usb_host.wakeup_mode = 1; /* general wakeup mode */
+
+            /* general wakeup mode */
+            usb_host.wakeup_mode = GENERAL_WAKEUP; 
         }
 
         /* clear the EXTI line pending bit */
@@ -180,14 +183,10 @@ void EXTI0_IRQHandler(void)
     }
 }
 
-#endif /* USB_LOW_POWER */
-
-#if USB_LOW_POWER
-
 #ifdef USE_USB_FS
 
 /*!
-    \brief      this function handles USBFS wakeup interrupt handler
+    \brief      this function handles USBFS wakeup interrupt Handler
     \param[in]  none
     \param[out] none
     \retval     none
@@ -200,7 +199,8 @@ void USBFS_WKUP_IRQHandler(void)
         /* configure system clock */
         resume_mcu_clk();
 
-        usb_host.wakeup_mode = 2; /* remote wakeup mode */
+        /* remote wakeup mode */
+        usb_host.wakeup_mode = REMOTE_WAKEUP; 
     }
 
     exti_interrupt_flag_clear(EXTI_18);
@@ -209,7 +209,7 @@ void USBFS_WKUP_IRQHandler(void)
 #elif defined(USE_USB_HS)
 
 /*!
-    \brief      this function handles USBHS wakeup interrupt handler
+    \brief      this function handles USBHS wakeup interrupt Handler
     \param[in]  none
     \param[out] none
     \retval     none
@@ -222,16 +222,14 @@ void USBHS_WKUP_IRQHandler(void)
         /* configure system clock */
         resume_mcu_clk();
 
-        usb_host.wakeup_mode = 2; /* remote wakeup mode */
+        /* remote wakeup mode */
+        usb_host.wakeup_mode = REMOTE_WAKEUP; 
     }
 
     exti_interrupt_flag_clear(EXTI_20);
-
 }
 
 #endif /* USE_USBFS */
-
-#endif /* USB_LOW_POWER */
 
 #ifdef USE_USB_FS
 
@@ -261,20 +259,18 @@ void USBHS_IRQHandler(void)
 
 #endif /* USE_USBFS */
 
-#if USB_LOW_POWER
-
 /*!
-    \brief      resume MCU clock
+    \brief      resume mcu clock
     \param[in]  none
     \param[out] none
     \retval     none
 */
 static void resume_mcu_clk(void)
 {
-    /* enable HSE */
+    /* enable HXTAL */
     rcu_osci_on(RCU_HXTAL);
 
-    /* wait till HSE is ready */
+    /* wait till HXTAL is ready */
     while(RESET == rcu_flag_get(RCU_FLAG_HXTALSTB)){
     }
 
@@ -292,5 +288,3 @@ static void resume_mcu_clk(void)
     while(RCU_SCSS_PLLP != rcu_system_clock_source_get()){
     }
 }
-
-#endif /* USB_LOW_POWER */

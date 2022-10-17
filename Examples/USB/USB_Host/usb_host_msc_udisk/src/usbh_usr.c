@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -465,19 +466,19 @@ static uint8_t explore_disk (char* path, uint8_t recu_level)
                 }
             }
 
-            if(1U == recu_level){
+            if (1U == recu_level) {
                 LCD_UsrLog("   |__");
-            }else if(2U == recu_level){
+            } else if(2U == recu_level) {
                 LCD_UsrLog("   |   |__");
             }
 
-            if(AM_DIR == fno.fattrib){
+            if (AM_DIR == fno.fattrib) {
                 LCD_UsrLog("%s\r\n", fno.fname);
-            }else{
+            } else {
                 LCD_UsrLog("%s\r\n", fno.fname);
             }
 
-            if((AM_DIR == fno.fattrib) && (1U == recu_level)){
+            if ((AM_DIR == fno.fattrib) && (1U == recu_level)) {
                 explore_disk(fn, 2);
             }
         }

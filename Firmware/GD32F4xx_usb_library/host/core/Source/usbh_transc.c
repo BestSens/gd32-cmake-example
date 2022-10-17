@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -38,12 +39,12 @@ OF SUCH DAMAGE.
 #include "usbh_transc.h"
 
 /* local function prototypes ('static') */
-static usb_urb_state usbh_urb_wait (usbh_host *uhost, uint8_t pp_num, uint32_t wait_time);
-static void usbh_setup_transc (usbh_host *uhost);
-static void usbh_data_in_transc (usbh_host *uhost);
-static void usbh_data_out_transc (usbh_host *uhost);
-static void usbh_status_in_transc (usbh_host *uhost);
-static void usbh_status_out_transc (usbh_host *uhost);
+static usb_urb_state usbh_urb_wait  (usbh_host *uhost, uint8_t pp_num, uint32_t wait_time);
+static void usbh_setup_transc       (usbh_host *uhost);
+static void usbh_data_in_transc     (usbh_host *uhost);
+static void usbh_data_out_transc    (usbh_host *uhost);
+static void usbh_status_in_transc   (usbh_host *uhost);
+static void usbh_status_out_transc  (usbh_host *uhost);
 static uint32_t usbh_request_submit (usb_core_driver *udev, uint8_t pp_num);
 
 /*!
@@ -137,7 +138,7 @@ usbh_status usbh_data_recev (usb_core_driver *udev, uint8_t *buf, uint8_t pp_num
     case USB_EPTYPE_INTR:
         pp->DPID = PIPE_DPID[pp->data_toggle_in];
 
-        /* Toggle DATA PID */
+        /* toggle DATA PID */
         pp->data_toggle_in ^= 1U;
         break;
 
@@ -234,7 +235,7 @@ static usb_urb_state usbh_urb_wait (usbh_host *uhost, uint8_t pp_num, uint32_t w
         } else if (URB_ERROR == urb_status) {
             uhost->control.ctl_state = CTL_ERROR;
             break;
-        }else if ((wait_time > 0U) && (((usb_curframe_get(uhost->data) > timeout) && ((usb_curframe_get(uhost->data) - timeout) > wait_time)) \
+        } else if ((wait_time > 0U) && (((usb_curframe_get(uhost->data) > timeout) && ((usb_curframe_get(uhost->data) - timeout) > wait_time)) \
               || ((usb_curframe_get(uhost->data) < timeout) && ((usb_curframe_get(uhost->data) + 0x3FFFU - timeout) > wait_time)))){
             /* timeout for in transfer */
             uhost->control.ctl_state = CTL_ERROR;

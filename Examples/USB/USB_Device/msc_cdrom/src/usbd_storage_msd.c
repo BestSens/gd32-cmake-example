@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -40,7 +41,7 @@ OF SUCH DAMAGE.
 const int8_t STORAGE_InquiryData[] = 
 {
     /* LUN 0 */
-    0x05,                        /* 0x05 for CD-ROM; 0x00 for USB mass storage */
+    0x05,                        /* 0x05 for CD-ROM; 0x00 for usb mass storage */
     0x80,                        /* RMB BYTE is set by inquiry data */
     0x02,                        /* ANSI SCSI 2 */
     0x00,                        /* Data format = 0 */
@@ -49,22 +50,22 @@ const int8_t STORAGE_InquiryData[] =
     0x00,
     0x00,
     /* vendor information = GD32 */
-    'G', 'D', '3', '2', 0x20, 0x20, 0x20, 0x20 ,
+    'G', 'D', '3', '2', 0x20, 0x20, 0x20, 0x20,
     /* product identification = CDROM DEMO */
-    'C', 'D', 'R', 'O', 'M', 0x20,'D', 'E', 'M','0',0x20,0x20,0x20, 0x20, 0x20, 0x20, 
+    'C', 'D', 'R', 'O', 'M', 0x20, 'D', 'E', 'M', '0', 0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
     /* Product revision = 1.0 */
     0x31, 0x2E, 0x30, 0x20
-}; 
+};
 
 /* USB CDROM TOC(Table Of Content) Data */
 const int8_t usbcdrom_read_toc_data[] = {
-    0x00,                        
+    0x00,
     0x12,                        /* number of bytes below */
     0x01,                        /* first track */
     0x01,                        /* last track */
     0x00,                        /* reserved */
     0x14,                        /* (adr, control) */
-    0x01,                        /* (track being described) */ 
+    0x01,                        /* (track being described) */
     0x00,                        /* (reserved) */
     00, 00, 00, 00,              /* (start logical block address 0) */
     0x00,                        /* (reserved) */

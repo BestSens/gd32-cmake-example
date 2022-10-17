@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -39,42 +40,47 @@ OF SUCH DAMAGE.
 #include "gd32f4xx.h"
 
 /* function declarations */
-/* NMI handle function */
+/* this function handles NMI exception */
 void NMI_Handler(void);
-/* HardFault handle function */
+/* this function handles HardFault exception */
 void HardFault_Handler(void);
-/* MemManage handle function */
+/* this function handles MemManage exception */
 void MemManage_Handler(void);
-/* BusFault handle function */
+/* this function handles BusFault exception */
 void BusFault_Handler(void);
-/* UsageFault handle function */
+/* this function handles UsageFault exception */
 void UsageFault_Handler(void);
-/* SVC handle function */
+/* this function handles SVC exception */
 void SVC_Handler(void);
-/* DebugMon handle function */
+/* this function handles DebugMon exception */
 void DebugMon_Handler(void);
-/* PendSV handle function */
+/* this function handles PendSV exception */
 void PendSV_Handler(void);
-/* SysTick handle function */
+/* this function handles SysTick exception */
 void SysTick_Handler(void);
 /* this function handles TIMER2 IRQ Handler */
 void TIMER2_IRQHandler(void);
+/* this function handles EXTI0_IRQ Handler */
+void  EXTI0_IRQHandler (void);
+/* this function handles EXTI10_15_IRQ Handler */
+void  EXTI10_15_IRQHandler (void);
 #ifdef USE_USB_FS
 /* this function handles USB wakeup interrupt handler */
 void USBFS_WKUP_IRQHandler(void);
 /* this function handles USBFS IRQ Handler */
 void USBFS_IRQHandler(void);
-#else
+#endif /* USE_USB_FS */
+#ifdef USE_USB_HS
 /* this function handles USB wakeup interrupt handler */
 void USBHS_WKUP_IRQHandler(void);
 /* this function handles USBHS IRQ Handler */
 void USBHS_IRQHandler(void);
-#endif
-#ifdef USB_OTG_HS_DEDICATED_EP1_ENABLED
+#endif /* USE_USB_HS */
+#ifdef USB_HS_DEDICATED_EP1_ENABLED
 /* this function handles EP1_IN IRQ Handler */
 void USBHS_EP1_In_IRQHandler(void);
 /* this function handles EP1_OUT IRQ Handler */
-void USBHS_EP1_Out_IRQHandler(void)
-#endif
+void USBHS_EP1_Out_IRQHandler(void);
+#endif /* USB_HS_DEDICATED_EP1_ENABLED */
 
 #endif /* GD32F4XX_IT_H */

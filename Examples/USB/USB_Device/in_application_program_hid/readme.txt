@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -36,21 +37,19 @@ OF SUCH DAMAGE.
   This demo is based on the GD32450i-EVAL-V1.1 board, it provides a description of 
 how to use the USBFS/USBHS.
 
+  The GD32 device is enumerated as an USB Custom HID device for IAP, that uses the 
+native PC Host HID driver.
+
   To test the demo, you need a configuration hex image or bin image. The hex image
-or the bin image should set application address at 0x8004000. You can refer to 
-"Utilities/Binary/gd32f450i" folder and use the hex images or bin images in it.
+or the bin image should set application address at APP_LOADED_ADDR. You can refer to 
+"../Test_Images" folder and use the hex images or bin images in it.
 
   To test the demo, you need to:
     - Download the "USB IAP Client" PC applet
-
     - Start the "USB IAP Client" PC applet and connect GD32 USB to PC (Note: maybe
       the driver installing is failed in the first time, try reseting again.)
-
     - The device should be detected and shown in the PC applet
-
     - Select the hex image and download it to the flash
-
     - After each device reset, the mcu will run the new application
-
-    - After each device reset, hold down the TAMPER key on the GD32450i-EVAL-V1.1 board 
+    - After each device reset, hold down the TAMPER key on the GD32 board 
       to enter IAP mode

@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -122,6 +123,17 @@ static void usbh_user_init(void)
 }
 
 /*!
+    \brief      deinitialize user state and associated variables
+    \param[in]  none
+    \param[out] none
+    \retval     none
+*/
+static void usbh_user_deinit(void)
+{
+    usbh_usr_application_state = USBH_USR_FS_INIT;
+}
+
+/*!
     \brief      user operation for device attached
     \param[in]  none
     \param[out] none
@@ -133,7 +145,7 @@ static void usbh_user_device_connected(void)
 }
 
 /*!
-    \brief      user operation when unrecoveredError happens
+    \brief      user operation for unrecovered error happens
     \param[in]  none
     \param[out] none
     \retval     none
@@ -199,7 +211,7 @@ static void usbh_user_device_desc_available(void *device_desc)
 }
 
 /*!
-    \brief      USB device is successfully assigned the Address 
+    \brief      USB device is successfully assigned the address
     \param[in]  none
     \param[out] none
     \retval     none
@@ -306,7 +318,7 @@ static usbh_user_status usbh_user_userinput(void)
 }
 
 /*!
-    \brief      user operation for device over current detection event
+    \brief      user action for device over current detection event
     \param[in]  none
     \param[out] none
     \retval     none
@@ -318,8 +330,7 @@ static void usbh_user_over_current_detected(void)
 
 /*!
     \brief      demo application for mass storage
-    \param[in]  pudev: pointer to device
-    \param[in]  id: no use here
+    \param[in]  none
     \param[out] none
     \retval     status
 */
@@ -494,15 +505,4 @@ static void toggle_leds(void)
         gd_eval_led_toggle(LED3);
         i = 0;
     }
-}
-
-/*!
-    \brief      deinitialize user state and associated variables
-    \param[in]  none
-    \param[out] none
-    \retval     none
-*/
-static void usbh_user_deinit(void)
-{
-    usbh_usr_application_state = USBH_USR_FS_INIT;
 }

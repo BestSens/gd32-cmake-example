@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -49,7 +50,7 @@ OF SUCH DAMAGE.
 #define LCD_HEADER_Y                  0U
 
 #define LCD_FLAG_WIDTH                30U
-#define LCD_FLAG_HEIGHT               272U
+#define LCD_FLAG_HEIGHT               270U
 
 #define LCD_FOOTER_X                  450U
 #define LCD_FOOTER_Y                  0U

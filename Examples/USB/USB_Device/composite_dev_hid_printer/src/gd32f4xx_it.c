@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -142,7 +143,7 @@ void PendSV_Handler(void)
 }
 
 /*!
-    \brief      this function handles SysTick Handler.
+    \brief      this function handles SysTick exception
     \param[in]  none
     \param[out] none
     \retval     none
@@ -152,7 +153,18 @@ void SysTick_Handler(void)
 }
 
 /*!
-    \brief      this function handles EXTI0_IRQ Handler.
+    \brief      this function handles timer2 interrupt Handler
+    \param[in]  none
+    \param[out] none
+    \retval     none
+*/
+void TIMER2_IRQHandler(void)
+{
+    usb_timer_irq();
+}
+
+/*!
+    \brief      this function handles EXTI0_IRQ Handler
     \param[in]  none
     \param[out] none
     \retval     none
@@ -180,7 +192,7 @@ void EXTI0_IRQHandler (void)
 }
 
 /*!
-    \brief      this function handles EXTI10_15_IRQ Handler.
+    \brief      this function handles EXTI10_15_IRQ Handler
     \param[in]  none
     \param[out] none
     \retval     none
@@ -207,17 +219,6 @@ void EXTI10_15_IRQHandler (void)
     }
 }
 
-/*!
-    \brief      this function handles Timer2 Handler.
-    \param[in]  none
-    \param[out] none
-    \retval     none
-*/
-void TIMER2_IRQHandler(void)
-{
-    usb_timer_irq();
-}
-
 #ifdef USE_USB_FS
 
 /*!
@@ -231,20 +232,8 @@ void USBFS_WKUP_IRQHandler(void)
     if (usbd_hid_printer.bp.low_power) {
         resume_mcu_clk();
 
-       #ifndef USE_IRC48M
-            rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLQ);
-
-            rcu_ck48m_clock_config(RCU_CK48MSRC_PLL48M);
-        #else
-            /* enable IRC48M clock */
-            rcu_osci_on(RCU_IRC48M);
-
-            /* wait till IRC48M is ready */
-            while (SUCCESS != rcu_osci_stab_wait(RCU_IRC48M)) {
-            }
-
-            rcu_ck48m_clock_config(RCU_CK48MSRC_IRC48M);
-        #endif /* USE_IRC48M */
+        rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLQ);
+        rcu_ck48m_clock_config(RCU_CK48MSRC_PLL48M);
 
         rcu_periph_clock_enable(RCU_USBFS);
 
@@ -267,24 +256,12 @@ void USBHS_WKUP_IRQHandler(void)
     if (usbd_hid_printer.bp.low_power) {
         resume_mcu_clk();
 
-       #ifndef USE_IRC48M
-            #ifdef USE_EMBEDDED_PHY
-                rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLQ);
-
-                rcu_ck48m_clock_config(RCU_CK48MSRC_PLL48M);
-            #elif defined(USE_ULPI_PHY)
-                rcu_periph_clock_enable(RCU_USBHSULPI);
-            #endif
-        #else
-            /* enable IRC48M clock */
-            rcu_osci_on(RCU_IRC48M);
-
-            /* wait till IRC48M is ready */
-            while (SUCCESS != rcu_osci_stab_wait(RCU_IRC48M)) {
-            }
-
-            rcu_ck48m_clock_config(RCU_CK48MSRC_IRC48M);
-        #endif /* USE_IRC48M */
+        #ifdef USE_EMBEDDED_PHY
+            rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLQ);
+            rcu_ck48m_clock_config(RCU_CK48MSRC_PLL48M);
+        #elif defined(USE_ULPI_PHY)
+            rcu_periph_clock_enable(RCU_USBHSULPI);
+        #endif
 
         rcu_periph_clock_enable(RCU_USBHS);
 
@@ -358,10 +335,10 @@ void USBHS_EP1_Out_IRQHandler(void)
 */
 static void resume_mcu_clk(void)
 {
-    /* enable HSE */
+    /* enable HXTAL */
     rcu_osci_on(RCU_HXTAL);
 
-    /* wait till HSE is ready */
+    /* wait till HXTAL is ready */
     while(RESET == rcu_flag_get(RCU_FLAG_HXTALSTB)){
     }
 

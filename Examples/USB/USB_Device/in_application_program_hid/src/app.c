@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -36,6 +37,10 @@ OF SUCH DAMAGE.
 #include "drv_usb_hw.h"
 #include "usb_iap_core.h"
 
+/* SRAM start address and SRAM end address */
+#define SRAM_BASE_ADDR      SRAM_BASE
+#define SRAM_END_ADDR       (SRAM_BASE + GET_BITS(REG32(0x1FFF7A20U), 0U, 15U) * 1024U)
+
 usb_core_driver usb_iap_dev;
 
 /*!
@@ -54,8 +59,8 @@ int main(void)
 
     /* tamper key must be pressed on GD32450i-EVAL when power on */
     if (0U != gd_eval_key_state_get(KEY_TAMPER)) {
-        /* test if user code is programmed starting from address 0x8004000 */
-        if (((*(__IO uint32_t*)APP_LOADED_ADDR) & 0x2FFE0000U) == 0x20000000U) {
+        /* test if user code is programmed starting from address APP_LOADED_ADDR */
+        if((REG32(APP_LOADED_ADDR) >= SRAM_BASE_ADDR) && (REG32(APP_LOADED_ADDR) < SRAM_END_ADDR)){
             app_address = *(__IO uint32_t*) (APP_LOADED_ADDR + 4U);
             application = (app_func) app_address;
 
@@ -83,17 +88,6 @@ int main(void)
     );
 
     usb_intr_config();
-
-#ifdef USE_IRC48M
-    /* CTC peripheral clock enable */
-    rcu_periph_clock_enable(RCU_CTC);
-
-    /* CTC configure */
-    ctc_config();
-
-    while (ctc_flag_get(CTC_FLAG_CKOK) == RESET) {
-    }
-#endif
 
     /* check if USB device is enumerated successfully */
     while (USBD_CONFIGURED != usb_iap_dev.dev.cur_status) {

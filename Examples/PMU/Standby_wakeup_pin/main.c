@@ -62,7 +62,7 @@ int main(void)
     /* press tamper key to enter standby mode and use wakeup key to wakeup mcu */
     while(1) {
         if(RESET == gpio_input_bit_get(TAMPER_KEY_GPIO_PORT, TAMPER_KEY_PIN)) {
-            pmu_to_standbymode(WFI_CMD);
+            pmu_to_standbymode();
         }
     }
 }

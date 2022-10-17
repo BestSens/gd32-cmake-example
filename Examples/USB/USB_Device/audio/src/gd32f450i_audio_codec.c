@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -40,6 +41,11 @@ OF SUCH DAMAGE.
 uint32_t i2s_audiofreq = 0;
 dma_single_data_parameter_struct dma_initstructure;
 
+/* I2SPLL parameters configure based on the sampling-rate */
+const uint32_t I2SFreq[8] = {8000, 11025, 16000, 22050, 32000, 44100, 48000, 96000};
+const uint32_t I2SPLLN[8] = {256, 429, 213, 429, 426, 271, 258, 344};
+const uint32_t I2SPLLR[8] = {5, 4, 2, 4, 4, 6, 3, 1};
+
 /*!
     \brief      initializes the audio codec audio interface (i2s)
     \note       this function assumes that the i2s input clock (through pll_r in 
@@ -51,7 +57,26 @@ dma_single_data_parameter_struct dma_initstructure;
 */
 void codec_audio_interface_init(uint32_t audio_freq)
 {
+    uint8_t index = 0, freqindex = 0xFF;
+
     i2s_audiofreq = audio_freq;
+
+    for (index = 0; index < 8; index++) {
+        if (I2SFreq[index] == audio_freq) {
+            freqindex = index;
+        }
+    }
+
+    if (freqindex != 0xFF) {
+        /* must turn off when modify PLLI2S rcu configure */
+        rcu_osci_off(RCU_PLLI2S_CK);
+
+        rcu_plli2s_config(I2SPLLN[freqindex], I2SPLLR[freqindex]);
+        rcu_i2s_clock_config(RCU_I2SSRC_PLLI2S);
+
+        /* must turn on when modify PLLI2S rcu configure */
+        rcu_osci_on(RCU_PLLI2S_CK);
+    }
 
     /* enable the AD_I2S peripheral clock */
     rcu_periph_clock_enable(AD_I2S_CLK);
@@ -166,11 +191,11 @@ void codec_i2s_dma_init(void)
     dma_channel_enable(AD_DMA, AD_DMA_CHANNEL);
     dma_deinit(AD_DMA, AD_DMA_CHANNEL);
 
-    /* Set the parameters to be configured */
+    /* set the parameters to be configured */
     dma_initstructure.periph_addr = AD_I2S_ADDRESS;
-    dma_initstructure.memory0_addr = (uint32_t)0;/* this field will be configured in play function */
+    dma_initstructure.memory0_addr = (uint32_t)0; /* this field will be configured in play function */
     dma_initstructure.direction = DMA_MEMORY_TO_PERIPH;
-    dma_initstructure.number = (uint32_t)0xFFFE;/* this field will be configured in play function */
+    dma_initstructure.number = (uint32_t)0xFFFE; /* this field will be configured in play function */
     dma_initstructure.periph_inc = DMA_PERIPH_INCREASE_DISABLE;
     dma_initstructure.memory_inc = DMA_MEMORY_INCREASE_ENABLE;
     dma_initstructure.periph_memory_width = AD_DMA_PERIPH_DATA_SIZE;

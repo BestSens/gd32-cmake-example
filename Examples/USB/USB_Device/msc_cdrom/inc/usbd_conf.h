@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -38,11 +39,11 @@ OF SUCH DAMAGE.
 
 #include "usb_conf.h"
 
-#define USBD_CFG_MAX_NUM                1
-#define USBD_ITF_MAX_NUM                1
-#define USB_STR_DESC_MAX_SIZE           64
+#define USBD_CFG_MAX_NUM                1U
+#define USBD_ITF_MAX_NUM                1U
+#define USB_STR_DESC_MAX_SIZE           64U
 
-#define USBD_MSC_INTERFACE              0
+#define USBD_MSC_INTERFACE              0U
 
 /* class layer parameter */
 #define MSC_IN_EP                       EP1_IN
@@ -50,18 +51,18 @@ OF SUCH DAMAGE.
 
 #ifdef USE_USB_HS  
     #ifdef USE_ULPI_PHY
-        #define MSC_DATA_PACKET_SIZE    512
+        #define MSC_DATA_PACKET_SIZE    512U
     #else
-        #define MSC_DATA_PACKET_SIZE    64
+        #define MSC_DATA_PACKET_SIZE    64U
     #endif
 #else /* USE_USB_FS */
-    #define MSC_DATA_PACKET_SIZE        64
+    #define MSC_DATA_PACKET_SIZE        64U
 #endif
 
-#define MSC_MEDIA_PACKET_SIZE           4096
+#define MSC_MEDIA_PACKET_SIZE           4096U
 
-#define MEM_LUN_NUM                     1
+#define MEM_LUN_NUM                     1U
 
-#define USB_STRING_COUNT                4
+#define USB_STRING_COUNT                4U
 
 #endif /* __USBD_CONF_H */

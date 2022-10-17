@@ -33,8 +33,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef SYS_TICK_H
-#define SYS_TICK_H
+#ifndef SYSTICK_H
+#define SYSTICK_H
 
 #include <stdint.h>
 
@@ -46,4 +46,4 @@ void delay_1ms(uint32_t count);
 /* delay decrement */
 void delay_decrement(void);
 
-#endif /* SYS_TICK_H */
+#endif /* SYSTICK_H */

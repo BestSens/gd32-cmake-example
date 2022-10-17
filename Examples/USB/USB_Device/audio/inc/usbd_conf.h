@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -62,7 +63,7 @@ OF SUCH DAMAGE.
                                                          MIC_IN_CHANNEL_NBR) /1000)) 
 
 /* speaker parameter */
-#define USBD_SPEAKER_FREQ                   USBD_AD_FREQ_44K
+#define USBD_SPEAKER_FREQ                   USBD_AD_FREQ_48K
 #define SPEAKER_OUT_BIT_RESOLUTION          16
 #define SPEAKER_OUT_CHANNEL_NBR             2 /* Mono = 1, Stereo = 2 */
 #define SPEAKER_OUT_PACKET                  (uint32_t)(((USBD_SPEAKER_FREQ * \

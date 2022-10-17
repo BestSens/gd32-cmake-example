@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -44,7 +45,7 @@ OF SUCH DAMAGE.
     \param[out] none
     \retval     MAL_OK if all operations are OK, MAL_FAIL else
 */
-void flash_erase(uint32_t address, uint32_t file_length, uint8_t* report_buffer)
+void flash_erase (uint32_t address, uint32_t file_length, uint8_t* report_buffer)
 {
     uint16_t start_sector = 0U, end_sector = 0U, i = 0U;
 
@@ -160,7 +161,7 @@ void iap_data_write (uint8_t *data, uint32_t addr, uint32_t len)
         if (FMC_READY == fmc_halfword_program(addr, *(uint32_t *)(data + idx))) {
             addr += 2U;
         } else {
-            while(1){
+            while(1) {
             }
         }
     }

@@ -64,9 +64,9 @@ int main(void)
     /* LED initialize */
     gd_eval_led_init(LED1);
     gd_eval_led_init(LED3);
-    /* config the USART */
+    /* configure the USART */
     gd_eval_com_init(EVAL_COM0);
-    /* config the EXMC access mode */
+    /* configure the EXMC access mode */
     exmc_nandflash_init(EXMC_BANK1_NAND);
     /* read NAND ID */
     nand_read_id(&nand_id);

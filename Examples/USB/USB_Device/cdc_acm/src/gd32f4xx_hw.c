@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -39,7 +40,7 @@ OF SUCH DAMAGE.
 #define TIM_USEC_DELAY                          0x02U
 
 __IO uint32_t delay_time = 0U;
-__IO uint32_t timer_prescaler = 5U;
+__IO uint16_t timer_prescaler = 5U;
 
 /* local function prototypes ('static') */
 static void hw_time_set (uint8_t unit);
@@ -54,55 +55,15 @@ static void hw_delay    (uint32_t ntime, uint8_t unit);
 void usb_rcu_config(void)
 {
 #ifdef USE_USB_FS
-
-    #ifndef USE_IRC48M
-        rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLQ);
-
-        rcu_ck48m_clock_config(RCU_CK48MSRC_PLL48M);
-    #else
-        /* enable IRC48M clock */
-        rcu_osci_on(RCU_IRC48M);
-
-        /* wait till IRC48M is ready */
-        while (SUCCESS != rcu_osci_stab_wait(RCU_IRC48M)) {
-        }
-
-        rcu_ck48m_clock_config(RCU_CK48MSRC_IRC48M);
-    #endif /* USE_IRC48M */
+    rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLQ);
+    rcu_ck48m_clock_config(RCU_CK48MSRC_PLL48M);
 
     rcu_periph_clock_enable(RCU_USBFS);
-
 #elif defined(USE_USB_HS)
-
     #ifdef USE_EMBEDDED_PHY
-
-        #ifndef USE_IRC48M
-            rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLQ);
-
-            rcu_ck48m_clock_config(RCU_CK48MSRC_PLL48M);
-        #else
-            /* enable IRC48M clock */
-            rcu_osci_on(RCU_IRC48M);
-
-            /* wait till IRC48M is ready */
-            while (SUCCESS != rcu_osci_stab_wait(RCU_IRC48M)) {
-            }
-
-            rcu_ck48m_clock_config(RCU_CK48MSRC_IRC48M);
-        #endif /* USE_IRC48M */
-
+        rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLQ);
+        rcu_ck48m_clock_config(RCU_CK48MSRC_PLL48M);
     #elif defined(USE_ULPI_PHY)
-        #ifdef USE_IRC48M
-            /* enable IRC48M clock */
-            rcu_osci_on(RCU_IRC48M);
-
-            /* wait till IRC48M is ready */
-            while (SUCCESS != rcu_osci_stab_wait(RCU_IRC48M)) {
-            }
-
-            rcu_ck48m_clock_config(RCU_CK48MSRC_IRC48M);
-        #endif /* USE_IRC48M */
-
         rcu_periph_clock_enable(RCU_USBHSULPI);
     #endif /* USE_EMBEDDED_PHY */
 
@@ -198,39 +159,37 @@ void usb_intr_config(void)
 
 #ifdef USE_USB_FS
     nvic_irq_enable((uint8_t)USBFS_IRQn, 2U, 0U);
+
+    #if USBFS_LOW_POWER
+        /* enable the power module clock */
+        rcu_periph_clock_enable(RCU_PMU);
+
+        /* USB wakeup EXTI line configuration */
+        exti_interrupt_flag_clear(EXTI_18);
+        exti_init(EXTI_18, EXTI_INTERRUPT, EXTI_TRIG_RISING);
+        exti_interrupt_enable(EXTI_18);
+
+        nvic_irq_enable((uint8_t)USBFS_WKUP_IRQn, 0U, 0U);
+    #endif /* USBFS_LOW_POWER */
 #elif defined(USE_USB_HS)
     nvic_irq_enable((uint8_t)USBHS_IRQn, 2U, 0U);
-#endif /* USE_USBFS */
 
-#ifdef USBFS_LOW_PWR_MGMT_SUPPORT
+    #if USBHS_LOW_POWER
+        /* enable the power module clock */
+        rcu_periph_clock_enable(RCU_PMU);
 
-    /* enable the power module clock */
-    rcu_periph_clock_enable(RCU_PMU);
+        /* USB wakeup EXTI line configuration */
+        exti_interrupt_flag_clear(EXTI_20);
+        exti_init(EXTI_20, EXTI_INTERRUPT, EXTI_TRIG_RISING);
+        exti_interrupt_enable(EXTI_20);
 
-    /* USB wakeup EXTI line configuration */
-    exti_interrupt_flag_clear(EXTI_18);
-    exti_init(EXTI_18, EXTI_INTERRUPT, EXTI_TRIG_RISING);
-    exti_interrupt_enable(EXTI_18);
-
-    nvic_irq_enable((uint8_t)USBFS_WKUP_IRQn, 1U, 0U);
-
-#elif defined(USBHS_LOW_PWR_MGMT_SUPPORT)
-
-    /* enable the power module clock */
-    rcu_periph_clock_enable(RCU_PMU);
-
-    /* USB wakeup EXTI line configuration */
-    exti_interrupt_flag_clear(EXTI_20);
-    exti_init(EXTI_20, EXTI_INTERRUPT, EXTI_TRIG_RISING);
-    exti_interrupt_enable(EXTI_20);
-
-    nvic_irq_enable((uint8_t)USBHS_WKUP_IRQn, 1U, 0U);
-
-#endif /* USBHS_LOW_PWR_MGMT_SUPPORT */
+        nvic_irq_enable((uint8_t)USBHS_WKUP_IRQn, 0U, 0U);
+    #endif /* USBHS_LOW_POWER */
+#endif /* USE_USB_FS */
 
 #ifdef USB_HS_DEDICATED_EP1_ENABLED
-    nvic_irq_enable((uint8_t)USBHS_EP1_Out_IRQn, 1U, 0U);
-    nvic_irq_enable((uint8_t)USBHS_EP1_In_IRQn, 1U, 0U);
+    nvic_irq_enable(USBHS_EP1_Out_IRQn, 1, 0);
+    nvic_irq_enable(USBHS_EP1_In_IRQn, 1, 0);
 #endif /* USB_HS_DEDICATED_EP1_ENABLED */
 }
 
@@ -281,8 +240,8 @@ void usb_mdelay (const uint32_t msec)
 */
 void usb_timer_irq (void)
 {
-    if (RESET != timer_interrupt_flag_get(TIMER2, TIMER_INT_UP)){
-        timer_interrupt_flag_clear(TIMER2, TIMER_INT_UP);
+    if (RESET != timer_interrupt_flag_get(TIMER2, TIMER_INT_FLAG_UP)){
+        timer_interrupt_flag_clear(TIMER2, TIMER_INT_FLAG_UP);
 
         if (delay_time > 0x00U){
             delay_time--;
@@ -293,8 +252,8 @@ void usb_timer_irq (void)
 }
 
 /*!
-    \brief      delay routine based on TIM2
-    \param[in]  nTime: delay Time 
+    \brief      delay routine based on TIMER2
+    \param[in]  nTime: delay Time
     \param[in]  unit: delay Time unit = milliseconds / microseconds
     \param[out] none
     \retval     none
@@ -312,7 +271,7 @@ static void hw_delay(uint32_t ntime, uint8_t unit)
 }
 
 /*!
-    \brief      configures TIM2 for delay routine based on TIM2
+    \brief      configures TIMER for delay routine based on Timer2
     \param[in]  unit: msec /usec
     \param[out] none
     \retval     none
@@ -321,13 +280,15 @@ static void hw_time_set(uint8_t unit)
 {
     timer_parameter_struct  timer_basestructure;
 
+    timer_prescaler = ((rcu_clock_freq_get(CK_APB1)/1000000*2)/12) - 1;
+
     timer_disable(TIMER2);
     timer_interrupt_disable(TIMER2, TIMER_INT_UP);
 
-    if (unit == TIM_USEC_DELAY) {
-        timer_basestructure.period = 13U;
-    } else if(unit == TIM_MSEC_DELAY) {
-        timer_basestructure.period = 13999U;
+    if(TIM_USEC_DELAY == unit) {
+        timer_basestructure.period = 11U;
+    } else if(TIM_MSEC_DELAY == unit) {
+        timer_basestructure.period = 11999U;
     } else {
         /* no operation */
     }
@@ -340,59 +301,13 @@ static void hw_time_set(uint8_t unit)
 
     timer_init(TIMER2, &timer_basestructure);
 
-    timer_interrupt_flag_clear(TIMER2, TIMER_INT_UP);
+    timer_interrupt_flag_clear(TIMER2, TIMER_INT_FLAG_UP);
 
     timer_auto_reload_shadow_enable(TIMER2);
 
     /* TIMER2 interrupt enable */
     timer_interrupt_enable(TIMER2, TIMER_INT_UP);
 
-    /* TIMER2 enable counter */ 
+    /* TIMER2 enable counter */
     timer_enable(TIMER2);
 }
-
-#ifdef USE_IRC48M
-
-/*!
-    \brief      configure the CTC peripheral
-    \param[in]  none
-    \param[out] none
-    \retval     none
-*/
-void ctc_config(void)
-{
-    /* configure CTC reference signal source prescaler */
-    ctc_refsource_prescaler_config(CTC_REFSOURCE_PSC_OFF);
-    /* select reference signal source */
-    ctc_refsource_signal_select(CTC_REFSOURCE_USBSOF);
-
-#ifdef USE_USB_HS
-    /* select SOF source */
-    ctc_usbsof_signal_select(CTC_USBSOFSEL_USBHS);
-#else
-    /* select SOF source */
-    ctc_usbsof_signal_select(CTC_USBSOFSEL_USBFS);
-#endif /* USE_USB_HS */
-
-    /* select reference signal source polarity */
-    ctc_refsource_polarity_config(CTC_REFSOURCE_POLARITY_RISING);
-    /* configure hardware automatically trim mode */
-    ctc_hardware_trim_mode_config(CTC_HARDWARE_TRIM_MODE_ENABLE);
-
-#ifdef USE_ULPI_PHY
-    /* configure CTC counter reload value, Fclock/Fref-1 */
-    ctc_counter_reload_value_config(0x176F);
-    /* configure clock trim base limit value, Fclock/Fref*0.0012/2 */
-    ctc_clock_limit_value_config(0x04);
-#else
-    /* configure CTC counter reload value, Fclock/Fref-1 */
-    ctc_counter_reload_value_config(0xBB7F);
-    /* configure clock trim base limit value, Fclock/Fref*0.0012/2 */
-    ctc_clock_limit_value_config(0x1D);
-#endif
-
-    /* CTC counter enable */
-    ctc_counter_enable();
-}
-
-#endif /* USE IRC48M */

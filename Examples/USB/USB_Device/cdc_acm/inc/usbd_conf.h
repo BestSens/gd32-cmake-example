@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -49,7 +50,7 @@ OF SUCH DAMAGE.
 #define CDC_DATA_OUT_EP                     EP3_OUT /* EP3 for data OUT */
 #define CDC_CMD_EP                          EP2_IN  /* EP2 for CDC commands */
 
-#define USB_STRING_COUNT                    4U
+#define USB_STRING_COUNT                    4
 
 #define USB_CDC_CMD_PACKET_SIZE             8    /* Control Endpoint Packet size */
 

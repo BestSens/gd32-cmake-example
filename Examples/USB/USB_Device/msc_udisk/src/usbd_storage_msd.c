@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -69,7 +70,7 @@ static int8_t  STORAGE_Write            (uint8_t Lun,
                                         uint32_t BlkAddr,
                                         uint16_t BlkLen);
 
-usbd_mem_cb USBD_Internal_Storage_fops =
+usbd_mem_cb USBD_Internal_Storage_fops = 
 {
     .mem_init      = STORAGE_Init,
     .mem_ready     = STORAGE_IsReady,
@@ -166,7 +167,7 @@ static int8_t STORAGE_Write (uint8_t Lun,
         return 1;
     }
 
-    return (0);
+    return 0;
 }
 
 /*!

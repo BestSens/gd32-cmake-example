@@ -48,17 +48,18 @@ typedef enum {
     I2C_STOP
 } i2c_process_enum;
 
-#define EEP_FIRST_PAGE         0x00
-#define I2C_OK                 0
-#define I2C_FAIL               1
+#define EEP_FIRST_PAGE 0x00
+#define I2C_OK         0
+#define I2C_FAIL       1
+#define I2CX           I2C0
 
 /* function declarations */
 /* I2C read and write functions */
 uint8_t i2c_24c02_test(void);
 /* initialize peripherals used by the I2C EEPROM driver */
 void i2c_eeprom_init(void);
-/* write buffer of data to the I2C EEPROM */
-void eeprom_buffer_write_interrupt(uint8_t *p_buffer, uint8_t write_address, uint16_t number_of_byte);
+/* write buffer of data to the I2C EEPROM by interrupt */
+void eeprom_buffer_write_interrupt(uint8_t* p_buffer, uint8_t write_address, uint16_t number_of_byte);
 /* write more than one byte to the EEPROM by interrupt */
 void eeprom_page_write_interrupt(void);
 /* read data from the EEPROM by interrupt */

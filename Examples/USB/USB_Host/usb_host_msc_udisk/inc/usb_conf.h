@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -41,7 +42,7 @@ OF SUCH DAMAGE.
 #include "gd32f450i_lcd_eval.h"
 #include "lcd_log.h"
 
-/****************** USB OTG FS PHY CONFIGURATION *******************************
+/****************** USBFS/USBHS PHY CONFIGURATION *******************************
  *  The USB OTG FS Core supports one on-chip Full Speed PHY.
  *  The USE_EMBEDDED_PHY symbol is defined in the project compiler preprocessor 
  *  when FS core is used.
@@ -49,11 +50,11 @@ OF SUCH DAMAGE.
 
 #ifdef USE_USB_FS
     #define USB_FS_CORE
-#endif
+#endif /* USE_USB_FS */
 
 #ifdef USE_USB_HS
     #define USB_HS_CORE
-#endif
+#endif /* USE_USB_HS */
 
 /*******************************************************************************
  *                     FIFO Size Configuration in Host mode
@@ -74,11 +75,14 @@ OF SUCH DAMAGE.
  *        that channel.
 *******************************************************************************/
 
-/****************** USB OTG FS CONFIGURATION **********************************/
+/****************** USBFS/USBHS CONFIGURATION **********************************/
 #ifdef USB_FS_CORE
     #define USB_RX_FIFO_FS_SIZE                            128
     #define USB_HTX_NPFIFO_FS_SIZE                         96
     #define USB_HTX_PFIFO_FS_SIZE                          96
+
+    #define USBFS_SOF_OUTPUT                               0
+    #define USBFS_LOW_POWER                                0
 #endif
 
 #ifdef USB_HS_CORE
@@ -95,14 +99,12 @@ OF SUCH DAMAGE.
     #endif
 
 //    #define USB_HS_INTERNAL_DMA_ENABLED
+
+    #define USBHS_SOF_OUTPUT                               0
+    #define USBHS_LOW_POWER                                0
 #endif
 
-#define USB_SOF_OUTPUT                                     0
-#define USB_LOW_POWER                                      0
-
-//#define USB_LOW_PWR_ENABLE
-
-/****************** USB OTG MODE CONFIGURATION ********************************/
+/****************** USB MODE CONFIGURATION ********************************/
 #define USE_HOST_MODE
 //#define USE_DEVICE_MODE
 //#define USE_OTG_MODE

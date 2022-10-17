@@ -76,7 +76,7 @@ int main(void)
 
     /* check if the system has resumed from FWDGT reset */
     if (RESET != rcu_flag_get(RCU_FLAG_FWDGTRST)){
-        /* turn on LED2 */
+        /* turn on LED3 */
         gd_eval_led_on(LED3);
         /* clear the FWDGT reset flag */
         rcu_all_reset_flag_clear();
@@ -85,7 +85,7 @@ int main(void)
         }
         
     }else{
-        /* turn on LED1 */
+        /* turn on LED2 */
         gd_eval_led_on(LED2);
     }
 

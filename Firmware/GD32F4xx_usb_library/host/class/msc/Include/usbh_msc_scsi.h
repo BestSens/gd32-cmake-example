@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -63,7 +64,7 @@ typedef struct
     uint32_t msc_sense_key;
     uint16_t msc_page_len;
     uint8_t msc_write_protect;
-}usbh_msc_parameter;
+} usbh_msc_parameter;
 
 #define DESC_REQUEST_SENSE                   0x00U
 #define ALLOCATION_LENGTH_REQUEST_SENSE      63U

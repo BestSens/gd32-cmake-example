@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -38,11 +39,11 @@ OF SUCH DAMAGE.
 
 #include "usb_conf.h"
 
-#define USBD_CFG_MAX_NUM                       1
-#define USBD_ITF_MAX_NUM                       1
-#define USB_STR_DESC_MAX_SIZE                  64
+#define USBD_CFG_MAX_NUM                       1U
+#define USBD_ITF_MAX_NUM                       1U
+#define USB_STR_DESC_MAX_SIZE                  64U
 
-#define USBD_IAP_INTERFACE                     0
+#define USBD_IAP_INTERFACE                     0U
 
 #define USB_STRING_COUNT                       4U
 
@@ -79,7 +80,7 @@ OF SUCH DAMAGE.
 
 /* memory address from where user application will be loaded, which represents 
    the DFU code protected against write and erase operations.*/
-#define APP_LOADED_ADDR                    0x08004000U
+#define APP_LOADED_ADDR                    0x08008000U
 
 /* make sure the corresponding memory where the DFU code should not be loaded
    cannot be erased or overwritten by DFU application. */

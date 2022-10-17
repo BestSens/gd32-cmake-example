@@ -406,14 +406,14 @@
           <GroupName>Application</GroupName>
           <Files>
             <File>
-              <FileName>gd32f4xx_it.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\src\gd32f4xx_it.c</FilePath>
-            </File>
-            <File>
               <FileName>app.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\app.c</FilePath>
+            </File>
+            <File>
+              <FileName>gd32f4xx_it.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\gd32f4xx_it.c</FilePath>
             </File>
             <File>
               <FileName>gd32f4xx_hw.c</FileName>
@@ -421,9 +421,29 @@
               <FilePath>..\src\gd32f4xx_hw.c</FilePath>
             </File>
             <File>
-              <FileName>flash_if.c</FileName>
+              <FileName>exmc_nandflash.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\src\flash_if.c</FilePath>
+              <FilePath>..\src\exmc_nandflash.c</FilePath>
+            </File>
+            <File>
+              <FileName>gd25qxx.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\gd25qxx.c</FilePath>
+            </File>
+            <File>
+              <FileName>inter_flash_if.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\inter_flash_if.c</FilePath>
+            </File>
+            <File>
+              <FileName>nand_flash_if.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\nand_flash_if.c</FilePath>
+            </File>
+            <File>
+              <FileName>nor_flash_if.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\nor_flash_if.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -509,6 +529,11 @@
               <FileName>gd32f4xx_fmc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\Firmware\GD32F4xx_standard_peripheral\Source\gd32f4xx_fmc.c</FilePath>
+            </File>
+            <File>
+              <FileName>gd32f4xx_exmc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\Firmware\GD32F4xx_standard_peripheral\Source\gd32f4xx_exmc.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -989,14 +1014,14 @@
           <GroupName>Application</GroupName>
           <Files>
             <File>
-              <FileName>gd32f4xx_it.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\src\gd32f4xx_it.c</FilePath>
-            </File>
-            <File>
               <FileName>app.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\app.c</FilePath>
+            </File>
+            <File>
+              <FileName>gd32f4xx_it.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\gd32f4xx_it.c</FilePath>
             </File>
             <File>
               <FileName>gd32f4xx_hw.c</FileName>
@@ -1004,9 +1029,29 @@
               <FilePath>..\src\gd32f4xx_hw.c</FilePath>
             </File>
             <File>
-              <FileName>flash_if.c</FileName>
+              <FileName>exmc_nandflash.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\src\flash_if.c</FilePath>
+              <FilePath>..\src\exmc_nandflash.c</FilePath>
+            </File>
+            <File>
+              <FileName>gd25qxx.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\gd25qxx.c</FilePath>
+            </File>
+            <File>
+              <FileName>inter_flash_if.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\inter_flash_if.c</FilePath>
+            </File>
+            <File>
+              <FileName>nand_flash_if.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\nand_flash_if.c</FilePath>
+            </File>
+            <File>
+              <FileName>nor_flash_if.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\src\nor_flash_if.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1092,6 +1137,11 @@
               <FileName>gd32f4xx_fmc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\Firmware\GD32F4xx_standard_peripheral\Source\gd32f4xx_fmc.c</FilePath>
+            </File>
+            <File>
+              <FileName>gd32f4xx_exmc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\Firmware\GD32F4xx_standard_peripheral\Source\gd32f4xx_exmc.c</FilePath>
             </File>
           </Files>
         </Group>

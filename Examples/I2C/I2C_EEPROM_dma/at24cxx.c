@@ -91,7 +91,7 @@ uint8_t i2c_24c02_test(void)
     \param[out] none
     \retval     none
 */
-void i2c_eeprom_init()
+void i2c_eeprom_init(void)
 {
     eeprom_address = EEPROM_BLOCK0_ADDRESS;
 }
@@ -112,6 +112,8 @@ uint8_t eeprom_page_write_dma_timeout(uint8_t *p_buffer, uint8_t write_address, 
     uint16_t timeout = 0;
     uint8_t i2c_timeout_flag = 0;
 
+    /* enable acknowledge */
+    i2c_ack_config(I2CX, I2C_ACK_ENABLE);
     while(!(i2c_timeout_flag)) {
         switch(state) {
         case I2C_START:
@@ -196,7 +198,8 @@ uint8_t eeprom_page_write_dma_timeout(uint8_t *p_buffer, uint8_t write_address, 
             /* enable DMA TX channel */
             dma_channel_enable(I2C_DMA, DMA_TX_CH);
             /* wait until FTF bit is set */
-            while(!dma_flag_get(I2C_DMA, DMA_TX_CH, DMA_FLAG_FTF));            /* wait until BTC bit is set */
+            while(!dma_flag_get(I2C_DMA, DMA_TX_CH, DMA_FLAG_FTF));
+            /* wait until BTC bit is set */
             while((!i2c_flag_get(I2CX, I2C_FLAG_BTC)) && (timeout < I2C_TIME_OUT)) {
                 timeout++;
             }
@@ -315,6 +318,8 @@ uint8_t eeprom_buffer_read_dma_timeout(uint8_t *p_buffer, uint8_t read_address, 
     uint16_t timeout = 0;
     uint8_t i2c_timeout_flag = 0;
 
+    /* enable acknowledge */
+    i2c_ack_config(I2CX, I2C_ACK_ENABLE);
     while(!(i2c_timeout_flag)) {
         switch(state) {
         case I2C_START:
@@ -579,7 +584,7 @@ uint8_t eeprom_wait_standby_state_timeout(void)
         default:
             state = I2C_START;
             timeout = 0;
-            printf("i2c master sends start signal end in EEPROM standby!.\n");
+            printf("i2c master sends start signal end in EEPROM standby!\n");
             break;
         }
     }

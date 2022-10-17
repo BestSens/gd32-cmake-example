@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -119,6 +120,14 @@ typedef enum
     USR_IN_RESP_OK = 1U,
 } usbh_user_status;
 
+/* USB host wakeup mode */
+typedef enum
+{
+    NORMAL_WORK = 0U,
+    GENERAL_WAKEUP = 1U,
+    REMOTE_WAKEUP = 2,
+} usbh_wakeup_mode;
+
 /* control transfer information */
 typedef struct _usbh_control
 {
@@ -171,7 +180,7 @@ struct _usbh_host;
 /* device class callbacks */
 typedef struct
 {
-    uint8_t       class_code;       /*!< USB class type */
+    uint8_t     class_code;        /*!< USB class type */
 
     usbh_status (*class_init)      (struct _usbh_host *phost);
     void        (*class_deinit)    (struct _usbh_host *phost);
@@ -226,11 +235,9 @@ typedef struct _usbh_host
 
     void                                *data;                              /*!< used for... */
 
-#if USB_LOW_POWER
     uint8_t                             suspend_flag;                       /*!< host suspend flag */
     uint8_t                             dev_supp_remote_wkup;               /*!< record device remote wakeup function */
-    uint8_t                             wakeup_mode;                        /*!< record wakeup mode */
-#endif /* USB_LOW_POWER*/
+    usbh_wakeup_mode                    wakeup_mode;                        /*!< record wakeup mode */
 } usbh_host;
 
 /*!
@@ -268,9 +275,5 @@ usbh_status usbh_deinit (usbh_host *uhost);
 void usbh_core_task (usbh_host *uhost);
 /* handle the error on USB host side */
 void usbh_error_handler (usbh_host *uhost, usbh_status err_type);
-#ifdef USB_LOW_PWR_ENABLE
-/* handles the USB resume from suspend mode */
-void usb_hwp_resume(usb_core_driver *udev);
-#endif /* USB_LOW_PWR_ENABLE */
 
 #endif /* __USBH_CORE_H */

@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -64,6 +65,7 @@ void key_config(void)
 */
 void led_config(void)
 {
+    /* initialize LEDs */
     gd_eval_led_init(LED1);
     gd_eval_led_init(LED2);
     gd_eval_led_init(LED3);

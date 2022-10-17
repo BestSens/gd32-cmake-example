@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -100,7 +101,7 @@ static void usbh_user_init(void)
     if(0U == startup){
         startup = 1U;
 
-        /* configure the USER key */
+        /* configure the User key */
         gd_eval_key_init(KEY_USER, KEY_MODE_GPIO);
 
         printf("> USB HID host library started\n");
@@ -108,7 +109,7 @@ static void usbh_user_init(void)
 }
 
 /*!
-    \brief      de-init user state and associated variables
+    \brief      deinitialize user state and associated variables
     \param[in]  none
     \param[out] none
     \retval     none
@@ -230,7 +231,7 @@ static void usbh_user_configuration_descavailable(usb_desc_config *cfg_desc,
 
 /*!
     \brief      user operation when manufacturer string exists
-    \param[in]  ManufacturerString: manufacturer string of USB device
+    \param[in]  ManufacturerString: manufacturer string of usb device
     \param[out] none
     \retval     none
 */
@@ -240,8 +241,8 @@ static void usbh_user_manufacturer_string(void *manufacturer_string)
 }
 
 /*!
-    \brief      user operation when manufacturer string exists
-    \param[in]  ProductString: product string of USB device
+    \brief      user operation when product string exists
+    \param[in]  ProductString: product string of usb device
     \param[out] none
     \retval     none
 */
@@ -251,8 +252,8 @@ static void usbh_user_product_string(void *product_string)
 }
 
 /*!
-    \brief      user operation when serialnum string exists
-    \param[in]  SerialNumString: serialNum string of USB device
+    \brief      user operation when serial string exists
+    \param[in]  SerialNumString: serialNum string of usb device
     \param[out] none
     \retval     none
 */
@@ -290,13 +291,13 @@ static void usbh_user_device_not_supported(void)
     \brief      user action for application state entry
     \param[in]  none
     \param[out] none
-    \retval     user response for USER key
+    \retval     user response for user key
 */
 static usbh_user_status usbh_user_userinput(void)
 {
     usbh_user_status usbh_usr_status = USR_IN_NO_RESP;
 
-    /*Key USER is in polling mode to detect user action */
+    /*Key User is in polling mode to detect user action */
     if(RESET == gd_eval_key_state_get(KEY_USER)){
         usbh_usr_status = USR_IN_RESP_OK;
     }
@@ -305,7 +306,7 @@ static usbh_user_status usbh_user_userinput(void)
 }
 
 /*!
-    \brief      user action for device overcurrent detection event
+    \brief      user action for device over current detection event
     \param[in]  none
     \param[out] none
     \retval     none
@@ -316,7 +317,7 @@ static void usbh_user_over_current_detected (void)
 }
 
 /*!
-    \brief      init mouse window
+    \brief      initialize mouse window
     \param[in]  none
     \param[out] none
     \retval     none
@@ -340,7 +341,7 @@ void usr_mouse_process_data (hid_mouse_info *data)
 }
 
 /*!
-    \brief      init keyboard window
+    \brief      initialize keyboard window
     \param[in]  none
     \param[out] none
     \retval     none

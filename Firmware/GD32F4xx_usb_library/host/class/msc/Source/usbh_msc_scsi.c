@@ -4,6 +4,7 @@
 
     \version 2020-08-01, V3.0.0, firmware for GD32F4xx
     \version 2022-03-09, V3.1.0, firmware for GD32F4xx
+    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
 */
 
 /*
@@ -52,22 +53,22 @@ usbh_status usbh_msc_scsi_inquiry (usbh_host *uhost, uint8_t lun, scsi_std_inqui
     usbh_status error = USBH_FAIL;
     usbh_msc_handler *msc = (usbh_msc_handler *)uhost->active_class->class_data;
 
-    switch (msc->bot.cmd_state) {
+    switch (msc->bbb.cmd_state) {
     case BBB_CMD_SEND:
         /* prepare the cbw and relevant field*/
-        msc->bot.cbw.field.dCBWDataTransferLength = STANDARD_INQUIRY_DATA_LEN;
-        msc->bot.cbw.field.bmCBWFlags = USB_TRX_IN;
-        msc->bot.cbw.field.bCBWCBLength = CBW_LENGTH;
+        msc->bbb.cbw.field.dCBWDataTransferLength = STANDARD_INQUIRY_DATA_LEN;
+        msc->bbb.cbw.field.bmCBWFlags = USB_TRX_IN;
+        msc->bbb.cbw.field.bCBWCBLength = CBW_LENGTH;
 
-        memset(msc->bot.cbw.field.CBWCB, 0U, CBW_LENGTH);
+        memset(msc->bbb.cbw.field.CBWCB, 0U, CBW_LENGTH);
 
-        msc->bot.cbw.field.CBWCB[0] = SCSI_INQUIRY;
-        msc->bot.cbw.field.CBWCB[1] = (lun << 5U);
-        msc->bot.cbw.field.CBWCB[4] = 0x24U;
+        msc->bbb.cbw.field.CBWCB[0] = SCSI_INQUIRY;
+        msc->bbb.cbw.field.CBWCB[1] = (lun << 5U);
+        msc->bbb.cbw.field.CBWCB[4] = 0x24U;
 
-        msc->bot.state = BBB_SEND_CBW;
-        msc->bot.cmd_state = BBB_CMD_WAIT;
-        msc->bot.pbuf = (uint8_t *)(void *)msc->bot.data;
+        msc->bbb.state = BBB_SEND_CBW;
+        msc->bbb.cmd_state = BBB_CMD_WAIT;
+        msc->bbb.pbuf = (uint8_t *)(void *)msc->bbb.data;
         error = USBH_BUSY;
         break;
 
@@ -78,18 +79,18 @@ usbh_status usbh_msc_scsi_inquiry (usbh_host *uhost, uint8_t lun, scsi_std_inqui
             memset(inquiry, 0U, sizeof(scsi_std_inquiry_data));
 
             /* assign inquiry data */
-            inquiry->device_type = msc->bot.pbuf[0] & 0x1FU;
-            inquiry->peripheral_qualifier = msc->bot.pbuf[0] >> 5U;
+            inquiry->device_type = msc->bbb.pbuf[0] & 0x1FU;
+            inquiry->peripheral_qualifier = msc->bbb.pbuf[0] >> 5U;
 
-            if (0x80U == ((uint32_t)msc->bot.pbuf[1] & 0x80U)) {
+            if (0x80U == ((uint32_t)msc->bbb.pbuf[1] & 0x80U)) {
                 inquiry->removable_media = 1U;
             } else {
                 inquiry->removable_media = 0U;
             }
 
-            memcpy (inquiry->vendor_id, &msc->bot.pbuf[8], 8U);
-            memcpy (inquiry->product_id, &msc->bot.pbuf[16], 16U);
-            memcpy (inquiry->revision_id, &msc->bot.pbuf[32], 4U);
+            memcpy (inquiry->vendor_id, &msc->bbb.pbuf[8], 8U);
+            memcpy (inquiry->product_id, &msc->bbb.pbuf[16], 16U);
+            memcpy (inquiry->revision_id, &msc->bbb.pbuf[32], 4U);
         }
         break;
 
@@ -113,18 +114,18 @@ usbh_status usbh_msc_test_unitready (usbh_host *uhost, uint8_t lun)
     usbh_msc_handler *msc = (usbh_msc_handler *)uhost->active_class->class_data;
 
 
-    switch (msc->bot.cmd_state) {
+    switch (msc->bbb.cmd_state) {
     case BBB_CMD_SEND:  
         /* prepare the CBW and relevant field */
-        msc->bot.cbw.field.dCBWDataTransferLength = CBW_LENGTH_TEST_UNIT_READY;
-        msc->bot.cbw.field.bmCBWFlags = USB_TRX_OUT;
-        msc->bot.cbw.field.bCBWCBLength = CBW_LENGTH;
+        msc->bbb.cbw.field.dCBWDataTransferLength = CBW_LENGTH_TEST_UNIT_READY;
+        msc->bbb.cbw.field.bmCBWFlags = USB_TRX_OUT;
+        msc->bbb.cbw.field.bCBWCBLength = CBW_LENGTH;
 
-        memset(msc->bot.cbw.field.CBWCB, 0U, CBW_CB_LENGTH);
+        memset(msc->bbb.cbw.field.CBWCB, 0U, CBW_CB_LENGTH);
 
-        msc->bot.cbw.field.CBWCB[0] = SCSI_TEST_UNIT_READY; 
-        msc->bot.state = BBB_SEND_CBW;
-        msc->bot.cmd_state = BBB_CMD_WAIT;
+        msc->bbb.cbw.field.CBWCB[0] = SCSI_TEST_UNIT_READY; 
+        msc->bbb.state = BBB_SEND_CBW;
+        msc->bbb.cmd_state = BBB_CMD_WAIT;
 
         status = USBH_BUSY;
         break;
@@ -153,19 +154,19 @@ usbh_status usbh_msc_read_capacity10 (usbh_host *uhost, uint8_t lun, scsi_capaci
     usbh_status status = USBH_FAIL;
     usbh_msc_handler *msc = (usbh_msc_handler *)uhost->active_class->class_data;
 
-    switch (msc->bot.cmd_state) {
+    switch (msc->bbb.cmd_state) {
     case BBB_CMD_SEND:
         /* prepare the CBW and relevant field */
-        msc->bot.cbw.field.dCBWDataTransferLength = READ_CAPACITY10_DATA_LEN;
-        msc->bot.cbw.field.bmCBWFlags = USB_TRX_IN;
-        msc->bot.cbw.field.bCBWCBLength = CBW_LENGTH;
+        msc->bbb.cbw.field.dCBWDataTransferLength = READ_CAPACITY10_DATA_LEN;
+        msc->bbb.cbw.field.bmCBWFlags = USB_TRX_IN;
+        msc->bbb.cbw.field.bCBWCBLength = CBW_LENGTH;
 
-        memset(msc->bot.cbw.field.CBWCB, 0U, CBW_CB_LENGTH);
+        memset(msc->bbb.cbw.field.CBWCB, 0U, CBW_CB_LENGTH);
 
-        msc->bot.cbw.field.CBWCB[0] = SCSI_READ_CAPACITY10;
-        msc->bot.state = BBB_SEND_CBW;
-        msc->bot.cmd_state = BBB_CMD_WAIT;
-        msc->bot.pbuf = (uint8_t *)(void *)msc->bot.data;
+        msc->bbb.cbw.field.CBWCB[0] = SCSI_READ_CAPACITY10;
+        msc->bbb.state = BBB_SEND_CBW;
+        msc->bbb.cmd_state = BBB_CMD_WAIT;
+        msc->bbb.pbuf = (uint8_t *)(void *)msc->bbb.data;
 
         status = USBH_BUSY;
         break;
@@ -174,12 +175,12 @@ usbh_status usbh_msc_read_capacity10 (usbh_host *uhost, uint8_t lun, scsi_capaci
         status = usbh_msc_bbb_process(uhost, lun);
 
         if (USBH_OK == status) {
-            capacity->block_nbr = msc->bot.pbuf[3] | \
-                                  ((uint32_t)msc->bot.pbuf[2] << 8U) | \
-                                  ((uint32_t)msc->bot.pbuf[1] << 16U) | \
-                                  ((uint32_t)msc->bot.pbuf[0] << 24U);
+            capacity->block_nbr = msc->bbb.pbuf[3] | \
+                                  ((uint32_t)msc->bbb.pbuf[2] << 8U) | \
+                                  ((uint32_t)msc->bbb.pbuf[1] << 16U) | \
+                                  ((uint32_t)msc->bbb.pbuf[0] << 24U);
 
-            capacity->block_size = (uint16_t)(msc->bot.pbuf[7] | ((uint32_t)msc->bot.pbuf[6] << 8U));
+            capacity->block_size = (uint16_t)(msc->bbb.pbuf[7] | ((uint32_t)msc->bbb.pbuf[6] << 8U));
         }
         break;
 
@@ -203,21 +204,21 @@ usbh_status usbh_msc_mode_sense6 (usbh_host *uhost, uint8_t lun)
     usbh_msc_handler *msc = (usbh_msc_handler *)uhost->active_class->class_data;
 
 
-    switch (msc->bot.cmd_state) {
+    switch (msc->bbb.cmd_state) {
     case BBB_CMD_SEND:
         /* prepare the CBW and relevant field */
-        msc->bot.cbw.field.dCBWDataTransferLength = XFER_LEN_MODE_SENSE6;
-        msc->bot.cbw.field.bmCBWFlags = USB_TRX_IN;
-        msc->bot.cbw.field.bCBWCBLength = CBW_LENGTH;
+        msc->bbb.cbw.field.dCBWDataTransferLength = XFER_LEN_MODE_SENSE6;
+        msc->bbb.cbw.field.bmCBWFlags = USB_TRX_IN;
+        msc->bbb.cbw.field.bCBWCBLength = CBW_LENGTH;
 
-        memset(msc->bot.cbw.field.CBWCB, 0U, CBW_CB_LENGTH);
+        memset(msc->bbb.cbw.field.CBWCB, 0U, CBW_CB_LENGTH);
 
-        msc->bot.cbw.field.CBWCB[0] = SCSI_MODE_SENSE6; 
-        msc->bot.cbw.field.CBWCB[2] = MODE_SENSE_PAGE_CONTROL_FIELD | MODE_SENSE_PAGE_CODE;
-        msc->bot.cbw.field.CBWCB[4] = XFER_LEN_MODE_SENSE6;
-        msc->bot.state = BBB_SEND_CBW;
-        msc->bot.cmd_state = BBB_CMD_WAIT;
-        msc->bot.pbuf = (uint8_t *)(void *)msc->bot.data;
+        msc->bbb.cbw.field.CBWCB[0] = SCSI_MODE_SENSE6; 
+        msc->bbb.cbw.field.CBWCB[2] = MODE_SENSE_PAGE_CONTROL_FIELD | MODE_SENSE_PAGE_CODE;
+        msc->bbb.cbw.field.CBWCB[4] = XFER_LEN_MODE_SENSE6;
+        msc->bbb.state = BBB_SEND_CBW;
+        msc->bbb.cmd_state = BBB_CMD_WAIT;
+        msc->bbb.pbuf = (uint8_t *)(void *)msc->bbb.data;
 
         status = USBH_BUSY;
         break;
@@ -226,7 +227,7 @@ usbh_status usbh_msc_mode_sense6 (usbh_host *uhost, uint8_t lun)
         status = usbh_msc_bbb_process(uhost, lun);
 
         if (USBH_OK == status) {
-            if (msc->bot.data[2] & MASK_MODE_SENSE_WRITE_PROTECT) {
+            if (msc->bbb.data[2] & MASK_MODE_SENSE_WRITE_PROTECT) {
 
             } else {
 
@@ -255,22 +256,22 @@ usbh_status usbh_msc_request_sense (usbh_host *uhost, uint8_t lun, msc_scsi_sens
     usbh_status status = USBH_FAIL;
     usbh_msc_handler *msc = (usbh_msc_handler *)uhost->active_class->class_data;
 
-    switch (msc->bot.cmd_state) {
+    switch (msc->bbb.cmd_state) {
     case BBB_CMD_SEND:
         /* prepare the cbw and relevant field */
-        msc->bot.cbw.field.dCBWDataTransferLength = ALLOCATION_LENGTH_REQUEST_SENSE;
-        msc->bot.cbw.field.bmCBWFlags = USB_TRX_IN;
-        msc->bot.cbw.field.bCBWCBLength = CBW_LENGTH;
+        msc->bbb.cbw.field.dCBWDataTransferLength = ALLOCATION_LENGTH_REQUEST_SENSE;
+        msc->bbb.cbw.field.bmCBWFlags = USB_TRX_IN;
+        msc->bbb.cbw.field.bCBWCBLength = CBW_LENGTH;
 
-        memset(msc->bot.cbw.field.CBWCB, 0U, CBW_CB_LENGTH);
+        memset(msc->bbb.cbw.field.CBWCB, 0U, CBW_CB_LENGTH);
 
-        msc->bot.cbw.field.CBWCB[0] = SCSI_REQUEST_SENSE; 
-        msc->bot.cbw.field.CBWCB[1] = (lun << 5U);
-        msc->bot.cbw.field.CBWCB[4] = ALLOCATION_LENGTH_REQUEST_SENSE;
+        msc->bbb.cbw.field.CBWCB[0] = SCSI_REQUEST_SENSE; 
+        msc->bbb.cbw.field.CBWCB[1] = (lun << 5U);
+        msc->bbb.cbw.field.CBWCB[4] = ALLOCATION_LENGTH_REQUEST_SENSE;
 
-        msc->bot.state = BBB_SEND_CBW;
-        msc->bot.cmd_state = BBB_CMD_WAIT;
-        msc->bot.pbuf = (uint8_t *)(void *)msc->bot.data;
+        msc->bbb.state = BBB_SEND_CBW;
+        msc->bbb.cmd_state = BBB_CMD_WAIT;
+        msc->bbb.pbuf = (uint8_t *)(void *)msc->bbb.data;
 
         status = USBH_BUSY;
         break;
@@ -280,9 +281,9 @@ usbh_status usbh_msc_request_sense (usbh_host *uhost, uint8_t lun, msc_scsi_sens
 
         if (status == USBH_OK) {
             /* get sense data */
-            sense_data->SenseKey = msc->bot.pbuf[2] & 0x0FU;
-            sense_data->ASC = msc->bot.pbuf[12];
-            sense_data->ASCQ = msc->bot.pbuf[13];
+            sense_data->SenseKey = msc->bbb.pbuf[2] & 0x0FU;
+            sense_data->ASC = msc->bbb.pbuf[12];
+            sense_data->ASCQ = msc->bbb.pbuf[13];
         }
         break;
 
@@ -308,29 +309,29 @@ usbh_status usbh_msc_write10 (usbh_host *uhost, uint8_t lun, uint8_t *data_buf, 
     usbh_status status = USBH_FAIL;
     usbh_msc_handler *msc = (usbh_msc_handler *)uhost->active_class->class_data;
 
-    switch (msc->bot.cmd_state) {
+    switch (msc->bbb.cmd_state) {
     case BBB_CMD_SEND:
-        msc->bot.cbw.field.dCBWDataTransferLength = sector_num * msc->unit[lun].capacity.block_size;
-        msc->bot.cbw.field.bmCBWFlags = USB_TRX_OUT;
-        msc->bot.cbw.field.bCBWCBLength = CBW_LENGTH;
+        msc->bbb.cbw.field.dCBWDataTransferLength = sector_num * msc->unit[lun].capacity.block_size;
+        msc->bbb.cbw.field.bmCBWFlags = USB_TRX_OUT;
+        msc->bbb.cbw.field.bCBWCBLength = CBW_LENGTH;
 
-        memset(msc->bot.cbw.field.CBWCB, 0U, CBW_CB_LENGTH);
+        memset(msc->bbb.cbw.field.CBWCB, 0U, CBW_CB_LENGTH);
 
-        msc->bot.cbw.field.CBWCB[0] = SCSI_WRITE10; 
+        msc->bbb.cbw.field.CBWCB[0] = SCSI_WRITE10; 
 
         /* logical block address */
-        msc->bot.cbw.field.CBWCB[2] = (((uint8_t*)&addr)[3]);
-        msc->bot.cbw.field.CBWCB[3] = (((uint8_t*)&addr)[2]);
-        msc->bot.cbw.field.CBWCB[4] = (((uint8_t*)&addr)[1]);
-        msc->bot.cbw.field.CBWCB[5] = (((uint8_t*)&addr)[0]);
+        msc->bbb.cbw.field.CBWCB[2] = (((uint8_t*)&addr)[3]);
+        msc->bbb.cbw.field.CBWCB[3] = (((uint8_t*)&addr)[2]);
+        msc->bbb.cbw.field.CBWCB[4] = (((uint8_t*)&addr)[1]);
+        msc->bbb.cbw.field.CBWCB[5] = (((uint8_t*)&addr)[0]);
 
         /* transfer length */
-        msc->bot.cbw.field.CBWCB[7] = (((uint8_t *)&sector_num)[1]);
-        msc->bot.cbw.field.CBWCB[8] = (((uint8_t *)&sector_num)[0]);
+        msc->bbb.cbw.field.CBWCB[7] = (((uint8_t *)&sector_num)[1]);
+        msc->bbb.cbw.field.CBWCB[8] = (((uint8_t *)&sector_num)[0]);
 
-        msc->bot.state = BBB_SEND_CBW;
-        msc->bot.cmd_state = BBB_CMD_WAIT;
-        msc->bot.pbuf = data_buf;
+        msc->bbb.state = BBB_SEND_CBW;
+        msc->bbb.cmd_state = BBB_CMD_WAIT;
+        msc->bbb.pbuf = data_buf;
 
         status = USBH_BUSY;
         break;
@@ -361,30 +362,30 @@ usbh_status usbh_msc_read10 (usbh_host *uhost, uint8_t lun, uint8_t *data_buf, u
     usbh_status status = USBH_FAIL;
     usbh_msc_handler *msc = (usbh_msc_handler *)uhost->active_class->class_data;
 
-    switch (msc->bot.cmd_state) {
+    switch (msc->bbb.cmd_state) {
     case BBB_CMD_SEND:
         /* prepare the CBW and relevant field */
-        msc->bot.cbw.field.dCBWDataTransferLength = sector_num * msc->unit[lun].capacity.block_size;
-        msc->bot.cbw.field.bmCBWFlags = USB_TRX_IN;
-        msc->bot.cbw.field.bCBWCBLength = CBW_LENGTH;
+        msc->bbb.cbw.field.dCBWDataTransferLength = sector_num * msc->unit[lun].capacity.block_size;
+        msc->bbb.cbw.field.bmCBWFlags = USB_TRX_IN;
+        msc->bbb.cbw.field.bCBWCBLength = CBW_LENGTH;
 
-        memset(msc->bot.cbw.field.CBWCB, 0U, CBW_CB_LENGTH);
+        memset(msc->bbb.cbw.field.CBWCB, 0U, CBW_CB_LENGTH);
 
-        msc->bot.cbw.field.CBWCB[0] = SCSI_READ10; 
+        msc->bbb.cbw.field.CBWCB[0] = SCSI_READ10; 
 
         /* logical block address */
-        msc->bot.cbw.field.CBWCB[2] = (((uint8_t*)&addr)[3]);
-        msc->bot.cbw.field.CBWCB[3] = (((uint8_t*)&addr)[2]);
-        msc->bot.cbw.field.CBWCB[4] = (((uint8_t*)&addr)[1]);
-        msc->bot.cbw.field.CBWCB[5] = (((uint8_t*)&addr)[0]);
+        msc->bbb.cbw.field.CBWCB[2] = (((uint8_t*)&addr)[3]);
+        msc->bbb.cbw.field.CBWCB[3] = (((uint8_t*)&addr)[2]);
+        msc->bbb.cbw.field.CBWCB[4] = (((uint8_t*)&addr)[1]);
+        msc->bbb.cbw.field.CBWCB[5] = (((uint8_t*)&addr)[0]);
 
         /* transfer length */
-        msc->bot.cbw.field.CBWCB[7] = (((uint8_t *)&sector_num)[1]);
-        msc->bot.cbw.field.CBWCB[8] = (((uint8_t *)&sector_num)[0]);
+        msc->bbb.cbw.field.CBWCB[7] = (((uint8_t *)&sector_num)[1]);
+        msc->bbb.cbw.field.CBWCB[8] = (((uint8_t *)&sector_num)[0]);
 
-        msc->bot.state = BBB_SEND_CBW;
-        msc->bot.cmd_state = BBB_CMD_WAIT;
-        msc->bot.pbuf = data_buf;
+        msc->bbb.state = BBB_SEND_CBW;
+        msc->bbb.cmd_state = BBB_CMD_WAIT;
+        msc->bbb.pbuf = data_buf;
 
         status = USBH_BUSY;
         break;

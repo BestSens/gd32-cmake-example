@@ -101,6 +101,7 @@ void i2c_bus_reset(void)
     __NOP();
     __NOP();
     __NOP();
+    /* stop signal */
     GPIO_BOP(I2C_SCL_PORT) |= I2C_SCL_PIN;
     __NOP();
     __NOP();

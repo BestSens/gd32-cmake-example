@@ -90,7 +90,7 @@ uint8_t i2c_24c02_test(void)
     \param[out] none
     \retval     none
 */
-void i2c_eeprom_init()
+void i2c_eeprom_init(void)
 {
     eeprom_address = EEPROM_BLOCK0_ADDRESS;
 }
@@ -108,6 +108,8 @@ uint8_t eeprom_byte_write_timeout(uint8_t *p_buffer, uint8_t write_address)
     uint16_t timeout = 0;
     uint8_t i2c_timeout_flag = 0;
 
+    /* enable acknowledge */
+    i2c_ack_config(I2CX, I2C_ACK_ENABLE);
     while(!(i2c_timeout_flag)) {
         switch(state) {
         case I2C_START:
@@ -223,6 +225,7 @@ uint8_t eeprom_byte_write_timeout(uint8_t *p_buffer, uint8_t write_address)
     }
     return I2C_END;
 }
+
 /*!
     \brief      write more than one byte to the EEPROM with a single write cycle
     \param[in]  p_buffer: pointer to the buffer containing the data to be written to the EEPROM
@@ -237,6 +240,8 @@ uint8_t eeprom_page_write_timeout(uint8_t *p_buffer, uint8_t write_address, uint
     uint16_t timeout = 0;
     uint8_t i2c_timeout_flag = 0;
 
+    /* enable acknowledge */
+    i2c_ack_config(I2CX, I2C_ACK_ENABLE);
     while(!(i2c_timeout_flag)) {
         switch(state) {
         case I2C_START:
@@ -432,6 +437,8 @@ uint8_t eeprom_buffer_read_timeout(uint8_t *p_buffer, uint8_t read_address, uint
     uint16_t timeout = 0;
     uint8_t i2c_timeout_flag = 0;
 
+    /* enable acknowledge */
+    i2c_ack_config(I2CX, I2C_ACK_ENABLE);
     while(!(i2c_timeout_flag)) {
         switch(state) {
         case I2C_START:
