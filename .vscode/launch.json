@@ -1,0 +1,25 @@
+{
+	// Verwendet IntelliSense zum Ermitteln möglicher Attribute.
+	// Zeigen Sie auf vorhandene Attribute, um die zugehörigen Beschreibungen anzuzeigen.
+	// Weitere Informationen finden Sie unter https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"cwd": "${workspaceFolder}",
+			"executable": "${command:cmake.launchTargetPath}",
+			"name": "Debug with OpenOCD",
+			"request": "launch",
+			"type": "cortex-debug",
+			"runToEntryPoint": "main",
+			"showDevDebugOutput": "none",
+			"servertype": "openocd",
+			"svdFile": "OpenOCD/GD32F4xx.svd",
+			"configFiles": [
+				"gd32f450_jlink.cfg"
+			],
+			"searchDir": [
+				"${workspaceFolder}/OpenOCD"
+			]
+		}
+	]
+}

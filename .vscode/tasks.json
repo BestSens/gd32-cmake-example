@@ -1,0 +1,36 @@
+{
+	// See https://go.microsoft.com/fwlink/?LinkId=733558
+	// for the documentation about the tasks.json format
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Flash µC",
+			"type": "shell",
+			"options": {
+				"cwd": "${command:cmake.launchTargetDirectory}"
+			},
+			"command": "& openocd -s '${workspaceFolder}/OpenOCD/' -f gd32f450_jlink.cfg -c 'init; reset halt; flash write_image erase ${command:cmake.launchTargetFilename}; reset; exit'",
+			"problemMatcher": []
+		},
+		{
+			"label": "Reset µC",
+			"type": "shell",
+			"command": "& openocd -s '${workspaceFolder}/OpenOCD/' -f gd32f450_jlink.cfg -c 'init; reset; exit'",
+			"problemMatcher": []
+		},
+		{
+			"label": "Mass-Erase µC",
+			"type": "shell",
+			"command": "& openocd -s '${workspaceFolder}/OpenOCD/' -f gd32f450_jlink.cfg -c 'init; reset halt; stm32f4x mass_erase 0; exit'",
+			"problemMatcher": []
+		},
+		{
+			"label": "OpenOCD server",
+			"type": "shell",
+			"command":[
+				"& openocd -s '${workspaceFolder}/OpenOCD/' -f gd32f450_jlink.cfg"
+			],
+			"problemMatcher": []
+		},
+	]
+}
