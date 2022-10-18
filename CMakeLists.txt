@@ -68,4 +68,6 @@ add_link_options(
 	-T${PROJECT_SOURCE_DIR}/gd32f450.ld
 )
 
+set(CMAKE_EXECUTABLE_SUFFIX .elf)
+
 add_subdirectory(Examples)
