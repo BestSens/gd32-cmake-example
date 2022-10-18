@@ -16,6 +16,7 @@ add_executable(${EXEC_NAME}
 	src/hello_gigadevice.c
 	src/main.c
 	src/netconf.c
+	${CMAKE_SOURCE_DIR}/Retarget/retarget.c
 )
 
 target_include_directories(${EXEC_NAME} PRIVATE

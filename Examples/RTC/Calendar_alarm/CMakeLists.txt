@@ -5,6 +5,7 @@ include(example_set_name)
 add_executable(${EXEC_NAME}
 	gd32f4xx_it.c
 	main.c
+	${CMAKE_SOURCE_DIR}/Retarget/retarget.c
 )
 
 target_include_directories(${EXEC_NAME} PRIVATE

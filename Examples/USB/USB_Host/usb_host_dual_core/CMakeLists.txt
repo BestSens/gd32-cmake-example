@@ -19,6 +19,7 @@ add_executable(${EXEC_NAME}
 	src/system_gd32f4xx.c
 	src/usbh_hid_usr.c
 	src/usbh_msc_usr.c
+	${CMAKE_SOURCE_DIR}/Retarget/retarget.c
 )
 
 target_include_directories(${EXEC_NAME} PRIVATE

@@ -8,6 +8,7 @@ add_executable(${EXEC_NAME}
 	i2c.c
 	main.c
 	systick.c
+	${CMAKE_SOURCE_DIR}/Retarget/retarget.c
 )
 
 target_include_directories(${EXEC_NAME} PRIVATE
