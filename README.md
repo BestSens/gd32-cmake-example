@@ -27,7 +27,7 @@ cmake --build .\build\ --config Release --target Running_led.bin
 ```
 
 ## OpenOCD
-This project also contains OpenOCD configuration files to access the GD32F450 via J-Link or JTAG over an Altera USB-Blaster. These configuration files can easily be changed for the used interface.
+This project also contains OpenOCD configuration files to access the GD32F450 via a standard CMSIS-DAP interface (the GD-Link one on the GD32450i-EVAL), J-Link or JTAG over an Altera USB-Blaster. These configuration files can easily be changed for the used interface.
 
 The `.vscode/tasks.json` also contains examples of how to use OpenOCD to flash or erase the target. Tested with OpenOCD 0.11.0.
 

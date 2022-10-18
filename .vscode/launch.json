@@ -15,7 +15,7 @@
 			"servertype": "openocd",
 			"svdFile": "OpenOCD/GD32F4xx.svd",
 			"configFiles": [
-				"gd32f450_jlink.cfg"
+				"gd32f450_cmsis_dap.cfg"
 			],
 			"searchDir": [
 				"${workspaceFolder}/OpenOCD"
