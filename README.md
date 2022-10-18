@@ -29,7 +29,7 @@ cmake --build .\build\ --config Release --target Running_led.bin
 ## OpenOCD
 This project also contains OpenOCD configuration files to access the GD32F450 via J-Link or JTAG over an Altera USB-Blaster. These configuration files can easily be changed for the used interface.
 
-The '.vscode/tasks.json' also contains examples of how to use OpenOCD to flash or erase the target. Tested with OpenOCD 0.11.0.
+The `*.vscode/tasks.json` also contains examples of how to use OpenOCD to flash or erase the target. Tested with OpenOCD 0.11.0.
 
 **The GD32F450 configuration file is using the stm32f4x driver for accessing the on-board flash. As STM32 devices have a maximum of 2048 KB of flash, I needed to override this size. This is somewhat working but page sizes are wrong starting at offset 1020 KB. So OpenOCD may delete wrong pages eg. may delete not enough so data written is corrupt. Should be fine when only using the first 1024 KB of flash.**
 
