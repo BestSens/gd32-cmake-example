@@ -63,7 +63,8 @@ static const uint8_t USB_SPEED[4] = {
 void usbd_isr (usb_core_driver *udev)
 {
     if (HOST_MODE != (udev->regs.gr->GINTF & GINTF_COPM)) {
-        uint32_t intr = udev->regs.gr->GINTF & udev->regs.gr->GINTEN;
+        uint32_t intr = udev->regs.gr->GINTF;
+        intr &= udev->regs.gr->GINTEN;
 
         /* there are no interrupts, avoid spurious interrupt */
         if (!intr) {

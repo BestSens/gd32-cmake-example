@@ -262,7 +262,7 @@ typedef struct _usb_host_drv
 {
     __IO uint32_t            connect_status;
     __IO uint32_t            port_enabled;
-    __IO uint32_t            backup_xfercount[USBFS_MAX_TX_FIFOS];
+    uint32_t                 backup_xfercount[USBFS_MAX_TX_FIFOS];
 
     usb_pipe                 pipe[USBFS_MAX_TX_FIFOS];
     void                    *data;
@@ -294,7 +294,11 @@ typedef struct _usb_core_driver
 */
 __STATIC_INLINE uint32_t usb_coreintr_get(usb_core_regs *usb_regs)
 {
-    return usb_regs->gr->GINTEN & usb_regs->gr->GINTF;
+    uint32_t reg_data = usb_regs->gr->GINTEN;
+    
+    reg_data &= usb_regs->gr->GINTF;
+    
+    return reg_data;
 }
 
 /*!

@@ -274,7 +274,8 @@ static uint32_t usbh_int_pipe_in (usb_core_driver *udev, uint32_t pp_num)
 
     usb_pipe *pp = &udev->host.pipe[pp_num];
 
-    __IO uint32_t intr_pp = pp_reg->HCHINTF & pp_reg->HCHINTEN;
+    uint32_t intr_pp = pp_reg->HCHINTF;
+    intr_pp &= pp_reg->HCHINTEN;
 
     uint8_t ep_type = (uint8_t)((pp_reg->HCHCTL & HCHCTL_EPTYPE) >> 18U);
 
@@ -404,7 +405,8 @@ static uint32_t usbh_int_pipe_out (usb_core_driver *udev, uint32_t pp_num)
     usbh_host *uhost = udev->host.data;
     usb_pr *pp_reg = udev->regs.pr[pp_num];
     usb_pipe *pp = &udev->host.pipe[pp_num];
-    uint32_t intr_pp = pp_reg->HCHINTF & pp_reg->HCHINTEN;
+    uint32_t intr_pp = pp_reg->HCHINTF;
+    intr_pp &= pp_reg->HCHINTEN;
 
     if (intr_pp & HCHINTF_ACK) {
         if (1U == udev->host.pipe[pp_num].do_ping) {
@@ -506,7 +508,7 @@ static uint32_t usbh_int_pipe_out (usb_core_driver *udev, uint32_t pp_num)
 #endif /* __ICCARM */
 static uint32_t usbh_int_rxfifonoempty (usb_core_driver *udev)
 {
-    uint32_t count = 0U;
+    uint32_t count = 0U, xfer_count = 0U;
 
     __IO uint8_t pp_num = 0U;
     __IO uint32_t rx_stat = 0U;
@@ -528,12 +530,14 @@ static uint32_t usbh_int_rxfifonoempty (usb_core_driver *udev)
             /* manage multiple transfer packet */
             udev->host.pipe[pp_num].xfer_buf += count;
             udev->host.pipe[pp_num].xfer_count += count;
+            
+            xfer_count = udev->host.pipe[pp_num].xfer_count;
 
-            udev->host.backup_xfercount[pp_num] = udev->host.pipe[pp_num].xfer_count;
+            udev->host.backup_xfercount[pp_num] = xfer_count;
 
             if (udev->regs.pr[pp_num]->HCHLEN & HCHLEN_PCNT) {
                 /* re-activate the channel when more packets are expected */
-                __IO uint32_t pp_ctl = udev->regs.pr[pp_num]->HCHCTL;
+                uint32_t pp_ctl = udev->regs.pr[pp_num]->HCHCTL;
 
                 pp_ctl |= HCHCTL_CEN;
                 pp_ctl &= ~HCHCTL_CDIS;

@@ -53,6 +53,7 @@ int main(void)
 {
     app_func application;
     uint32_t app_address;
+    uint32_t sram_sect = REG32(APP_LOADED_ADDR);
 
     /* configure Tamper key to run firmware */
     gd_eval_key_init(KEY_TAMPER, KEY_MODE_GPIO);
@@ -60,7 +61,7 @@ int main(void)
     /* tamper key must be pressed on GD32450i-EVAL when power on */
     if (0U != gd_eval_key_state_get(KEY_TAMPER)) {
         /* test if user code is programmed starting from address APP_LOADED_ADDR */
-        if((REG32(APP_LOADED_ADDR) >= SRAM_BASE_ADDR) && (REG32(APP_LOADED_ADDR) < SRAM_END_ADDR)){
+        if((sram_sect >= SRAM_BASE_ADDR) && (sram_sect < SRAM_END_ADDR)){
             app_address = *(__IO uint32_t*) (APP_LOADED_ADDR + 4U);
             application = (app_func) app_address;
 

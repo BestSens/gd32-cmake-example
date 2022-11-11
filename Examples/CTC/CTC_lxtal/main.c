@@ -48,37 +48,35 @@ void ctc_config(void);
 */
 int main(void)
 {
-    /* init led1*/
+    /* initilize LED1 */
     gd_eval_led_init(LED1);
 
     /* enable IRC48M clock */
-    RCU_ADDCTL |= RCU_ADDCTL_IRC48MEN; 
-    /* wait till IRC48M is ready */
-    while((RCU_ADDCTL & RCU_ADDCTL_IRC48MSTB) == 0)
-    {
+    rcu_osci_on(RCU_IRC48M);
+    /* wait until IRC48M is ready */
+    while(ERROR == rcu_osci_stab_wait(RCU_IRC48M)) {
     }
 
-    /* LXTAL clock config */
+    /* configure LXTAL clock */
     rcu_periph_clock_enable(RCU_PMU);
     pmu_backup_write_enable();
 
     /* enable LXTAL clock */
-    RCU_BDCTL |= RCU_BDCTL_LXTALEN;
-    /* wait till LXTAL is ready */
-    while((RCU_BDCTL & RCU_BDCTL_LXTALSTB) == 0){
+    rcu_osci_on(RCU_LXTAL);
+    /* wait until LXTAL is ready */
+    while(ERROR == rcu_osci_stab_wait(RCU_LXTAL)) {
     }
     rcu_ckout0_config(RCU_CKOUT0SRC_LXTAL,RCU_CKOUT0_DIV1);
 
-    /* CTC peripheral clock enable */
-    rcu_periph_clock_enable(RCU_CTC);
-    /* CTC config */
+
+    /* configure CTC */
     ctc_config();
 
     while(1){
         /* if the clock trim is OK */
-        if(ctc_flag_get(CTC_FLAG_CKOK) != RESET){
+        if(ctc_flag_get(CTC_FLAG_CKOK) != RESET) {
             gd_eval_led_on(LED1);
-        }else{
+        }else {
             gd_eval_led_off(LED1);
         }
     }
@@ -92,20 +90,22 @@ int main(void)
 */
 void ctc_config(void)
 {
-    /* config CTC reference signal source prescaler */
+    /* CTC peripheral clock enable */
+    rcu_periph_clock_enable(RCU_CTC);
+    /* configure CTC reference signal source prescaler */
     ctc_refsource_prescaler_config(CTC_REFSOURCE_PSC_OFF);
     /* select reference signal source */
     ctc_refsource_signal_select(CTC_REFSOURCE_LXTAL);
     /* select reference signal source polarity */
     ctc_refsource_polarity_config(CTC_REFSOURCE_POLARITY_RISING);
-    /* config hardware automatically trim mode */
+    /* configure hardware automatically trim mode */
     ctc_hardware_trim_mode_config(CTC_HARDWARE_TRIM_MODE_ENABLE);
     
-    /* config CTC counter reload value */
+    /* configure CTC counter reload value */
     ctc_counter_reload_value_config(0x05B8);
-    /* config clock trim base limit value */
+    /* configure clock trim base limit value */
     ctc_clock_limit_value_config(0x0002);
 
-    /* CTC counter enable */
+    /* enable CTC counter */
     ctc_counter_enable();
 }

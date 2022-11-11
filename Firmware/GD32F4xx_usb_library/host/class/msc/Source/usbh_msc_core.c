@@ -501,8 +501,8 @@ usbh_status usbh_msc_read (usbh_host *uhost,
     timeout = uhost->control.timer;
 
     while (USBH_BUSY == usbh_msc_rdwr_process(uhost, lun)) {
-        if (((uhost->control.timer > timeout) && ((uhost->control.timer - timeout) > (1000U * length))) \
-              || ((uhost->control.timer < timeout) && ((uhost->control.timer + 0x3FFFU - timeout) > (1000U * length))) \
+        if (((uhost->control.timer > timeout) && ((uhost->control.timer - timeout) > (10000U * length))) \
+              || ((uhost->control.timer < timeout) && ((uhost->control.timer + 0x3FFFU - timeout) > (10000U * length))) \
               || (0U == udev->host.connect_status)){
             msc->state = MSC_IDLE;
             return USBH_FAIL;
@@ -549,8 +549,8 @@ usbh_status usbh_msc_write (usbh_host *uhost,
     timeout = uhost->control.timer;
 
     while (USBH_BUSY == usbh_msc_rdwr_process(uhost, lun)) {
-        if (((uhost->control.timer > timeout) && ((uhost->control.timer - timeout) > (1000U * length))) \
-              || ((uhost->control.timer < timeout) && ((uhost->control.timer + 0x3FFFU - timeout) > (1000U * length))) \
+        if (((uhost->control.timer > timeout) && ((uhost->control.timer - timeout) > (10000U * length))) \
+              || ((uhost->control.timer < timeout) && ((uhost->control.timer + 0x3FFFU - timeout) > (10000U * length))) \
               || (0U == udev->host.connect_status)){
             msc->state = MSC_IDLE;
             return USBH_FAIL;

@@ -1,6 +1,6 @@
 /*!
     \file    readme.txt
-    \brief   description of the ADC TIMER trigger injected channel
+    \brief   ADC channel of temperature,Vref and Vbat
     
     \version 2016-08-15, V1.0.0, firmware for GD32F4xx
     \version 2018-12-12, V2.0.0, firmware for GD32F4xx
@@ -34,11 +34,9 @@ WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWIS
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
 OF SUCH DAMAGE.
 */
-
   This demo is based on the GD32450I-EVAL-V1.1, it shows how to 
 use the ADC to convert analog signal to digital data.The ADC is configured 
 in dependent mode, inner channel16(temperature sensor channel),channel17(VREF channel) 
 and channel18(VBAT/4 channel) are chosen as analog input pin.
-  As the AD convertion begins by software,the converted data in the ADC_IDTRx register
-,where the x is 0 to 2.
+  As the AD convertion begins by software.
   We can watch temperature, vref_value and vbat_value in debug mode or by COM.

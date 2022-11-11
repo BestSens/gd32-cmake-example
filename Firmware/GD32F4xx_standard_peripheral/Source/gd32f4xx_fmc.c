@@ -620,11 +620,7 @@ void ob_drp_enable(uint32_t ob_drp)
 
 /*!
     \brief    disable erase/program protection and D-bus read protection
-    \param[in]  ob_drp: disable the WPx bits used as erase/program protection and D-bus read protection of each sector
-                one or more parameters can be selected which are shown as below:
-      \arg        OB_DRP_x(x=0..22): sector x(x = 0,1,2...22)
-      \arg        OB_DRP_23_27: sector23~27
-      \arg        OB_DRP_ALL: all sector
+    \param[in]  none
     \param[out] none
     \retval     none
 */

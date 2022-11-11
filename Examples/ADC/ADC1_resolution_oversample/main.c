@@ -1,6 +1,6 @@
 /*!
     \file    main.c
-    \brief   ADC modresolution oversample
+    \brief   ADC1 resolution oversample
     
     \version 2016-08-15, V1.0.0, firmware for GD32F4xx
     \version 2018-12-12, V2.0.0, firmware for GD32F4xx
@@ -76,7 +76,7 @@ int main(void)
         adc_oversample_mode_disable(ADC1);
         /* 1 time sample */
         adc_enable(ADC1);
-        adc_software_trigger_enable(ADC1,ADC_REGULAR_CHANNEL);
+        adc_software_trigger_enable(ADC1,ADC_ROUTINE_CHANNEL);
         while(RESET == adc_flag_get(ADC1,ADC_FLAG_EOC));
         delay_1ms(500);
         printf(" 1 time sample,the data is %d\r\n",ADC_RDATA(ADC1));
@@ -86,7 +86,7 @@ int main(void)
         adc_oversample_mode_config(ADC1,ADC_OVERSAMPLING_ALL_CONVERT,ADC_OVERSAMPLING_SHIFT_NONE,ADC_OVERSAMPLING_RATIO_MUL16);
         adc_oversample_mode_enable(ADC1);
         adc_enable(ADC1);
-        adc_software_trigger_enable(ADC1,ADC_REGULAR_CHANNEL);
+        adc_software_trigger_enable(ADC1,ADC_ROUTINE_CHANNEL);
         while(RESET == adc_flag_get(ADC1,ADC_FLAG_EOC));
         delay_1ms(500);
         printf(" 16 times sample,no shift,the data is %d\r\n",ADC_RDATA(ADC1));
@@ -95,7 +95,7 @@ int main(void)
         /* 16 times sample ,4 bits shift */
         adc_oversample_mode_config(ADC1,ADC_OVERSAMPLING_ALL_CONVERT,ADC_OVERSAMPLING_SHIFT_4B,ADC_OVERSAMPLING_RATIO_MUL16);
         adc_enable(ADC1);
-        adc_software_trigger_enable(ADC1,ADC_REGULAR_CHANNEL);
+        adc_software_trigger_enable(ADC1,ADC_ROUTINE_CHANNEL);
         while(RESET == adc_flag_get(ADC1,ADC_FLAG_EOC));
         delay_1ms(500);
         printf(" 16 times sample,4 bits shift,the data is %d\r\n",ADC_RDATA(ADC1));
@@ -108,7 +108,7 @@ int main(void)
         adc_oversample_mode_disable(ADC1);
         /* 1 time sample */
         adc_enable(ADC1);
-        adc_software_trigger_enable(ADC1,ADC_REGULAR_CHANNEL);
+        adc_software_trigger_enable(ADC1,ADC_ROUTINE_CHANNEL);
         while(RESET == adc_flag_get(ADC1,ADC_FLAG_EOC));
         delay_1ms(500);
         printf(" 1 time sample,the data is %d\r\n",ADC_RDATA(ADC1));
@@ -118,7 +118,7 @@ int main(void)
         adc_oversample_mode_config(ADC1,ADC_OVERSAMPLING_ALL_CONVERT,ADC_OVERSAMPLING_SHIFT_NONE,ADC_OVERSAMPLING_RATIO_MUL16);
         adc_oversample_mode_enable(ADC1);
         adc_enable(ADC1);
-        adc_software_trigger_enable(ADC1,ADC_REGULAR_CHANNEL);
+        adc_software_trigger_enable(ADC1,ADC_ROUTINE_CHANNEL);
         while(RESET == adc_flag_get(ADC1,ADC_FLAG_EOC));
         delay_1ms(500);
         printf(" 16 times sample,no shift,the data is %d\r\n",ADC_RDATA(ADC1));
@@ -127,7 +127,7 @@ int main(void)
         /* 16 times sample ,4 bits shift */
         adc_oversample_mode_config(ADC1,ADC_OVERSAMPLING_ALL_CONVERT,ADC_OVERSAMPLING_SHIFT_4B,ADC_OVERSAMPLING_RATIO_MUL16);
         adc_enable(ADC1);
-        adc_software_trigger_enable(ADC1,ADC_REGULAR_CHANNEL);
+        adc_software_trigger_enable(ADC1,ADC_ROUTINE_CHANNEL);
         while(RESET == adc_flag_get(ADC1,ADC_FLAG_EOC));
         delay_1ms(500);
         printf(" 16 times sample,4 bits shift,the data is %d\r\n",ADC_RDATA(ADC1));
@@ -172,12 +172,12 @@ void gpio_config(void)
 void adc_config(void)
 {
     /* ADC channel length config */
-    adc_channel_length_config(ADC1,ADC_REGULAR_CHANNEL,1);
-    /* ADC regular channel config */
-    adc_regular_channel_config(ADC1,0,BOARD_ADC_CHANNEL,ADC_SAMPLETIME_56);
+    adc_channel_length_config(ADC1,ADC_ROUTINE_CHANNEL,1);
+    /* ADC routine channel config */
+    adc_routine_channel_config(ADC1,0,BOARD_ADC_CHANNEL,ADC_SAMPLETIME_56);
 
     /* ADC external trigger enable */
-    adc_external_trigger_config(ADC1,ADC_REGULAR_CHANNEL,EXTERNAL_TRIGGER_DISABLE);
+    adc_external_trigger_config(ADC1,ADC_ROUTINE_CHANNEL,EXTERNAL_TRIGGER_DISABLE);
     /* ADC data alignment config */
     adc_data_alignment_config(ADC1,ADC_DATAALIGN_RIGHT);
     /* enable ADC interface */

@@ -152,7 +152,7 @@ void ADC_IRQHandler(void)
     uint16_t adc_value;
     if(adc_interrupt_flag_get(ADC0, ADC_INT_FLAG_EOC)){
         adc_interrupt_flag_clear(ADC0, ADC_INT_FLAG_EOC);
-        adc_value = adc_regular_data_read(ADC0);
+        adc_value = adc_routine_data_read(ADC0);
         
         dac_data_set(DAC0, DAC_ALIGN_12B_R, adc_value);
         

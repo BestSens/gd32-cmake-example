@@ -1,6 +1,6 @@
 /*!
     \file    readme.txt
-    \brief   description of the ADC modify resolution and oversample
+    \brief   description of the ADC1_resolution_oversample
     
     \version 2016-08-15, V1.0.0, firmware for GD32F4xx
     \version 2018-12-12, V2.0.0, firmware for GD32F4xx

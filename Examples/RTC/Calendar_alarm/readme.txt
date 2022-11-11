@@ -43,9 +43,9 @@ time and generate an alarm interrupt.
 define in main file. And the HyperTerminal should be connected to the evaluation 
 board via USART. The vbat bin on the board should connect to the CR1220 battery.
   
-  After start-up, the program check if the BKP data register is written to a key 
-value. If the value is not correct, the program will ask to set the time and alarm
-value on the HyperTerminal. If the key value is correct, the time and alarm value
+  After start-up,get key value from BKP data register or bit RTCSRC of backup domain 
+control register. If the value is not correct, the program will ask to set the time and 
+alarm value on the HyperTerminal. If the key value is correct, the time and alarm value
 will be displayed on the HyperTerminal. Also the demo shows how to get the cuurent 
 subsecond value and convert it into fractional format.
   

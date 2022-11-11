@@ -48,13 +48,13 @@ void ctc_config(void);
 */
 int main(void)
 {
-    /* init led1*/
+    /* initilize LED1 */
     gd_eval_led_init(LED1);
 
     /* enable IRC48M clock */
-    RCU_ADDCTL |= RCU_ADDCTL_IRC48MEN; 
-    /* wait till IRC48M is ready */
-    while((RCU_ADDCTL & RCU_ADDCTL_IRC48MSTB) == 0){
+    rcu_osci_on(RCU_IRC48M);
+    /* wait until IRC48M is ready */
+    while(ERROR == rcu_osci_stab_wait(RCU_IRC48M)) {
     }
 
     /* configure PA8 as external reference signal source input with 32khz */
@@ -63,14 +63,12 @@ int main(void)
     gpio_mode_set(GPIOA, GPIO_MODE_AF, GPIO_PUPD_PULLDOWN, GPIO_PIN_8);
     gpio_output_options_set(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_25MHZ, GPIO_PIN_8);
 
-    /* CTC peripheral clock enable */
-    rcu_periph_clock_enable(RCU_CTC);
-    /* CTC config */
+    /* configure CTC */
     ctc_config();
 
     while(1){
         /* if the clock trim is OK */
-        if(ctc_flag_get(CTC_FLAG_CKOK) != RESET){
+        if(ctc_flag_get(CTC_FLAG_CKOK) != RESET) {
             gd_eval_led_on(LED1);
         }else{
             gd_eval_led_off(LED1);
@@ -86,20 +84,22 @@ int main(void)
 */
 void ctc_config(void)
 {
-    /* config CTC reference signal source prescaler */
+    /* CTC peripheral clock enable */
+    rcu_periph_clock_enable(RCU_CTC);
+    /* configure CTC reference signal source prescaler */
     ctc_refsource_prescaler_config(CTC_REFSOURCE_PSC_DIV32);
     /* select reference signal source */
     ctc_refsource_signal_select(CTC_REFSOURCE_GPIO);
     /* select reference signal source polarity */
     ctc_refsource_polarity_config(CTC_REFSOURCE_POLARITY_RISING);
-    /* config hardware automatically trim mode */
+    /* configure hardware automatically trim mode */
     ctc_hardware_trim_mode_config(CTC_HARDWARE_TRIM_MODE_ENABLE);
     
-    /* config CTC counter reload value */
+    /* configure CTC counter reload value */
     ctc_counter_reload_value_config(0xBB7F);
-    /* config clock trim base limit value */
+    /* configure clock trim base limit value */
     ctc_clock_limit_value_config(0x1D);
 
-    /* CTC counter enable */
+    /* enable CTC counter */
     ctc_counter_enable();
 }

@@ -215,6 +215,8 @@ usb_status usb_devint_enable (usb_core_driver *udev)
 usb_status usb_transc0_active (usb_core_driver *udev, usb_transc *transc)
 {
     __IO uint32_t *reg_addr = NULL;
+    
+    uint8_t enum_speed = udev->regs.dr->DSTAT & DSTAT_ES;
 
     /* get the endpoint number */
     uint8_t ep_num = transc->ep_addr.num;
@@ -234,7 +236,7 @@ usb_status usb_transc0_active (usb_core_driver *udev, usb_transc *transc)
     *reg_addr &= ~(DEPCTL_MPL | DEPCTL_EPTYPE | DIEPCTL_TXFNUM);
 
     /* set endpoint 0 maximum packet length */
-    *reg_addr |= EP0_MAXLEN[udev->regs.dr->DSTAT & DSTAT_ES];
+    *reg_addr |= EP0_MAXLEN[enum_speed];
 
     /* activate endpoint */
     *reg_addr |= ((uint32_t)transc->ep_type << 18U) | ((uint32_t)ep_num << 22U) | DEPCTL_SD0PID | DEPCTL_EPACT;
@@ -252,7 +254,8 @@ usb_status usb_transc0_active (usb_core_driver *udev, usb_transc *transc)
 usb_status usb_transc_active (usb_core_driver *udev, usb_transc *transc)
 {
     __IO uint32_t *reg_addr = NULL;
-    __IO uint32_t epinten = 0U;
+    uint32_t epinten = 0U;
+    uint8_t enum_speed = udev->regs.dr->DSTAT & DSTAT_ES;
 
     /* get the endpoint number */
     uint8_t ep_num = transc->ep_addr.num;
@@ -274,7 +277,7 @@ usb_status usb_transc_active (usb_core_driver *udev, usb_transc *transc)
 
         /* set endpoint maximum packet length */
         if (0U == ep_num) {
-            *reg_addr |= EP0_MAXLEN[udev->regs.dr->DSTAT & DSTAT_ES];
+            *reg_addr |= EP0_MAXLEN[enum_speed];
         } else {
             *reg_addr |= transc->max_len;
         }

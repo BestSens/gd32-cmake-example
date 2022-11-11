@@ -68,6 +68,8 @@ int main(void)
 
     flag = Flash_Data[0];
 
+    (void)flag;
+
     while (1) {
     }
 }

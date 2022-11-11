@@ -44,9 +44,9 @@ define in main file. And the HyperTerminal should be connected to the evaluation
 board via USART. The vbat bin on the board should connect to the CR1220 battery.
 The tamper key is the timestamp pin.
   
-  After start-up, the program check if the BKP data register is written to a key 
-value. If the value is not correct, the program will ask to set the time value on the 
-HyperTerminal. If the key value is correct, the current time and subsecond value
+  After start-up,get key value from BKP data register or bit RTCSRC of backup domain 
+control register. If the value is not correct, the program will ask to set the time value 
+on the HyperTerminal. If the key value is correct, the current time and subsecond value
 will be displayed on the HyperTerminal. 
   
   Then LED1 is turned on.

@@ -124,11 +124,11 @@ void adc_config(void)
     /* ADC data alignment config */
     adc_data_alignment_config(ADC0, ADC_DATAALIGN_RIGHT);
     /* ADC channel length config */
-    adc_channel_length_config(ADC0, ADC_REGULAR_CHANNEL, 1);
-    /* ADC regular channel config */
-    adc_regular_channel_config(ADC0, 0, ADC_CHANNEL_13, ADC_SAMPLETIME_56);
+    adc_channel_length_config(ADC0, ADC_ROUTINE_CHANNEL, 1);
+    /* ADC routine channel config */
+    adc_routine_channel_config(ADC0, 0, ADC_CHANNEL_13, ADC_SAMPLETIME_56);
     /* ADC external trigger enable */
-    adc_external_trigger_config(ADC0, ADC_REGULAR_CHANNEL, EXTERNAL_TRIGGER_DISABLE);
+    adc_external_trigger_config(ADC0, ADC_ROUTINE_CHANNEL, EXTERNAL_TRIGGER_DISABLE);
     
     /* enable ADC interface */
     adc_enable(ADC0);  
@@ -141,7 +141,7 @@ void adc_config(void)
     adc_interrupt_enable(ADC0, ADC_INT_EOC);
     
     /* enable ADC software trigger */
-    adc_software_trigger_enable(ADC0, ADC_REGULAR_CHANNEL);
+    adc_software_trigger_enable(ADC0, ADC_ROUTINE_CHANNEL);
 }
 
 /*!

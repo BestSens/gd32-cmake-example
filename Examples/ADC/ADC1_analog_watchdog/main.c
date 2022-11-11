@@ -77,10 +77,10 @@ int main(void)
 
     while(1){
         delay_1ms(1000);
-        adc_value = adc_regular_data_read(ADC1);
+        adc_value = adc_routine_data_read(ADC1);
         printf("\r\n ADC1 watchdog low threshold: %04X \r\n",ADC_WATCHDOG_LT);
         printf("\r\n ADC1 watchdog hgih threshold: %04X \r\n",ADC_WATCHDOG_HT);
-        printf("\r\n ADC1 regular channel data = %04X \r\n",adc_value);
+        printf("\r\n ADC1 routine channel data = %04X \r\n",adc_value);
         printf("\r\n ***********************************\r\n");
         if(1 == data){
             /* turn off LED2 */
@@ -150,17 +150,17 @@ void adc_config(void)
     /* ADC data alignment config */
     adc_data_alignment_config(ADC1, ADC_DATAALIGN_RIGHT);
 
-    /* ADC regular channel config */
-    adc_regular_channel_config(ADC1,0,BOARD_ADC_CHANNEL,ADC_SAMPLETIME_56);
+    /* ADC routine channel config */
+    adc_routine_channel_config(ADC1,0,BOARD_ADC_CHANNEL,ADC_SAMPLETIME_56);
     /* ADC external trigger enable */
-    adc_external_trigger_config(ADC1,ADC_REGULAR_CHANNEL,EXTERNAL_TRIGGER_DISABLE);
+    adc_external_trigger_config(ADC1,ADC_ROUTINE_CHANNEL,EXTERNAL_TRIGGER_DISABLE);
 
     /* ADC analog watchdog threshold config */
     adc_watchdog_threshold_config(ADC1,0x0400,0x0A00);
     /* ADC analog watchdog single channel config */
     adc_watchdog_single_channel_enable(ADC1,BOARD_ADC_CHANNEL);
     /* ADC analog watchdog enable on regular channel group*/
-    adc_watchdog_group_channel_enable(ADC1,ADC_REGULAR_CHANNEL);
+    adc_watchdog_sequence_channel_enable(ADC1,ADC_ROUTINE_CHANNEL);
 
     /* ADC interrupt config */
     adc_interrupt_enable(ADC1, ADC_INT_WDE);
@@ -173,7 +173,7 @@ void adc_config(void)
     adc_calibration_enable(ADC1);
 
     /* ADC software trigger enable */
-    adc_software_trigger_enable(ADC1,ADC_REGULAR_CHANNEL);
+    adc_software_trigger_enable(ADC1,ADC_ROUTINE_CHANNEL);
 }
 
 /* retarget the C library printf function to the USART */

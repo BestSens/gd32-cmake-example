@@ -46,6 +46,7 @@ rtc_timestamp_struct rtc_timestamp;
 rtc_tamper_struct rtc_tamper;
 rtc_parameter_struct rtc_initpara;
 __IO uint32_t prescaler_a = 0, prescaler_s = 0;
+uint32_t RTCSRC_FLAG = 0;
 
 void rtc_setup(void);
 void rtc_show_time(void);
@@ -68,12 +69,17 @@ int main(void)
     /* enable access to RTC registers in backup domain */
     rcu_periph_clock_enable(RCU_PMU);
     pmu_backup_write_enable();
-
-    rtc_pre_config();
     rtc_tamper_disable(RTC_TAMPER0);
 
+    rtc_pre_config();    
+    /* get RTC clock entry selection */
+    RTCSRC_FLAG = GET_BITS(RCU_BDCTL, 8, 9);
+
     /* check if RTC has aready been configured */
-    if (BKP_VALUE != RTC_BKP0){
+    if ((BKP_VALUE != RTC_BKP0) || (0x00 == RTCSRC_FLAG)){
+        /* backup data register value is not correct or not yet programmed
+        or RTC clock source is not configured (when the first time the program 
+        is executed or data in RCU_BDCTL is lost due to Vbat feeding) */
         rtc_setup();
     }else{
         /* detect the reset source */

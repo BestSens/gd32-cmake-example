@@ -49,13 +49,6 @@ OF SUCH DAMAGE.
 */
 int main(void)
 {
-    /* enable IRC32K */
-    rcu_osci_on(RCU_IRC32K);
-    
-    /* wait till IRC32K is ready */
-    while(SUCCESS != rcu_osci_stab_wait(RCU_IRC32K)){
-    }
-    
     /* config systick  */
     systick_config();
     
