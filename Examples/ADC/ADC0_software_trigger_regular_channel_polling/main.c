@@ -125,11 +125,11 @@ void adc_config(void)
     /* ADC data alignment config */
     adc_data_alignment_config(ADC0, ADC_DATAALIGN_RIGHT);
     /* ADC channel length config */
-    adc_channel_length_config(ADC0, ADC_REGULAR_CHANNEL, 1U);
+    adc_channel_length_config(ADC0, ADC_ROUTINE_CHANNEL, 1U);
 
     /* ADC trigger config */
-    adc_external_trigger_source_config(ADC0, ADC_REGULAR_CHANNEL, ADC_EXTTRIG_REGULAR_T0_CH0); 
-    adc_external_trigger_config(ADC0, ADC_REGULAR_CHANNEL, EXTERNAL_TRIGGER_DISABLE);
+    adc_external_trigger_source_config(ADC0, ADC_ROUTINE_CHANNEL, ADC_EXTTRIG_ROUTINE_T0_CH0); 
+    adc_external_trigger_config(ADC0, ADC_ROUTINE_CHANNEL, EXTERNAL_TRIGGER_DISABLE);
 
     /* enable ADC interface */
     adc_enable(ADC0);
@@ -146,15 +146,15 @@ void adc_config(void)
 */
 uint16_t adc_channel_sample(uint8_t channel)
 {
-    /* ADC regular channel config */
-    adc_regular_channel_config(ADC0, 0U, channel, ADC_SAMPLETIME_15);
+    /* ADC routine channel config */
+    adc_routine_channel_config(ADC0, 0U, channel, ADC_SAMPLETIME_15);
     /* ADC software trigger enable */
-    adc_software_trigger_enable(ADC0, ADC_REGULAR_CHANNEL);
+    adc_software_trigger_enable(ADC0, ADC_ROUTINE_CHANNEL);
 
     /* wait the end of conversion flag */
     while(!adc_flag_get(ADC0, ADC_FLAG_EOC));
     /* clear the end of conversion flag */
     adc_flag_clear(ADC0, ADC_FLAG_EOC);
-    /* return regular channel sample value */
-    return (adc_regular_data_read(ADC0));
+    /* return routine channel sample value */
+    return (adc_routine_data_read(ADC0));
 }

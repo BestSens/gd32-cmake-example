@@ -202,17 +202,17 @@ void adc_config(void)
     adc_interrupt_enable(ADC0, ADC_INT_EOIC);
 
     /* ADC channel length config */
-    adc_channel_length_config(ADC0, ADC_REGULAR_CHANNEL, 4);
-    /* ADC regular channel config */
-    adc_regular_channel_config(ADC0, 0, ADC_CHANNEL_4, ADC_SAMPLETIME_15);
-    adc_regular_channel_config(ADC0, 1, ADC_CHANNEL_5, ADC_SAMPLETIME_15);
-    adc_regular_channel_config(ADC0, 2, ADC_CHANNEL_6, ADC_SAMPLETIME_15);
-    adc_regular_channel_config(ADC0, 3, ADC_CHANNEL_7, ADC_SAMPLETIME_15);
+    adc_channel_length_config(ADC0, ADC_ROUTINE_CHANNEL, 4);
+    /* ADC routine channel config */
+    adc_routine_channel_config(ADC0, 0, ADC_CHANNEL_4, ADC_SAMPLETIME_15);
+    adc_routine_channel_config(ADC0, 1, ADC_CHANNEL_5, ADC_SAMPLETIME_15);
+    adc_routine_channel_config(ADC0, 2, ADC_CHANNEL_6, ADC_SAMPLETIME_15);
+    adc_routine_channel_config(ADC0, 3, ADC_CHANNEL_7, ADC_SAMPLETIME_15);
     /* ADC trigger config */
-    adc_external_trigger_source_config(ADC0, ADC_REGULAR_CHANNEL, ADC_EXTTRIG_REGULAR_EXTI_11);
-    adc_external_trigger_config(ADC0, ADC_REGULAR_CHANNEL, ENABLE);
+    adc_external_trigger_source_config(ADC0, ADC_ROUTINE_CHANNEL, ADC_EXTTRIG_ROUTINE_EXTI_11);
+    adc_external_trigger_config(ADC0, ADC_ROUTINE_CHANNEL, ENABLE);
     /* ADC discontinuous mode */
-    adc_discontinuous_mode_config(ADC0, ADC_REGULAR_CHANNEL, 1);
+    adc_discontinuous_mode_config(ADC0, ADC_ROUTINE_CHANNEL, 1);
     /* ADC DMA function enable */
     adc_dma_request_after_last_enable(ADC0);
     adc_dma_mode_enable(ADC0);

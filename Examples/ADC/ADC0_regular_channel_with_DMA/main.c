@@ -172,15 +172,15 @@ void adc_config(void)
     adc_data_alignment_config(ADC0, ADC_DATAALIGN_RIGHT);
 
     /* ADC channel length config */
-    adc_channel_length_config(ADC0, ADC_REGULAR_CHANNEL, 4);
-    /* ADC regular channel config */
-    adc_regular_channel_config(ADC0, 0, ADC_CHANNEL_1, ADC_SAMPLETIME_15);
-    adc_regular_channel_config(ADC0, 1, ADC_CHANNEL_2, ADC_SAMPLETIME_15);
-    adc_regular_channel_config(ADC0, 2, ADC_CHANNEL_3, ADC_SAMPLETIME_15);
-    adc_regular_channel_config(ADC0, 3, BOARD_ADC_CHANNEL, ADC_SAMPLETIME_15);
+    adc_channel_length_config(ADC0, ADC_ROUTINE_CHANNEL, 4);
+    /* ADC routine channel config */
+    adc_routine_channel_config(ADC0, 0, ADC_CHANNEL_1, ADC_SAMPLETIME_15);
+    adc_routine_channel_config(ADC0, 1, ADC_CHANNEL_2, ADC_SAMPLETIME_15);
+    adc_routine_channel_config(ADC0, 2, ADC_CHANNEL_3, ADC_SAMPLETIME_15);
+    adc_routine_channel_config(ADC0, 3, BOARD_ADC_CHANNEL, ADC_SAMPLETIME_15);
     /* ADC trigger config */
-    adc_external_trigger_source_config(ADC0, ADC_REGULAR_CHANNEL, ADC_EXTTRIG_REGULAR_T0_CH0); 
-    adc_external_trigger_config(ADC0, ADC_REGULAR_CHANNEL, EXTERNAL_TRIGGER_DISABLE);
+    adc_external_trigger_source_config(ADC0, ADC_ROUTINE_CHANNEL, ADC_EXTTRIG_ROUTINE_T0_CH0); 
+    adc_external_trigger_config(ADC0, ADC_ROUTINE_CHANNEL, EXTERNAL_TRIGGER_DISABLE);
 
     /* ADC DMA function enable */
     adc_dma_request_after_last_enable(ADC0);
@@ -194,7 +194,7 @@ void adc_config(void)
     adc_calibration_enable(ADC0);
 
     /* enable ADC software trigger */
-    adc_software_trigger_enable(ADC0, ADC_REGULAR_CHANNEL);
+    adc_software_trigger_enable(ADC0, ADC_ROUTINE_CHANNEL);
 }
 
 /* retarget the C library printf function to the USART */

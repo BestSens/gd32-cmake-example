@@ -152,23 +152,23 @@ void dma_config(void)
 void adc_config(void)
 {
     /* ADC channel length config */
-    adc_channel_length_config(ADC0,ADC_REGULAR_CHANNEL,2);
-    adc_channel_length_config(ADC1,ADC_REGULAR_CHANNEL,2);
-    /* ADC regular channel config */
-    adc_regular_channel_config(ADC0,0,ADC_CHANNEL_3,ADC_SAMPLETIME_144);
-    adc_regular_channel_config(ADC0,1,ADC_CHANNEL_4,ADC_SAMPLETIME_144);
-    adc_regular_channel_config(ADC1,1,ADC_CHANNEL_3,ADC_SAMPLETIME_144);
-    adc_regular_channel_config(ADC1,0,ADC_CHANNEL_4,ADC_SAMPLETIME_144);
+    adc_channel_length_config(ADC0,ADC_ROUTINE_CHANNEL,2);
+    adc_channel_length_config(ADC1,ADC_ROUTINE_CHANNEL,2);
+    /* ADC routine channel config */
+    adc_routine_channel_config(ADC0,0,ADC_CHANNEL_3,ADC_SAMPLETIME_144);
+    adc_routine_channel_config(ADC0,1,ADC_CHANNEL_4,ADC_SAMPLETIME_144);
+    adc_routine_channel_config(ADC1,1,ADC_CHANNEL_3,ADC_SAMPLETIME_144);
+    adc_routine_channel_config(ADC1,0,ADC_CHANNEL_4,ADC_SAMPLETIME_144);
     /* ADC external trigger enable */
-    adc_external_trigger_config(ADC0,ADC_REGULAR_CHANNEL,EXTERNAL_TRIGGER_RISING);
-    adc_external_trigger_config(ADC1,ADC_REGULAR_CHANNEL,EXTERNAL_TRIGGER_DISABLE);
-    adc_external_trigger_source_config(ADC0,ADC_REGULAR_CHANNEL,ADC_EXTTRIG_REGULAR_T1_CH1);
+    adc_external_trigger_config(ADC0,ADC_ROUTINE_CHANNEL,EXTERNAL_TRIGGER_RISING);
+    adc_external_trigger_config(ADC1,ADC_ROUTINE_CHANNEL,EXTERNAL_TRIGGER_DISABLE);
+    adc_external_trigger_source_config(ADC0,ADC_ROUTINE_CHANNEL,ADC_EXTTRIG_ROUTINE_T1_CH1);
 
     /* ADC data alignment config */
     adc_data_alignment_config(ADC0,ADC_DATAALIGN_RIGHT);
     adc_data_alignment_config(ADC1,ADC_DATAALIGN_RIGHT);
     /* configure the ADC sync mode */
-    adc_sync_mode_config(ADC_DAUL_REGULAL_PARALLEL);
+    adc_sync_mode_config(ADC_DAUL_ROUTINE_PARALLEL);
     adc_sync_dma_config(ADC_SYNC_DMA_MODE1);
     adc_sync_dma_request_after_last_enable();
     /* ADC SCAN function enable */
