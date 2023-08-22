@@ -1,16 +1,16 @@
 # GD32 CMake example
 Goal of this repo is to provide an example CMake project to build the GigaDevice Demo suites provided for the GD32F4xx derivates with the standard GNU Arm Embedded Toolchain.
 
-Currently it's just a copy of the Demo Suites package with added CMake files, a toolchain configuration, a converted startup asm to be compatible with the GNU compiler and a linker script.
+Currently it's just a copy of the Demo Suites package with added CMake files, a toolchain configuration, c++ startup code to be compatible with the GNU compiler and a linker script. I also did some bugfixes on the ADC examples, they were not compatible with the firmware starting with v3.0.2.
 
 I've also commented out the documentation building for lwip in the ENET example to don't require doxygen to configure.
 
 I've removed '&'s from various Example paths as they are note compatible with CMake and did some fixes that break compilation on Unix based systems.
 
 ## Dependencies
-To build this package you need a working GNU Arm Embedded Toolchain (tested with 11.3-rel1 and 12.2.MPACBTI-Bet1), CMake and a build system installed. I'm using Ninja in my examples.
+To build this package you need a working GNU Arm Embedded Toolchain (tested with 11.3-rel1 and 12.3.Rel1), CMake and a build system installed. I'm using Ninja in my examples.
 
-I've tested this on Windows and Linux but with a bit of "you're lucky" it may work on macOS as well.
+I've tested this on Windows and Linux but with a bit of luck it may work on macOS as well.
 
 ## Usage
 All demo applications can be built with the following commands:
@@ -40,6 +40,6 @@ The `.vscode/tasks.json` also contains examples of how to use OpenOCD to flash o
 * There may be errors because of too long paths
 * Definitions should be local to targets not global
 * Board should be selectable with variables instead of building everything for the gd32f450z-eval excluding the ones specifically for the gd32f450i-eval
-* USB-Device examples are broken since firmware library update to 3.2.0 and I don't think it's my fault
+* USB-Device examples are broken since firmware library update to v3.0.2 and I don't think it's my fault
 * Retargeting only works by providing custom _write() override due to newlib used in arm-none-eabi-gcc
 * Linking on gcc 11.2 fails when retargeting
