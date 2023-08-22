@@ -2,11 +2,11 @@
     \file    main.c
     \brief   DMA reload transfer number by EXTI interrupt in discontinuous mode demo
 
-    \version 2022-03-09, V1.0.0, firmware for GD32F4xx
+     \version 2023-06-25, V3.1.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2022, GigaDevice Semiconductor Inc.
+    Copyright (c) 2023, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -83,14 +83,14 @@ int main(void)
     dma_circulation_disable(DMA1, DMA_CH7);
     dma_channel_subperipheral_select(DMA1, DMA_CH7, DMA_SUBPERI4);
 
-    /* USART DMA enable for transmission */
-    usart_dma_transmit_config(USART0, USART_DENT_ENABLE);
-
     /* enable DMA1 transfer complete interrupt */
     dma_interrupt_enable(DMA1, DMA_CH7, DMA_CHXCTL_FTFIE);
-
+    
     /* enable DMA1 channel7 */
     dma_channel_enable(DMA1, DMA_CH7);
+    
+    /* USART DMA enable for transmission */
+    usart_dma_transmit_config(USART0, USART_TRANSMIT_DMA_ENABLE);
 
     while(1) {
     }

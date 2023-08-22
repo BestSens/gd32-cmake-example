@@ -1,6 +1,7 @@
 add_subdirectory(Dma_transmitter_receiver)
 add_subdirectory(DMA_transmitter_receiver_interrupt)
 add_subdirectory(Half_duplex_transmitter_receiver)
+add_subdirectory(IDLE_receive_interrupt)
 add_subdirectory(Printf)
 add_subdirectory(Receivertimeout)
 add_subdirectory(Synchronous)

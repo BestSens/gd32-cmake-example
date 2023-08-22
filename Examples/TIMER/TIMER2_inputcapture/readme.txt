@@ -2,14 +2,11 @@
     \file    readme.txt
     \brief   description of the TIMER2 input capture demo
 
-    \version 2016-08-15, V1.0.0, firmware for GD32F4xx
-    \version 2018-12-12, V2.0.0, firmware for GD32F4xx
-    \version 2020-09-30, V2.1.0, firmware for GD32F4xx
-    \version 2022-03-09, V3.0.0, firmware for GD32F4xx
+    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2022, GigaDevice Semiconductor Inc.
+    Copyright (c) 2023, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -38,14 +35,14 @@ OF SUCH DAMAGE.
   This demo is based on the GD32F450I-EVAL-V1.1 board, it shows TIMER peripheral to 
 measure the frequency of an external signal.
   
-  The TIMxCLK frequency is set to systemcoreclock,the prescaler is 10000 so 
-the TIMER2 counter clock is 20KHz.
+  The TIMxCLK frequency is set to systemcoreclock,the prescaler is 200 so 
+the TIMER2 counter clock is 1MHz.
   
   The external signal is connected to TIMER2 CH0 pin (PB4).
   The rising edge is used as active edge.
   The TIMER2 CH0CV is used to compute the frequency value.
 
-  The available frequence of the input signal is ranging from 0.03Hz to 2KHz.
+  The available frequence of the input signal is ranging from 16Hz to 20KHz.
 You can use USART to watch the frequency of the input signal.The USART is
 configured as follow:
   - BaudRate    = 115200 baud

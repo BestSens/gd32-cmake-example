@@ -2,14 +2,11 @@
     \file    main.c
     \brief   communication_Loopback in normal mode
     
-    \version 2016-08-15, V1.0.0, firmware for GD32F4xx
-    \version 2018-12-12, V2.0.0, firmware for GD32F4xx
-    \version 2020-09-30, V2.1.0, firmware for GD32F4xx
-    \version 2022-03-09, V3.0.0, firmware for GD32F4xx
+    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2022, GigaDevice Semiconductor Inc.
+    Copyright (c) 2023, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -40,14 +37,17 @@ OF SUCH DAMAGE.
 #include "gd32f450i_eval.h"
 
 /* select CAN */
-#define CAN0_USED
-//#define CAN1_USED
+#define DEV_CAN0_USED
+//#define DEV_CAN1_USED
 
-#ifdef  CAN0_USED
+#ifdef  DEV_CAN0_USED
     #define CANX CAN0
 #else 
     #define CANX CAN1
 #endif
+
+#define DEV_CAN_POLLING_ID          0x0AA
+#define DEV_CAN_INTERRUPT_ID        0x1234
     
 volatile ErrStatus test_flag;
 volatile ErrStatus test_flag_interrupt;
@@ -119,7 +119,7 @@ ErrStatus can_loopback(void)
 
     /* initialize transmit message */
     can_struct_para_init(CAN_TX_MESSAGE_STRUCT, &transmit_message);
-    transmit_message.tx_sfid = 0x11;
+    transmit_message.tx_sfid = DEV_CAN_POLLING_ID;
     transmit_message.tx_ft = CAN_FT_DATA;
     transmit_message.tx_ff = CAN_FF_STANDARD;
     transmit_message.tx_dlen = 2;
@@ -141,16 +141,11 @@ ErrStatus can_loopback(void)
         timeout--; 
     }
 
-    /* initialize receive message*/
-    receive_message.rx_sfid = 0x00;
-    receive_message.rx_ff = 0;
-    receive_message.rx_dlen = 0;
-    receive_message.rx_data[0] = 0x00;
-    receive_message.rx_data[1] = 0x00;
+    can_struct_para_init(CAN_RX_MESSAGE_STRUCT, &receive_message);
     can_message_receive(CANX, CAN_FIFO1, &receive_message);
     
     /* check the receive message */
-    if((0x11 == receive_message.rx_sfid) && (CAN_FF_STANDARD == receive_message.rx_ff)
+    if((DEV_CAN_POLLING_ID == receive_message.rx_sfid) && (CAN_FF_STANDARD == receive_message.rx_ff)
        && (2 == receive_message.rx_dlen) && (0xCDAB == (receive_message.rx_data[1]<<8|receive_message.rx_data[0]))){
         return SUCCESS;
     }else{
@@ -177,7 +172,7 @@ ErrStatus can_loopback_interrupt(void)
 
     /* initialize transmit message */
     transmit_message.tx_sfid = 0;
-    transmit_message.tx_efid = 0x1234;
+    transmit_message.tx_efid = DEV_CAN_INTERRUPT_ID;
     transmit_message.tx_ff = CAN_FF_EXTENDED;
     transmit_message.tx_ft = CAN_FT_DATA;
     transmit_message.tx_dlen = 2;
@@ -222,34 +217,56 @@ void can_loopback_init(void)
     
     /* initialize CAN */
     can_parameter.time_triggered = DISABLE;
-    can_parameter.auto_bus_off_recovery = DISABLE;
+    can_parameter.auto_bus_off_recovery = ENABLE;
     can_parameter.auto_wake_up = DISABLE;
     can_parameter.auto_retrans = ENABLE;
     can_parameter.rec_fifo_overwrite = DISABLE;
     can_parameter.trans_fifo_order = DISABLE;
     can_parameter.working_mode = CAN_LOOPBACK_MODE;
-    /* configure baudrate to 500kbps */
+    /* configure baudrate to 125kbps */
     can_parameter.resync_jump_width = CAN_BT_SJW_1TQ;
     can_parameter.time_segment_1 = CAN_BT_BS1_7TQ;
     can_parameter.time_segment_2 = CAN_BT_BS2_2TQ;
-    can_parameter.prescaler = 10;
+    can_parameter.prescaler = 40;
     can_init(CANX, &can_parameter);
 
     /* initialize filter */
-#ifdef  CAN0_USED
+#ifdef  DEV_CAN0_USED
     /* CAN0 filter number */
     can_filter.filter_number = 0;
 #else
     /* CAN1 filter number */
-    can_filter.filter_number = 15;
+    can_filter.filter_number = 14;
 #endif
     /* initialize filter */    
     can_filter.filter_mode = CAN_FILTERMODE_MASK;
     can_filter.filter_bits = CAN_FILTERBITS_32BIT;
-    can_filter.filter_list_high = 0x0000;
+    can_filter.filter_list_high = (uint16_t)(DEV_CAN_POLLING_ID << 5);
     can_filter.filter_list_low = 0x0000;
-    can_filter.filter_mask_high = 0x0000;
-    can_filter.filter_mask_low = 0x0000;  
+    /* ID and standard frame matched */
+    can_filter.filter_mask_high = (uint16_t)(0x7FF << 5);
+    can_filter.filter_mask_low = (uint16_t)(1U << 2);
+    
+    can_filter.filter_fifo_number = CAN_FIFO1;
+    can_filter.filter_enable=ENABLE;
+    can_filter_init(&can_filter);
+    
+    /* initialize filter */
+#ifdef  DEV_CAN0_USED
+    /* CAN0 filter number */
+    can_filter.filter_number = 1;
+#else
+    /* CAN1 filter number */
+    can_filter.filter_number = 15;
+#endif
+    /* initialize filter */
+    can_filter.filter_mode = CAN_FILTERMODE_MASK;
+    can_filter.filter_bits = CAN_FILTERBITS_32BIT;
+    /* ID and extend frame matched */
+    can_filter.filter_list_high = (uint16_t)(DEV_CAN_INTERRUPT_ID >> 13);
+    can_filter.filter_list_low = (uint16_t)(((uint16_t)DEV_CAN_INTERRUPT_ID << 3) | (1U << 2));
+    can_filter.filter_mask_high = (uint16_t)(0x1FFFFFFF >> 13);
+    can_filter.filter_mask_low = (uint16_t)(((uint16_t)0x1FFFFFFF << 3) | (1U << 2));
     can_filter.filter_fifo_number = CAN_FIFO1;
     can_filter.filter_enable=ENABLE;
     can_filter_init(&can_filter);

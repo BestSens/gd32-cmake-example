@@ -2,13 +2,11 @@
     \file    drv_usbh_int.c
     \brief   USB host mode interrupt handler file
 
-    \version 2020-08-01, V3.0.0, firmware for GD32F4xx
-    \version 2022-03-09, V3.1.0, firmware for GD32F4xx
-    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
+    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2022, GigaDevice Semiconductor Inc.
+    Copyright (c) 2023, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -169,7 +167,7 @@ static uint32_t usbh_int_port (usb_core_driver *udev)
 
     __IO uint32_t port_state = *udev->regs.HPCS;
 
-    /* clear the interrupt bits in GINTSTS */
+    /* clear the interrupt bit in GINTF */
     port_state &= ~(HPCS_PE | HPCS_PCD | HPCS_PEDC);
 
     /* port connect detected */
@@ -412,7 +410,7 @@ static uint32_t usbh_int_pipe_out (usb_core_driver *udev, uint32_t pp_num)
         if (1U == udev->host.pipe[pp_num].do_ping) {
             udev->host.pipe[pp_num].do_ping = 0;
             pp->err_count = 0U;
-            usb_pp_halt (udev, (uint8_t)pp_num, HCHINTF_ACK, pp->pp_status);
+            usb_pp_halt (udev, (uint8_t)pp_num, HCHINTF_ACK, PIPE_NAK);
         }
 
         pp_reg->HCHINTF = HCHINTF_ACK;
@@ -434,6 +432,11 @@ static uint32_t usbh_int_pipe_out (usb_core_driver *udev, uint32_t pp_num)
         }
 
         pp->err_count = 0U;
+        if(USB_USE_FIFO == udev->bp.transfer_mode) {
+            usb_pp_halt (udev, (uint8_t)pp_num, HCHINTF_NAK, PIPE_NAK);
+        } else {
+            pp_reg->HCHINTF = HCHINTF_NAK;
+        }
         usb_pp_halt (udev, (uint8_t)pp_num, HCHINTF_NAK, PIPE_NAK);
     } else if (intr_pp & HCHINTF_USBER) {
         pp->err_count++;
@@ -465,8 +468,14 @@ static uint32_t usbh_int_pipe_out (usb_core_driver *udev, uint32_t pp_num)
             break;
 
         case PIPE_NAK:
+            pp->urb_state = URB_NOTREADY;    
+            break;
         case PIPE_NYET:
-            pp->urb_state = URB_NOTREADY;
+            pp->urb_state = URB_DONE;
+
+            if ((uint8_t)USB_EPTYPE_BULK == ((pp_reg->HCHCTL & HCHCTL_EPTYPE) >> 18U)) {
+                pp->data_toggle_out ^= 1U; 
+            }
             break;
 
         case PIPE_STALL:

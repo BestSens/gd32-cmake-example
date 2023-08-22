@@ -2,14 +2,11 @@
     \file    readme.txt
     \brief   description of DAC1_triangle_noise_mode example
     
-    \version 2016-08-15, V1.0.0, firmware for GD32F4xx
-    \version 2018-12-12, V2.0.0, firmware for GD32F4xx
-    \version 2020-09-30, V2.1.0, firmware for GD32F4xx
-    \version 2022-03-09, V3.0.0, firmware for GD32F4xx
+    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2022, GigaDevice Semiconductor Inc.
+    Copyright (c) 2023, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -37,6 +34,6 @@ OF SUCH DAMAGE.
 
   This example is based on the GD32450I-EVAL-V1.1 board, it shows how to use DAC1 to 
 generate triangle noise wave. TIMER6 is chosen to trigger DAC1. The DAC1 output pin is 
-configured PA4. 
+configured PA5. When running the example, the R113 resistor needs to be removed.
 
   The triangle noise wave can be observed through the oscilloscope.

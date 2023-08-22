@@ -2,14 +2,11 @@
     \file    gd32f4xx_tli.h
     \brief   definitions for the TLI
 
-    \version 2016-08-15, V1.0.0, firmware for GD32F4xx
-    \version 2018-12-12, V2.0.0, firmware for GD32F4xx
-    \version 2020-09-30, V2.1.0, firmware for GD32F4xx
-    \version 2022-03-09, V3.0.0, firmware for GD32F4xx
+    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2022, GigaDevice Semiconductor Inc.
+    Copyright (c) 2023, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -86,7 +83,7 @@ OF SUCH DAMAGE.
 #define TLI_ASZ_VASZ                      BITS(0,11)       /*!< size of the vertical active area width plus back porch and synchronous pulse */
 #define TLI_ASZ_HASZ                      BITS(16,27)      /*!< size of the horizontal active area width plus back porch and synchronous pulse */
 
-/* TLI_SPSZ */
+/* TLI_TSZ */
 #define TLI_TSZ_VTSZ                      BITS(0,11)       /*!< vertical total size of the display, including active area, back porch, synchronous pulse and front porch */
 #define TLI_TSZ_HTSZ                      BITS(16,27)      /*!< horizontal total size of the display, including active area, back porch, synchronous pulse and front porch */
 
@@ -139,7 +136,7 @@ OF SUCH DAMAGE.
 #define TLI_STAT_VDE                      BIT(0)           /*!< current VDE status */
 #define TLI_STAT_HDE                      BIT(1)           /*!< current HDE status */
 #define TLI_STAT_VS                       BIT(2)           /*!< current VS status of the TLI */
-#define TLI_STAT_HS                       BIT(3)           /*!< current HS status of the TLI  */
+#define TLI_STAT_HS                       BIT(3)           /*!< current HS status of the TLI */
 
 /* TLI_LxCTL */
 #define TLI_LxCTL_LEN                     BIT(0)           /*!< layer enable */
@@ -241,7 +238,7 @@ typedef struct {
 
 /* packeted pixel format */
 typedef enum {
-    LAYER_PPF_ARGB8888,                      /*!< layerx pixel format ARGB8888 */
+    LAYER_PPF_ARGB8888 = 0U,                 /*!< layerx pixel format ARGB8888 */
     LAYER_PPF_RGB888,                        /*!< layerx pixel format RGB888 */
     LAYER_PPF_RGB565,                        /*!< layerx pixel format RGB565 */
     LAYER_PPF_ARGB1555,                      /*!< layerx pixel format ARGB1555 */
@@ -284,10 +281,12 @@ typedef enum {
 /* horizontal pulse polarity selection */
 #define TLI_HSYN_ACTLIVE_LOW          ((uint32_t)0x00000000U)      /*!< horizontal synchronous pulse active low */
 #define TLI_HSYN_ACTLIVE_HIGHT        TLI_CTL_HPPS                 /*!< horizontal synchronous pulse active high */
+#define TLI_HSYN_ACTLIVE_HIGH         TLI_HSYN_ACTLIVE_HIGHT       /*!< horizontal synchronous pulse active high */
 
 /* vertical pulse polarity selection */
 #define TLI_VSYN_ACTLIVE_LOW          ((uint32_t)0x00000000U)      /*!< vertical synchronous pulse active low */
 #define TLI_VSYN_ACTLIVE_HIGHT        TLI_CTL_VPPS                 /*!< vertical synchronous pulse active high */
+#define TLI_VSYN_ACTLIVE_HIGH         TLI_VSYN_ACTLIVE_HIGHT       /*!< vertical synchronous pulse active high */
 
 /* pixel clock polarity selection */
 #define TLI_PIXEL_CLOCK_TLI           ((uint32_t)0x00000000U)      /*!< pixel clock is TLI clock */
@@ -296,6 +295,7 @@ typedef enum {
 /* data enable polarity selection */
 #define TLI_DE_ACTLIVE_LOW            ((uint32_t)0x00000000U)      /*!< data enable active low */
 #define TLI_DE_ACTLIVE_HIGHT          TLI_CTL_DEPS                 /*!< data enable active high */
+#define TLI_DE_ACTLIVE_HIGH           TLI_DE_ACTLIVE_HIGHT         /*!< data enable active high */
 
 /* alpha calculation factor 1 of blending method */
 #define LxBLEND_ACF1(regval)          (BITS(8,10) & ((uint32_t)(regval)<<8))

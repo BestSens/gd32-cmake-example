@@ -2,13 +2,11 @@
     \file    usbh_pipe.c
     \brief   USB host mode pipe operation driver
 
-    \version 2020-08-01, V3.0.0, firmware for GD32F4xx
-    \version 2022-03-09, V3.1.0, firmware for GD32F4xx
-    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
+    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2022, GigaDevice Semiconductor Inc.
+    Copyright (c) 2023, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -62,7 +60,7 @@ uint8_t usbh_pipe_create (usb_core_driver *udev,
     pp->ep.type = ep_type;
     pp->ep.mps = ep_mpl;
 
-    if ((USB_USE_DMA != udev->bp.transfer_mode) && ((USB_EPTYPE_BULK == pp->ep.type) || (USB_EPTYPE_CTRL == pp->ep.type))) {
+    if (((USB_EPTYPE_BULK == pp->ep.type) || (USB_EPTYPE_CTRL == pp->ep.type))) {
         pp->supp_ping = (uint8_t)(pp->dev_speed == PORT_SPEED_HIGH);
     }
 
@@ -96,7 +94,7 @@ uint8_t usbh_pipe_update (usb_core_driver *udev,
     if ((pp->dev_speed != dev_speed) && (dev_speed)) {
         pp->dev_speed = dev_speed;
 
-        if ((USB_USE_DMA != udev->bp.transfer_mode) && ((USB_EPTYPE_BULK == pp->ep.type) || (USB_EPTYPE_CTRL == pp->ep.type))) {
+        if (((USB_EPTYPE_BULK == pp->ep.type) || (USB_EPTYPE_CTRL == pp->ep.type))) {
             pp->supp_ping = (uint8_t)(pp->dev_speed == PORT_SPEED_HIGH);
         }
     }

@@ -2,14 +2,11 @@
     \file    main.c
     \brief   communication_among_CANS in normal mode
     
-    \version 2016-08-15, V1.0.0, firmware for GD32F4xx
-    \version 2018-12-12, V2.0.0, firmware for GD32F4xx
-    \version 2020-09-30, V2.1.0, firmware for GD32F4xx
-    \version 2022-03-09, V3.0.0, firmware for GD32F4xx
+    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2022, GigaDevice Semiconductor Inc.
+    Copyright (c) 2023, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -59,15 +56,14 @@ FlagStatus can0_receive_flag;
 FlagStatus can1_receive_flag;
 FlagStatus can0_error_flag;
 FlagStatus can1_error_flag;
-can_parameter_struct can_init_parameter;
-can_filter_parameter_struct can_filter_parameter;
+
 can_trasnmit_message_struct transmit_message;
 can_receive_message_struct receive_message;
 
 void nvic_config(void);
 void led_config(void);
 void can_gpio_config(void);
-void can_config(can_parameter_struct can_parameter, can_filter_parameter_struct can_filter);
+void can_config(void);
 
 /*!
     \brief      main function
@@ -77,6 +73,10 @@ void can_config(can_parameter_struct can_parameter, can_filter_parameter_struct 
 */
 int main(void)
 {
+    uint8_t i = 0;
+    uint32_t timeout = 0xFFFF;
+    uint8_t transmit_mailbox = 0;
+    
     can0_receive_flag = RESET;
     can1_receive_flag = RESET;
     can0_error_flag = RESET;
@@ -102,26 +102,44 @@ int main(void)
     gd_eval_led_off(LED2);
     
     /* initialize CAN and filter */
-    can_config(can_init_parameter, can_filter_parameter);
+    can_config();
     /* enable can receive FIFO0 not empty interrupt */
     can_interrupt_enable(CAN0, CAN_INT_RFNE0);
     can_interrupt_enable(CAN1, CAN_INT_RFNE0);
     
     /* initialize transmit message */
-    transmit_message.tx_sfid = 0x300>>1;
+    transmit_message.tx_sfid = 0x7ab;
     transmit_message.tx_efid = 0x00;
     transmit_message.tx_ft = CAN_FT_DATA;
     transmit_message.tx_ff = CAN_FF_STANDARD;
-    transmit_message.tx_dlen = 2;
+    transmit_message.tx_dlen = 8;
+    
+    transmit_message.tx_data[0] = 0x00;
+    transmit_message.tx_data[1] = 0xA1;
+    transmit_message.tx_data[2] = 0xA2;
+    transmit_message.tx_data[3] = 0xA3;
+    transmit_message.tx_data[4] = 0xA4;
+    transmit_message.tx_data[5] = 0xA5;
+    transmit_message.tx_data[6] = 0xA6;
+    transmit_message.tx_data[7] = 0xA7;
 
     while(1){
         /* test whether the Tamper key is pressed */
         if(0 == gd_eval_key_state_get(KEY_TAMPER)){
             transmit_message.tx_data[0] = 0x55;
             transmit_message.tx_data[1] = 0xAA;
-            printf("\r\n can0 transmit data:%x,%x", transmit_message.tx_data[0], transmit_message.tx_data[1]);
+            printf("\r\n can0 transmit data:");
+            for(i = 0; i < transmit_message.tx_dlen; i++){
+                printf(" %02x", transmit_message.tx_data[i]);
+            }
+            
             /* transmit message */
-            can_message_transmit(CAN0, &transmit_message);
+            transmit_mailbox = can_message_transmit(CAN0, &transmit_message);
+            /* waiting for transmit completed */
+            timeout = 0xFFFF;
+            while((CAN_TRANSMIT_OK != can_transmit_states(CAN0, transmit_mailbox)) && (0 != timeout)){
+                timeout--;
+            }
             /* waiting for the Tamper key up */
             while(0 == gd_eval_key_state_get(KEY_TAMPER));
         }
@@ -129,23 +147,37 @@ int main(void)
         if(0 == gd_eval_key_state_get(KEY_WAKEUP)){
             transmit_message.tx_data[0] = 0xAA;
             transmit_message.tx_data[1] = 0x55;
-            printf("\r\n can1 transmit data:%x,%x", transmit_message.tx_data[0], transmit_message.tx_data[1]);
+            printf("\r\n can1 transmit data:");
+            for(i = 0; i < transmit_message.tx_dlen; i++){
+                printf(" %02x", transmit_message.tx_data[i]);
+            }
             /* transmit message */
-            can_message_transmit(CAN1, &transmit_message);
+            transmit_mailbox = can_message_transmit(CAN1, &transmit_message);
+            /* waiting for transmit completed */
+            timeout = 0xFFFF;
+            while((CAN_TRANSMIT_OK != can_transmit_states(CAN1, transmit_mailbox)) && (0 != timeout)){
+                timeout--;
+            }
             /* waiting for the Wakeup key up */
             while(0 == gd_eval_key_state_get(KEY_WAKEUP));
         }
         /* CAN0 receive data correctly, the received data is printed */
         if(SET == can0_receive_flag){
             can0_receive_flag = RESET;
-            printf("\r\n can0 receive data:%x,%x", receive_message.rx_data[0], receive_message.rx_data[1]);
+            printf("\r\n can0 receive data:");
+            for(i = 0; i < receive_message.rx_dlen; i++){
+                printf(" %02x", receive_message.rx_data[i]);
+            }
             gd_eval_led_toggle(LED1);
         }
         /* CAN1 receive data correctly, the received data is printed */
         if(SET == can1_receive_flag){
             can1_receive_flag = RESET;
             gd_eval_led_toggle(LED2);
-            printf("\r\n can1 receive data:%x,%x", receive_message.rx_data[0], receive_message.rx_data[1]);
+            printf("\r\n can1 receive data:");
+            for(i = 0; i < receive_message.rx_dlen; i++){
+                printf(" %02x", receive_message.rx_data[i]);
+            }
         }
         /* CAN0 error */
         if(SET == can0_error_flag){
@@ -169,17 +201,19 @@ int main(void)
     \param[out] none
     \retval     none
 */
-void can_config(can_parameter_struct can_parameter, can_filter_parameter_struct can_filter)
+void can_config()
 {
+    can_parameter_struct            can_parameter;
+    can_filter_parameter_struct     can_filter;
     can_struct_para_init(CAN_INIT_STRUCT, &can_parameter);
-    can_struct_para_init(CAN_INIT_STRUCT, &can_filter);
+    can_struct_para_init(CAN_FILTER_STRUCT, &can_filter);
     /* initialize CAN register */
     can_deinit(CAN0);
     can_deinit(CAN1);
     
     /* initialize CAN parameters */
     can_parameter.time_triggered = DISABLE;
-    can_parameter.auto_bus_off_recovery = DISABLE;
+    can_parameter.auto_bus_off_recovery = ENABLE;
     can_parameter.auto_wake_up = DISABLE;
     can_parameter.auto_retrans = ENABLE;
     can_parameter.rec_fifo_overwrite = DISABLE;
@@ -221,9 +255,9 @@ void can_config(can_parameter_struct can_parameter, can_filter_parameter_struct 
     can_filter.filter_number=0;
     can_filter.filter_mode = CAN_FILTERMODE_MASK;
     can_filter.filter_bits = CAN_FILTERBITS_32BIT;
-    can_filter.filter_list_high = 0x3000;
+    can_filter.filter_list_high = 0x0000;
     can_filter.filter_list_low = 0x0000;
-    can_filter.filter_mask_high = 0x3000;
+    can_filter.filter_mask_high = 0x0000;
     can_filter.filter_mask_low = 0x0000;
     can_filter.filter_fifo_number = CAN_FIFO0;
     can_filter.filter_enable = ENABLE;

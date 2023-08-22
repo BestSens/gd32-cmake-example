@@ -2,14 +2,11 @@
     \file    gd32f4xx_spi.c
     \brief   SPI driver
 
-    \version 2016-08-15, V1.0.0, firmware for GD32F4xx
-    \version 2018-12-12, V2.0.0, firmware for GD32F4xx
-    \version 2020-09-30, V2.1.0, firmware for GD32F4xx
-    \version 2022-03-09, V3.0.0, firmware for GD32F4xx
+    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2022, GigaDevice Semiconductor Inc.
+    Copyright (c) 2023, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -487,6 +484,75 @@ void spi_bidirectional_transfer_config(uint32_t spi_periph, uint32_t transfer_di
 }
 
 /*!
+    \brief      configure i2s full duplex mode
+    \param[in]  i2s_add_periph: I2Sx_ADD(x=1,2)
+    \param[in]  i2s_mode:
+      \arg        I2S_MODE_SLAVETX : I2S slave transmit mode
+      \arg        I2S_MODE_SLAVERX : I2S slave receive mode
+      \arg        I2S_MODE_MASTERTX : I2S master transmit mode
+      \arg        I2S_MODE_MASTERRX : I2S master receive mode
+    \param[in]  i2s_standard:
+      \arg        I2S_STD_PHILLIPS : I2S phillips standard
+      \arg        I2S_STD_MSB : I2S MSB standard
+      \arg        I2S_STD_LSB : I2S LSB standard
+      \arg        I2S_STD_PCMSHORT : I2S PCM short standard
+      \arg        I2S_STD_PCMLONG : I2S PCM long standard
+    \param[in]  i2s_ckpl:
+      \arg        I2S_CKPL_LOW : I2S clock polarity low level
+      \arg        I2S_CKPL_HIGH : I2S clock polarity high level
+    \param[in]  i2s_frameformat:
+      \arg        I2S_FRAMEFORMAT_DT16B_CH16B: I2S data length is 16 bit and channel length is 16 bit
+      \arg        I2S_FRAMEFORMAT_DT16B_CH32B: I2S data length is 16 bit and channel length is 32 bit
+      \arg        I2S_FRAMEFORMAT_DT24B_CH32B: I2S data length is 24 bit and channel length is 32 bit
+      \arg        I2S_FRAMEFORMAT_DT32B_CH32B: I2S data length is 32 bit and channel length is 32 bit
+    \param[out] none
+    \retval     none
+*/
+void i2s_full_duplex_mode_config(uint32_t i2s_add_periph, uint32_t i2s_mode, uint32_t i2s_standard,
+                                 uint32_t i2s_ckpl, uint32_t i2s_frameformat)
+{
+    uint32_t reg = 0U, tmp = 0U;
+
+    reg = I2S_ADD_I2SCTL(i2s_add_periph);
+    reg &= I2S_FULL_DUPLEX_MASK;
+
+    /* get the mode of the extra I2S module I2Sx_ADD */
+    if((I2S_MODE_MASTERTX == i2s_mode) || (I2S_MODE_SLAVETX == i2s_mode)) {
+        tmp = I2S_MODE_SLAVERX;
+    } else {
+        tmp = I2S_MODE_SLAVETX;
+    }
+
+    /* enable I2S mode */
+    reg |= (uint32_t)SPI_I2SCTL_I2SSEL;
+    /* select I2S mode */
+    reg |= (uint32_t)tmp;
+    /* select I2S standard */
+    reg |= (uint32_t)i2s_standard;
+    /* select I2S polarity */
+    reg |= (uint32_t)i2s_ckpl;
+    /* configure data frame format */
+    reg |= (uint32_t)i2s_frameformat;
+
+    /* write to SPI_I2SCTL register */
+    I2S_ADD_I2SCTL(i2s_add_periph) = (uint32_t)reg;
+}
+
+/*!
+    \brief      clear SPI/I2S format error flag status
+    \param[in]  spi_periph: SPIx(x=0,1,2,3,4,5)
+    \param[in]  flag: SPI/I2S frame format error flag 
+      \arg        SPI_FLAG_FERR: only for SPI work in TI mode
+      \arg        I2S_FLAG_FERR: for I2S
+    \param[out] none
+    \retval     none
+*/
+void spi_i2s_format_error_clear(uint32_t spi_periph, uint32_t flag)
+{
+    SPI_STAT(spi_periph) = (uint32_t)(~flag);
+}
+
+/*!
     \brief      set SPI CRC polynomial
     \param[in]  spi_periph: SPIx(x=0,1,2,3,4,5)
     \param[in]  crc_poly: CRC polynomial value
@@ -563,6 +629,17 @@ uint16_t spi_crc_get(uint32_t spi_periph, uint8_t spi_crc)
 }
 
 /*!
+    \brief      clear SPI CRC error flag status
+    \param[in]  spi_periph: SPIx(x=0,1,2,3,4,5)
+    \param[out] none
+    \retval     none
+*/
+void spi_crc_error_clear(uint32_t spi_periph)
+{
+    SPI_STAT(spi_periph) = (uint32_t)(~SPI_FLAG_CRCERR);
+}
+
+/*!
     \brief      enable SPI TI mode
     \param[in]  spi_periph: SPIx(x=0,1,2,3,4,5)
     \param[out] none
@@ -582,61 +659,6 @@ void spi_ti_mode_enable(uint32_t spi_periph)
 void spi_ti_mode_disable(uint32_t spi_periph)
 {
     SPI_CTL1(spi_periph) &= (uint32_t)(~SPI_CTL1_TMOD);
-}
-
-/*!
-    \brief      configure i2s full duplex mode
-    \param[in]  i2s_add_periph: I2Sx_ADD(x=1,2)
-    \param[in]  i2s_mode:
-      \arg        I2S_MODE_SLAVETX : I2S slave transmit mode
-      \arg        I2S_MODE_SLAVERX : I2S slave receive mode
-      \arg        I2S_MODE_MASTERTX : I2S master transmit mode
-      \arg        I2S_MODE_MASTERRX : I2S master receive mode
-    \param[in]  i2s_standard:
-      \arg        I2S_STD_PHILLIPS : I2S phillips standard
-      \arg        I2S_STD_MSB : I2S MSB standard
-      \arg        I2S_STD_LSB : I2S LSB standard
-      \arg        I2S_STD_PCMSHORT : I2S PCM short standard
-      \arg        I2S_STD_PCMLONG : I2S PCM long standard
-    \param[in]  i2s_ckpl:
-      \arg        I2S_CKPL_LOW : I2S clock polarity low level
-      \arg        I2S_CKPL_HIGH : I2S clock polarity high level
-    \param[in]  i2s_frameformat:
-      \arg        I2S_FRAMEFORMAT_DT16B_CH16B: I2S data length is 16 bit and channel length is 16 bit
-      \arg        I2S_FRAMEFORMAT_DT16B_CH32B: I2S data length is 16 bit and channel length is 32 bit
-      \arg        I2S_FRAMEFORMAT_DT24B_CH32B: I2S data length is 24 bit and channel length is 32 bit
-      \arg        I2S_FRAMEFORMAT_DT32B_CH32B: I2S data length is 32 bit and channel length is 32 bit
-    \param[out] none
-    \retval     none
-*/
-void i2s_full_duplex_mode_config(uint32_t i2s_add_periph, uint32_t i2s_mode, uint32_t i2s_standard,
-                                 uint32_t i2s_ckpl, uint32_t i2s_frameformat)
-{
-    uint32_t reg = 0U, tmp = 0U;
-
-    reg = I2S_ADD_I2SCTL(i2s_add_periph);
-    reg &= I2S_FULL_DUPLEX_MASK;
-
-    /* get the mode of the extra I2S module I2Sx_ADD */
-    if((I2S_MODE_MASTERTX == i2s_mode) || (I2S_MODE_SLAVETX == i2s_mode)) {
-        tmp = I2S_MODE_SLAVERX;
-    } else {
-        tmp = I2S_MODE_SLAVETX;
-    }
-
-    /* enable I2S mode */
-    reg |= (uint32_t)SPI_I2SCTL_I2SSEL;
-    /* select I2S mode */
-    reg |= (uint32_t)tmp;
-    /* select I2S standard */
-    reg |= (uint32_t)i2s_standard;
-    /* select I2S polarity */
-    reg |= (uint32_t)i2s_ckpl;
-    /* configure data frame format */
-    reg |= (uint32_t)i2s_frameformat;
-
-    /* write to SPI_I2SCTL register */
-    I2S_ADD_I2SCTL(i2s_add_periph) = (uint32_t)reg;
 }
 
 /*!
@@ -706,6 +728,37 @@ void spi_quad_io23_output_disable(uint32_t spi_periph)
 }
 
 /*!
+    \brief      get SPI and I2S flag status
+    \param[in]  spi_periph: SPIx(x=0,1,2,3,4,5)
+    \param[in]  spi_i2s_flag: SPI/I2S flag status
+                only one parameter can be selected which are shown as below:
+      \arg        SPI_FLAG_TBE: transmit buffer empty flag
+      \arg        SPI_FLAG_RBNE: receive buffer not empty flag
+      \arg        SPI_FLAG_TRANS: transmit on-going flag
+      \arg        SPI_FLAG_RXORERR: receive overrun error flag
+      \arg        SPI_FLAG_CONFERR: mode config error flag
+      \arg        SPI_FLAG_CRCERR: CRC error flag
+      \arg        SPI_FLAG_FERR: format error flag
+      \arg        I2S_FLAG_TBE: transmit buffer empty flag
+      \arg        I2S_FLAG_RBNE: receive buffer not empty flag
+      \arg        I2S_FLAG_TRANS: transmit on-going flag
+      \arg        I2S_FLAG_RXORERR: overrun error flag
+      \arg        I2S_FLAG_TXURERR: underrun error flag
+      \arg        I2S_FLAG_CH: channel side flag
+      \arg        I2S_FLAG_FERR: format error flag
+    \param[out] none
+    \retval     FlagStatus: SET or RESET
+*/
+FlagStatus spi_i2s_flag_get(uint32_t spi_periph, uint32_t flag)
+{
+    if(SPI_STAT(spi_periph) & flag) {
+        return SET;
+    } else {
+        return RESET;
+    }
+}
+
+/*!
     \brief      enable SPI and I2S interrupt
     \param[in]  spi_periph: SPIx(x=0,1,2,3,4,5)
     \param[in]  spi_i2s_int: SPI/I2S interrupt
@@ -717,9 +770,9 @@ void spi_quad_io23_output_disable(uint32_t spi_periph)
     \param[out] none
     \retval     none
 */
-void spi_i2s_interrupt_enable(uint32_t spi_periph, uint8_t spi_i2s_int)
+void spi_i2s_interrupt_enable(uint32_t spi_periph, uint8_t interrupt)
 {
-    switch(spi_i2s_int) {
+    switch(interrupt) {
     /* SPI/I2S transmit buffer empty interrupt */
     case SPI_I2S_INT_TBE:
         SPI_CTL1(spi_periph) |= (uint32_t)SPI_CTL1_TBEIE;
@@ -749,9 +802,9 @@ void spi_i2s_interrupt_enable(uint32_t spi_periph, uint8_t spi_i2s_int)
     \param[out] none
     \retval     none
 */
-void spi_i2s_interrupt_disable(uint32_t spi_periph, uint8_t spi_i2s_int)
+void spi_i2s_interrupt_disable(uint32_t spi_periph, uint8_t interrupt)
 {
-    switch(spi_i2s_int) {
+    switch(interrupt) {
     /* SPI/I2S transmit buffer empty interrupt */
     case SPI_I2S_INT_TBE :
         SPI_CTL1(spi_periph) &= (uint32_t)(~SPI_CTL1_TBEIE);
@@ -784,12 +837,12 @@ void spi_i2s_interrupt_disable(uint32_t spi_periph, uint8_t spi_i2s_int)
     \param[out] none
     \retval     FlagStatus: SET or RESET
 */
-FlagStatus spi_i2s_interrupt_flag_get(uint32_t spi_periph, uint8_t spi_i2s_int)
+FlagStatus spi_i2s_interrupt_flag_get(uint32_t spi_periph, uint8_t interrupt)
 {
     uint32_t reg1 = SPI_STAT(spi_periph);
     uint32_t reg2 = SPI_CTL1(spi_periph);
 
-    switch(spi_i2s_int) {
+    switch(interrupt) {
     /* SPI/I2S transmit buffer empty interrupt */
     case SPI_I2S_INT_FLAG_TBE :
         reg1 = reg1 & SPI_STAT_TBE;
@@ -835,46 +888,3 @@ FlagStatus spi_i2s_interrupt_flag_get(uint32_t spi_periph, uint8_t spi_i2s_int)
         return RESET;
     }
 }
-
-/*!
-    \brief      get SPI and I2S flag status
-    \param[in]  spi_periph: SPIx(x=0,1,2,3,4,5)
-    \param[in]  spi_i2s_flag: SPI/I2S flag status
-                only one parameter can be selected which are shown as below:
-      \arg        SPI_FLAG_TBE: transmit buffer empty flag
-      \arg        SPI_FLAG_RBNE: receive buffer not empty flag
-      \arg        SPI_FLAG_TRANS: transmit on-going flag
-      \arg        SPI_FLAG_RXORERR: receive overrun error flag
-      \arg        SPI_FLAG_CONFERR: mode config error flag
-      \arg        SPI_FLAG_CRCERR: CRC error flag
-      \arg        SPI_FLAG_FERR: format error flag
-      \arg        I2S_FLAG_TBE: transmit buffer empty flag
-      \arg        I2S_FLAG_RBNE: receive buffer not empty flag
-      \arg        I2S_FLAG_TRANS: transmit on-going flag
-      \arg        I2S_FLAG_RXORERR: overrun error flag
-      \arg        I2S_FLAG_TXURERR: underrun error flag
-      \arg        I2S_FLAG_CH: channel side flag
-      \arg        I2S_FLAG_FERR: format error flag
-    \param[out] none
-    \retval     FlagStatus: SET or RESET
-*/
-FlagStatus spi_i2s_flag_get(uint32_t spi_periph, uint32_t spi_i2s_flag)
-{
-    if(SPI_STAT(spi_periph) & spi_i2s_flag) {
-        return SET;
-    } else {
-        return RESET;
-    }
-}
-
-/*!
-    \brief      clear SPI CRC error flag status
-    \param[in]  spi_periph: SPIx(x=0,1,2,3,4,5)
-    \param[out] none
-    \retval     none
-*/
-void spi_crc_error_clear(uint32_t spi_periph)
-{
-    SPI_STAT(spi_periph) &= (uint32_t)(~SPI_FLAG_CRCERR);
-}
-

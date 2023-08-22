@@ -2,13 +2,11 @@
     \file    usbh_hid_usr.c
     \brief   user application layer for USBFS host-mode HID class operation
 
-    \version 2020-08-01, V3.0.0, firmware for GD32F4xx
-    \version 2022-03-09, V3.1.0, firmware for GD32F4xx
-    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
+    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2022, GigaDevice Semiconductor Inc.
+    Copyright (c) 2023, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -65,7 +63,7 @@ static void usbh_user_device_not_supported(void);
 static usbh_user_status usbh_user_userinput(void);
 static void usbh_user_over_current_detected(void);
 
-/* Points to the DEVICE_PROP structure of current device */
+/* points to the usbh_user_cb structure */
 usbh_user_cb hid_usr_cb =
 {
     usbh_user_init,

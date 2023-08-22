@@ -2,14 +2,11 @@
     \file    main.c
     \brief   LCD display 2 layers
 
-    \version 2016-08-15, V1.0.0, firmware for GD32F4xx
-    \version 2018-12-12, V2.0.0, firmware for GD32F4xx
-    \version 2020-09-30, V2.1.0, firmware for GD32F4xx
-    \version 2022-03-09, V3.0.0, firmware for GD32F4xx
+    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2022, GigaDevice Semiconductor Inc.
+    Copyright (c) 2023, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -62,6 +59,7 @@ static void tli_config(void);
 */
 int main(void)
 {
+    /* configure TLI and RCU */
     tli_config();
     /* enable layer0 and layer1 */
     tli_layer_enable(LAYER0);
@@ -169,6 +167,8 @@ static void tli_config(void)
     tli_layer_init_struct.layer_frame_buf_stride_offset = (440 * 2);
     tli_layer_init_struct.layer_frame_total_line_number = 182;
     tli_layer_init(LAYER0, &tli_layer_init_struct);
+
+    tli_reload_config(TLI_REQUEST_RELOAD_EN);
     tli_dither_config(TLI_DITHER_ENABLE);
 }
 

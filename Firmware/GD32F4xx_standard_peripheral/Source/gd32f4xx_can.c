@@ -2,17 +2,11 @@
     \file    gd32f4xx_can.c
     \brief   CAN driver
 
-    \version 2016-08-15, V1.0.0, firmware for GD32F4xx
-    \version 2018-12-12, V2.0.0, firmware for GD32F4xx
-    \version 2019-11-27, V2.0.1, firmware for GD32F4xx
-    \version 2020-07-14, V2.0.2, firmware for GD32F4xx
-    \version 2020-09-30, V2.1.0, firmware for GD32F4xx
-    \version 2021-12-28, V2.1.1, firmware for GD32F4xx
-    \version 2022-03-09, V3.0.0, firmware for GD32F4xx
+    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2022, GigaDevice Semiconductor Inc.
+    Copyright (c) 2023, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -39,6 +33,7 @@ OF SUCH DAMAGE.
 */
 
 #include "gd32f4xx_can.h"
+#include <stdlib.h>
 
 #define CAN_ERROR_HANDLE(s)     do{}while(1)
 
@@ -51,10 +46,10 @@ OF SUCH DAMAGE.
 */
 void can_deinit(uint32_t can_periph)
 {
-    if(CAN0 == can_periph) {
+    if(CAN0 == can_periph){
         rcu_periph_reset_enable(RCU_CAN0RST);
         rcu_periph_reset_disable(RCU_CAN0RST);
-    } else {
+    }else{
         rcu_periph_reset_enable(RCU_CAN1RST);
         rcu_periph_reset_disable(RCU_CAN1RST);
     }
@@ -75,15 +70,19 @@ void can_struct_para_init(can_struct_type_enum type, void *p_struct)
 {
     uint8_t i;
 
+    if(NULL == p_struct) {
+        CAN_ERROR_HANDLE("struct parameter can not be NULL \r\n");
+    }
+
     /* get type of the struct */
     switch(type) {
     /* used for can_init() */
     case CAN_INIT_STRUCT:
         ((can_parameter_struct *)p_struct)->auto_bus_off_recovery = DISABLE;
-        ((can_parameter_struct *)p_struct)->auto_retrans = ENABLE;
+        ((can_parameter_struct *)p_struct)->auto_retrans = DISABLE;
         ((can_parameter_struct *)p_struct)->auto_wake_up = DISABLE;
         ((can_parameter_struct *)p_struct)->prescaler = 0x03FFU;
-        ((can_parameter_struct *)p_struct)->rec_fifo_overwrite = ENABLE;
+        ((can_parameter_struct *)p_struct)->rec_fifo_overwrite = DISABLE;
         ((can_parameter_struct *)p_struct)->resync_jump_width = CAN_BT_SJW_1TQ;
         ((can_parameter_struct *)p_struct)->time_segment_1 = CAN_BT_BS1_3TQ;
         ((can_parameter_struct *)p_struct)->time_segment_2 = CAN_BT_BS2_1TQ;
@@ -199,13 +198,13 @@ ErrStatus can_init(uint32_t can_periph, can_parameter_struct *can_parameter_init
         } else {
             CAN_CTL(can_periph) &= ~CAN_CTL_AWU;
         }
-        /* automatic retransmission mode disable */
+        /* automatic retransmission mode */
         if(ENABLE == can_parameter_init->auto_retrans) {
             CAN_CTL(can_periph) &= ~CAN_CTL_ARD;
         } else {
             CAN_CTL(can_periph) |= CAN_CTL_ARD;
         }
-        /* receive FIFO overwrite mode disable */
+        /* receive FIFO overwrite mode */
         if(ENABLE == can_parameter_init->rec_fifo_overwrite) {
             CAN_CTL(can_periph) &= ~CAN_CTL_RFOD;
         } else {
@@ -345,7 +344,7 @@ void can_debug_freeze_enable(uint32_t can_periph)
 
     if(CAN0 == can_periph) {
         dbg_periph_enable(DBG_CAN0_HOLD);
-    } else {
+    }else{
         dbg_periph_enable(DBG_CAN1_HOLD);
     }
 }
@@ -362,9 +361,9 @@ void can_debug_freeze_disable(uint32_t can_periph)
     /* set DFZ bit */
     CAN_CTL(can_periph) &= ~CAN_CTL_DFZ;
 
-    if(CAN0 == can_periph) {
+    if(CAN0 == can_periph){
         dbg_periph_disable(DBG_CAN0_HOLD);
-    } else {
+    }else{
         dbg_periph_disable(DBG_CAN1_HOLD);
     }
 }

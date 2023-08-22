@@ -2,14 +2,11 @@
     \file    main.c
     \brief   standby wakeup through wakeup pin
 
-    \version 2016-08-15, V1.0.0, firmware for GD32F4xx
-    \version 2018-12-12, V2.0.0, firmware for GD32F4xx
-    \version 2020-09-30, V2.1.0, firmware for GD32F4xx
-    \version 2022-03-09, V3.0.0, firmware for GD32F4xx
+    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2022, GigaDevice Semiconductor Inc.
+    Copyright (c) 2023, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -59,6 +56,8 @@ int main(void)
     gd_eval_key_init(KEY_TAMPER, KEY_MODE_GPIO);
     /* enable wakeup pin */
     pmu_wakeup_pin_enable();
+    /* clear STBF bit */
+    pmu_flag_clear(PMU_FLAG_RESET_STANDBY);
     /* press tamper key to enter standby mode and use wakeup key to wakeup mcu */
     while(1) {
         if(RESET == gpio_input_bit_get(TAMPER_KEY_GPIO_PORT, TAMPER_KEY_PIN)) {

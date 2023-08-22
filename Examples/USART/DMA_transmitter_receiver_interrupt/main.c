@@ -1,15 +1,12 @@
 /*!
-    \file    gd32f4xx_libopt.h
-    \brief   library optional for gd32f4xx
+    \file    main.c
+    \brief   transmit/receive data using DMA interrupt
 
-    \version 2016-08-15, V1.0.0, firmware for GD32F4xx
-    \version 2018-12-12, V2.0.0, firmware for GD32F4xx
-    \version 2020-09-30, V2.1.0, firmware for GD32F4xx
-    \version 2022-03-09, V3.0.0, firmware for GD32F4xx
+    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2022, GigaDevice Semiconductor Inc.
+    Copyright (c) 2023, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -63,8 +60,8 @@ int main(void)
     gd_eval_com_init(EVAL_COM0);
 
     /* USART DMA enable*/
-    usart_dma_receive_config(USART0, USART_DENR_ENABLE);
-    usart_dma_transmit_config(USART0, USART_DENT_ENABLE);
+    usart_dma_receive_config(USART0, USART_RECEIVE_DMA_ENABLE);
+    usart_dma_transmit_config(USART0, USART_TRANSMIT_DMA_ENABLE);
 
     /*configure DMA1 interrupt*/
     nvic_config();

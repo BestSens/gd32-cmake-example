@@ -2,13 +2,11 @@
     \file    usbh_standard_hid.c
     \brief   USB host HID keyboard and mouse driver
 
-    \version 2020-08-01, V3.0.0, firmware for GD32F4xx
-    \version 2022-03-09, V3.1.0, firmware for GD32F4xx
-    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
+    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2022, GigaDevice Semiconductor Inc.
+    Copyright (c) 2023, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -40,7 +38,7 @@ OF SUCH DAMAGE.
 hid_mouse_info mouse_info;
 hid_keybd_info keybd_info;
 
-__ALIGN_BEGIN uint8_t mouse_report_data[4] __ALIGN_END = {0U};
+__ALIGN_BEGIN uint8_t mouse_report_data[8] __ALIGN_END = {0U};
 __ALIGN_BEGIN uint32_t keybd_report_data[2] __ALIGN_END;
 
 /* local constants */

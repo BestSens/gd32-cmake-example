@@ -2,14 +2,11 @@
     \file    readme.txt
     \brief   description of the EXTI Key example
     
-    \version 2016-08-15, V1.0.0, firmware for GD32F4xx
-    \version 2018-12-12, V2.0.0, firmware for GD32F4xx
-    \version 2020-09-30, V2.1.0, firmware for GD32F4xx
-    \version 2022-03-09, V3.0.0, firmware for GD32F4xx
+    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2022, GigaDevice Semiconductor Inc.
+    Copyright (c) 2023, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -39,4 +36,3 @@ OF SUCH DAMAGE.
 the interrupt request, and toggle the LED. After the system start-up, 
 LED1 is on. When Tamper Key is pressed, LED2 is toggled, it is switched on; 
 when Tamper Key is pressed once again, LED2 is toggled, it is switched off.
-

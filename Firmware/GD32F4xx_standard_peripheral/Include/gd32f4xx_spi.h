@@ -2,14 +2,11 @@
     \file    gd32f4xx_spi.h
     \brief   definitions for the SPI
 
-    \version 2016-08-15, V1.0.0, firmware for GD32F4xx
-    \version 2018-12-12, V2.0.0, firmware for GD32F4xx
-    \version 2020-09-30, V2.1.0, firmware for GD32F4xx
-    \version 2022-03-09, V3.0.0, firmware for GD32F4xx
+    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2022, GigaDevice Semiconductor Inc.
+    Copyright (c) 2023, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -54,27 +51,27 @@ OF SUCH DAMAGE.
 #define I2S2_ADD                        (I2S_ADD_BASE + 0x00000C00U)
 
 /* SPI registers definitions */
-#define SPI_CTL0(spix)                  REG32((spix) + 0x00U)                   /*!< SPI control register 0 */
-#define SPI_CTL1(spix)                  REG32((spix) + 0x04U)                   /*!< SPI control register 1*/
-#define SPI_STAT(spix)                  REG32((spix) + 0x08U)                   /*!< SPI status register */
-#define SPI_DATA(spix)                  REG32((spix) + 0x0CU)                   /*!< SPI data register */
-#define SPI_CRCPOLY(spix)               REG32((spix) + 0x10U)                   /*!< SPI CRC polynomial register */
-#define SPI_RCRC(spix)                  REG32((spix) + 0x14U)                   /*!< SPI receive CRC register */
-#define SPI_TCRC(spix)                  REG32((spix) + 0x18U)                   /*!< SPI transmit CRC register */
-#define SPI_I2SCTL(spix)                REG32((spix) + 0x1CU)                   /*!< SPI I2S control register */
-#define SPI_I2SPSC(spix)                REG32((spix) + 0x20U)                   /*!< SPI I2S clock prescaler register */
-#define SPI_QCTL(spix)                  REG32((spix) + 0x80U)                   /*!< SPI quad mode control register */
+#define SPI_CTL0(spix)                  REG32((spix) + 0x00000000U)             /*!< SPI control register 0 */
+#define SPI_CTL1(spix)                  REG32((spix) + 0x00000004U)             /*!< SPI control register 1*/
+#define SPI_STAT(spix)                  REG32((spix) + 0x00000008U)             /*!< SPI status register */
+#define SPI_DATA(spix)                  REG32((spix) + 0x0000000CU)             /*!< SPI data register */
+#define SPI_CRCPOLY(spix)               REG32((spix) + 0x00000010U)             /*!< SPI CRC polynomial register */
+#define SPI_RCRC(spix)                  REG32((spix) + 0x00000014U)             /*!< SPI receive CRC register */
+#define SPI_TCRC(spix)                  REG32((spix) + 0x00000018U)             /*!< SPI transmit CRC register */
+#define SPI_I2SCTL(spix)                REG32((spix) + 0x0000001CU)             /*!< SPI I2S control register */
+#define SPI_I2SPSC(spix)                REG32((spix) + 0x00000020U)             /*!< SPI I2S clock prescaler register */
+#define SPI_QCTL(spix)                  REG32((spix) + 0x00000080U)             /*!< SPI quad mode control register */
 
 /* I2S_ADD registers definitions */
-#define I2S_ADD_CTL0(i2sx_add)          REG32((i2sx_add) + 0x00U)               /*!< I2S_ADD control register 0 */
-#define I2S_ADD_CTL1(i2sx_add)          REG32((i2sx_add) + 0x04U)               /*!< I2S_ADD control register 1*/
-#define I2S_ADD_STAT(i2sx_add)          REG32((i2sx_add) + 0x08U)               /*!< I2S_ADD status register */
-#define I2S_ADD_DATA(i2sx_add)          REG32((i2sx_add) + 0x0CU)               /*!< I2S_ADD data register */
-#define I2S_ADD_CRCPOLY(i2sx_add)       REG32((i2sx_add) + 0x10U)               /*!< I2S_ADD CRC polynomial register */
-#define I2S_ADD_RCRC(i2sx_add)          REG32((i2sx_add) + 0x14U)               /*!< I2S_ADD receive CRC register */
-#define I2S_ADD_TCRC(i2sx_add)          REG32((i2sx_add) + 0x18U)               /*!< I2S_ADD transmit CRC register */
-#define I2S_ADD_I2SCTL(i2sx_add)        REG32((i2sx_add) + 0x1CU)               /*!< I2S_ADD I2S control register */
-#define I2S_ADD_I2SPSC(i2sx_add)        REG32((i2sx_add) + 0x20U)               /*!< I2S_ADD I2S clock prescaler register */
+#define I2S_ADD_CTL0(i2sx_add)          REG32((i2sx_add) + 0x00000000U)         /*!< I2S_ADD control register 0 */
+#define I2S_ADD_CTL1(i2sx_add)          REG32((i2sx_add) + 0x00000004U)         /*!< I2S_ADD control register 1*/
+#define I2S_ADD_STAT(i2sx_add)          REG32((i2sx_add) + 0x00000008U)         /*!< I2S_ADD status register */
+#define I2S_ADD_DATA(i2sx_add)          REG32((i2sx_add) + 0x0000000CU)         /*!< I2S_ADD data register */
+#define I2S_ADD_CRCPOLY(i2sx_add)       REG32((i2sx_add) + 0x00000010U)         /*!< I2S_ADD CRC polynomial register */
+#define I2S_ADD_RCRC(i2sx_add)          REG32((i2sx_add) + 0x00000014U)         /*!< I2S_ADD receive CRC register */
+#define I2S_ADD_TCRC(i2sx_add)          REG32((i2sx_add) + 0x00000018U)         /*!< I2S_ADD transmit CRC register */
+#define I2S_ADD_I2SCTL(i2sx_add)        REG32((i2sx_add) + 0x0000001CU)         /*!< I2S_ADD I2S control register */
+#define I2S_ADD_I2SPSC(i2sx_add)        REG32((i2sx_add) + 0x00000020U)         /*!< I2S_ADD I2S clock prescaler register */
 
 /* bits definitions */
 /* SPI_CTL0 */
@@ -326,6 +323,10 @@ void spi_i2s_data_transmit(uint32_t spi_periph, uint16_t data);
 uint16_t spi_i2s_data_receive(uint32_t spi_periph);
 /* configure SPI bidirectional transfer direction  */
 void spi_bidirectional_transfer_config(uint32_t spi_periph, uint32_t transfer_direction);
+/* configure i2s full duplex mode */
+void i2s_full_duplex_mode_config(uint32_t i2s_add_periph, uint32_t i2s_mode, uint32_t i2s_standard, uint32_t i2s_ckpl, uint32_t i2s_frameformat);
+/* clear TI Mode Format Error flag status */
+void spi_i2s_format_error_clear(uint32_t spi_periph, uint32_t flag);
 
 /* SPI CRC functions */
 /* set SPI CRC polynomial */
@@ -340,15 +341,14 @@ void spi_crc_off(uint32_t spi_periph);
 void spi_crc_next(uint32_t spi_periph);
 /* get SPI CRC send value or receive value */
 uint16_t spi_crc_get(uint32_t spi_periph, uint8_t spi_crc);
+/* clear SPI CRC error flag status */
+void spi_crc_error_clear(uint32_t spi_periph);
 
 /* SPI TI mode functions */
 /* enable SPI TI mode */
 void spi_ti_mode_enable(uint32_t spi_periph);
 /* disable SPI TI mode */
 void spi_ti_mode_disable(uint32_t spi_periph);
-
-/* configure i2s full duplex mode */
-void i2s_full_duplex_mode_config(uint32_t i2s_add_periph, uint32_t i2s_mode, uint32_t i2s_standard, uint32_t i2s_ckpl, uint32_t i2s_frameformat);
 
 /* quad wire SPI functions */
 /* enable quad wire SPI */
@@ -364,16 +364,14 @@ void spi_quad_io23_output_enable(uint32_t spi_periph);
 /* disable SPI_IO2 and SPI_IO3 pin output */
 void spi_quad_io23_output_disable(uint32_t spi_periph);
 
-/* flag & interrupt functions */
-/* enable SPI and I2S interrupt */
-void spi_i2s_interrupt_enable(uint32_t spi_periph, uint8_t spi_i2s_int);
-/* disable SPI and I2S interrupt */
-void spi_i2s_interrupt_disable(uint32_t spi_periph, uint8_t spi_i2s_int);
-/* get SPI and I2S interrupt status*/
-FlagStatus spi_i2s_interrupt_flag_get(uint32_t spi_periph, uint8_t spi_i2s_int);
+/* flag and interrupt functions */
 /* get SPI and I2S flag status */
-FlagStatus spi_i2s_flag_get(uint32_t spi_periph, uint32_t spi_i2s_flag);
-/* clear SPI CRC error flag status */
-void spi_crc_error_clear(uint32_t spi_periph);
+FlagStatus spi_i2s_flag_get(uint32_t spi_periph, uint32_t flag);
+/* enable SPI and I2S interrupt */
+void spi_i2s_interrupt_enable(uint32_t spi_periph, uint8_t interrupt);
+/* disable SPI and I2S interrupt */
+void spi_i2s_interrupt_disable(uint32_t spi_periph, uint8_t interrupt);
+/* get SPI and I2S interrupt status*/
+FlagStatus spi_i2s_interrupt_flag_get(uint32_t spi_periph, uint8_t interrupt);
 
 #endif /* GD32F4XX_SPI_H */

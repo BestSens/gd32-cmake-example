@@ -2,12 +2,11 @@
     \file    readme.txt
     \brief   description of using the I2C bus to write and read EEPROM
 
-    \version 2022-01-15, V1.0.0, firmware for GD32F4xx
-    \version 2022-03-09, V3.0.0, firmware for GD32F4xx
+    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2022, GigaDevice Semiconductor Inc.
+    Copyright (c) 2023, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -35,7 +34,7 @@ OF SUCH DAMAGE.
 
   This demo is based on the GD32450I-EVAL-V1.1 board, It describes a communication 
 method between I2C bus and EEPROM with timeout and bus release function. The 
-access result will be printed by COM1.
+access result will be printed by COM0.
 
   Procedures sequentially writes 256 bytes of data to the EEPROM from the 0x00 
 address, and then the program sequentially reads 256 bytes of data from the 

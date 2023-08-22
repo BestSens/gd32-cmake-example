@@ -2,14 +2,11 @@
     \file    main.c
     \brief   ADC EXTI trigger ADC0 routine sequence 
     
-    \version 2016-08-15, V1.0.0, firmware for GD32F4xx
-    \version 2018-12-12, V2.0.0, firmware for GD32F4xx
-    \version 2020-09-30, V2.1.0, firmware for GD32F4xx
-    \version 2022-03-09, V3.0.0, firmware for GD32F4xx
+    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2022, GigaDevice Semiconductor Inc.
+    Copyright (c) 2023, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -187,7 +184,7 @@ void adc_config(void)
     adc_routine_channel_config(ADC0, 3, ADC_CHANNEL_7, ADC_SAMPLETIME_15);
     /* ADC trigger config */
     adc_external_trigger_source_config(ADC0, ADC_ROUTINE_CHANNEL, ADC_EXTTRIG_ROUTINE_EXTI_11);
-    adc_external_trigger_config(ADC0, ADC_ROUTINE_CHANNEL, ENABLE);
+    adc_external_trigger_config(ADC0, ADC_ROUTINE_CHANNEL, EXTERNAL_TRIGGER_RISING);
     /* ADC discontinuous mode */
     adc_discontinuous_mode_config(ADC0, ADC_ROUTINE_CHANNEL, 1);
     /* ADC DMA function enable */

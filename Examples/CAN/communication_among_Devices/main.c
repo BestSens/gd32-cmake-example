@@ -2,14 +2,11 @@
     \file    main.c
     \brief   communication_among_Devices in normal mode
     
-    \version 2016-08-15, V1.0.0, firmware for GD32F4xx
-    \version 2018-12-12, V2.0.0, firmware for GD32F4xx
-    \version 2020-09-30, V2.1.0, firmware for GD32F4xx
-    \version 2022-03-09, V3.0.0, firmware for GD32F4xx
+    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2022, GigaDevice Semiconductor Inc.
+    Copyright (c) 2023, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -40,10 +37,10 @@ OF SUCH DAMAGE.
 #include "gd32f450i_eval.h"
 
 /* select can */
-#define CAN0_USED
-//#define CAN1_USED
+#define DEV_CAN0_USED
+//#define DEV_CAN1_USED
 
-#ifdef  CAN0_USED
+#ifdef  DEV_CAN0_USED
     #define CANX CAN0
 #else 
     #define CANX CAN1
@@ -59,7 +56,6 @@ void led_config(void);
 void gpio_config(void);
 ErrStatus can_networking(void);
 void can_networking_init(void);
-void delay(void);
 
 /*!
     \brief      main function
@@ -69,6 +65,10 @@ void delay(void);
 */
 int main(void)
 {
+    uint8_t i = 0;
+    uint32_t timeout = 0xFFFF;
+    uint8_t transmit_mailbox = 0;
+    
     receive_flag = RESET;
     /* configure Tamper key */
     gd_eval_key_init(KEY_TAMPER, KEY_MODE_GPIO);
@@ -91,12 +91,22 @@ int main(void)
     
     /* initialize transmit message */
     can_struct_para_init(CAN_TX_MESSAGE_STRUCT, &transmit_message);
-    transmit_message.tx_sfid = 0x321;
-    transmit_message.tx_efid = 0x01;
+    transmit_message.tx_sfid = 0x00;
+    transmit_message.tx_efid = 0xaabb;
     transmit_message.tx_ft = CAN_FT_DATA;
-    transmit_message.tx_ff = CAN_FF_STANDARD;
-    transmit_message.tx_dlen = 1;
-    printf("please press the Tamper key to transmit data!\r\n");
+    transmit_message.tx_ff = CAN_FF_EXTENDED;
+    transmit_message.tx_dlen = 8;
+    
+    transmit_message.tx_data[0] = 0xA0;
+    transmit_message.tx_data[1] = 0xA1;
+    transmit_message.tx_data[2] = 0xA2;
+    transmit_message.tx_data[3] = 0xA3;
+    transmit_message.tx_data[4] = 0xA4;
+    transmit_message.tx_data[5] = 0xA5;
+    transmit_message.tx_data[6] = 0xA6;
+    transmit_message.tx_data[7] = 0xA7;
+                
+    printf("Please press the Tamper key to transmit data!\r\n");
     
     /* initialize receive message */
     can_struct_para_init(CAN_RX_MESSAGE_STRUCT, &receive_message);
@@ -109,10 +119,17 @@ int main(void)
                 transmit_number = 0x00;
             }else{
                 transmit_message.tx_data[0] = transmit_number++;
-                printf("transmit data: %x\r\n", transmit_message.tx_data[0]);
+                printf("\r\n can transmit data:");
+                for(i = 0; i < transmit_message.tx_dlen; i++){
+                    printf(" %02x", transmit_message.tx_data[i]);
+                }
                 /* transmit message */
-                can_message_transmit(CANX, &transmit_message);
-                delay();
+                transmit_mailbox = can_message_transmit(CANX, &transmit_message);
+                /* waiting for transmit completed */
+                timeout = 0xFFFF;
+                while((CAN_TRANSMIT_OK != can_transmit_states(CANX, transmit_mailbox)) && (0 != timeout)){
+                    timeout--;
+                }
                 /* waiting for Tamper key up */
                 while(0 == gd_eval_key_state_get(KEY_TAMPER));
             }
@@ -120,7 +137,10 @@ int main(void)
         if(SET == receive_flag){
             gd_eval_led_toggle(LED2);
             receive_flag = RESET;
-            printf("recive data: %x\r\n", receive_message.rx_data[0]);
+            printf("\r\n can receive data:");
+            for(i = 0; i < receive_message.rx_dlen; i++){
+                printf(" %02x", receive_message.rx_data[i]);
+            }
         }
     }
 }
@@ -147,7 +167,7 @@ void can_networking_init(void)
     
     /* initialize CAN */
     can_parameter.time_triggered = DISABLE;
-    can_parameter.auto_bus_off_recovery = DISABLE;
+    can_parameter.auto_bus_off_recovery = ENABLE;
     can_parameter.auto_wake_up = DISABLE;
     can_parameter.auto_retrans = ENABLE;
     can_parameter.rec_fifo_overwrite = DISABLE;
@@ -161,7 +181,7 @@ void can_networking_init(void)
     can_init(CANX, &can_parameter);
 
     /* initialize filter */
-#ifdef  CAN0_USED
+#ifdef  DEV_CAN0_USED
     /* CAN0 filter number */
     can_filter.filter_number = 0;
 #else
@@ -188,7 +208,7 @@ void can_networking_init(void)
 */
 void nvic_config(void)
 {
-#ifdef  CAN0_USED
+#ifdef  DEV_CAN0_USED
     /* configure CAN0 NVIC */
     nvic_irq_enable(CAN0_RX1_IRQn,0,0);
 #else
@@ -196,20 +216,6 @@ void nvic_config(void)
     nvic_irq_enable(CAN1_RX1_IRQn,0,0);
 #endif
 
-}
-
-/*!
-    \brief      delay
-    \param[in]  none
-    \param[out] none
-    \retval     none
-*/
-void delay(void)
-{
-    uint16_t nTime = 0x0000;
-
-    for(nTime = 0; nTime < 0xFFFF; nTime++){
-    }
 }
 
 /*!

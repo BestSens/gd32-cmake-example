@@ -51,8 +51,15 @@
 //#define __SYSTEM_CLOCK_168M_PLL_25M_HXTAL       (uint32_t)(168000000)
 //#define __SYSTEM_CLOCK_200M_PLL_IRC16M          (uint32_t)(200000000)
 //#define __SYSTEM_CLOCK_200M_PLL_8M_HXTAL        (uint32_t)(200000000)
-#define __SYSTEM_CLOCK_200M_PLL_25M_HXTAL       (uint32_t)(200000000)
-//#define __SYSTEM_CLOCK_240M_PLL_IRC16M          (uint32_t)(240000000)
+#if defined (GD32F450) || defined (GD32F405) || defined (GD32F407) || defined (GD32F425) || defined (GD32F427)
+#define __SYSTEM_CLOCK_200M_PLL_25M_HXTAL         (uint32_t)(200000000)
+#endif
+
+#if defined (GD32F470)
+#define __SYSTEM_CLOCK_240M_PLL_25M_HXTAL         (uint32_t)(240000000)
+#endif
+
+#define __SYSTEM_CLOCK_240M_PLL_IRC16M          (uint32_t)(240000000)
 //#define __SYSTEM_CLOCK_240M_PLL_8M_HXTAL        (uint32_t)(240000000)
 //#define __SYSTEM_CLOCK_240M_PLL_25M_HXTAL       (uint32_t)(240000000)
 
@@ -270,7 +277,8 @@ static void system_clock_hxtal(void)
     
     /* if fail */
     if(0U == (RCU_CTL & RCU_CTL_HXTALSTB)){
-        while(1){
+        while(0U == (RCU_CTL & RCU_CTL_HXTALSTB))
+        {
         }
     }
     
@@ -381,7 +389,8 @@ static void system_clock_120m_8m_hxtal(void)
 
     /* if fail */
     if(0U == (RCU_CTL & RCU_CTL_HXTALSTB)){
-        while(1){
+        while(0U == (RCU_CTL & RCU_CTL_HXTALSTB))
+        {
         }
     }
          
@@ -449,7 +458,8 @@ static void system_clock_120m_25m_hxtal(void)
 
     /* if fail */
     if(0U == (RCU_CTL & RCU_CTL_HXTALSTB)){
-        while(1){
+        while(0U == (RCU_CTL & RCU_CTL_HXTALSTB))
+        {
         }
     }
          
@@ -582,7 +592,8 @@ static void system_clock_168m_8m_hxtal(void)
 
     /* if fail */
     if(0U == (RCU_CTL & RCU_CTL_HXTALSTB)){
-        while(1){
+        while(0U == (RCU_CTL & RCU_CTL_HXTALSTB))
+        {
         }
     }
 
@@ -649,7 +660,8 @@ static void system_clock_168m_25m_hxtal(void)
 
     /* if fail */
     if(0U == (RCU_CTL & RCU_CTL_HXTALSTB)){
-        while(1){
+        while(0U == (RCU_CTL & RCU_CTL_HXTALSTB))
+        {
         }
     }
          
@@ -785,7 +797,8 @@ static void system_clock_200m_8m_hxtal(void)
 
     /* if fail */
     if(0U == (RCU_CTL & RCU_CTL_HXTALSTB)){
-        while(1){
+        while(0U == (RCU_CTL & RCU_CTL_HXTALSTB))
+        {
         }
     }
          
@@ -853,7 +866,8 @@ static void system_clock_200m_25m_hxtal(void)
 
     /* if fail */
     if(0U == (RCU_CTL & RCU_CTL_HXTALSTB)){
-        while(1){
+        while(0U == (RCU_CTL & RCU_CTL_HXTALSTB))
+        {
         }
     }
          
@@ -989,7 +1003,8 @@ static void system_clock_240m_8m_hxtal(void)
 
     /* if fail */
     if(0U == (RCU_CTL & RCU_CTL_HXTALSTB)){
-        while(1){
+        while(0U == (RCU_CTL & RCU_CTL_HXTALSTB))
+        {
         }
     }
          
@@ -1057,7 +1072,8 @@ static void system_clock_240m_25m_hxtal(void)
 
     /* if fail */
     if(0U == (RCU_CTL & RCU_CTL_HXTALSTB)){
-        while(1){
+        while(0U == (RCU_CTL & RCU_CTL_HXTALSTB))
+        {
         }
     }
          

@@ -2,14 +2,11 @@
     \file    readme.txt
     \brief   description of the master transmitter and slave receiver interrupt
     
-    \version 2016-08-15, V1.0.0, firmware for GD32F4xx
-    \version 2018-12-12, V2.0.0, firmware for GD32F4xx
-    \version 2020-09-30, V2.1.0, firmware for GD32F4xx
-    \version 2022-03-09, V3.0.0, firmware for GD32F4xx
+    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2022, GigaDevice Semiconductor Inc.
+    Copyright (c) 2023, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -44,7 +41,7 @@ by the pin PB10 and PB11 respectively.
 
   This demo will send the data of i2c_buffer_transmitter array through I2C1 interface 
 to the I2C0, and it will store the data received by I2C1 in the i2c_buffer_receiver
-array. If transfer is successfully completed, LED2 and LED3 are on. 
+array. If transfer is successfully completed, LED1 and LED2 are on. 
 
   We should use the jumper to connect the PB6 and PB10. The PB7 and PB11 are 
 connected as well.

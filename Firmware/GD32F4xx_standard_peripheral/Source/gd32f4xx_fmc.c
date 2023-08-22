@@ -2,14 +2,11 @@
     \file    gd32f4xx_fmc.c
     \brief   FMC driver
 
-    \version 2016-08-15, V1.0.0, firmware for GD32F4xx
-    \version 2018-12-12, V2.0.0, firmware for GD32F4xx
-    \version 2020-09-30, V2.1.0, firmware for GD32F4xx
-    \version 2022-03-09, V3.0.0, firmware for GD32F4xx
+    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2022, GigaDevice Semiconductor Inc.
+    Copyright (c) 2023, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -598,8 +595,6 @@ void ob_drp_enable(uint32_t ob_drp)
     uint32_t reg1 = FMC_OBCTL1;
     fmc_state_enum fmc_state = FMC_READY;
     uint32_t drp_state = FMC_OBCTL0 & FMC_OBCTL0_DRP;
-    uint32_t wp0_state = FMC_OBCTL0 & FMC_OBCTL0_WP0;
-    uint32_t wp1_state = FMC_OBCTL1 & FMC_OBCTL1_WP1;
 
     /* wait for the FMC ready */
     fmc_state = fmc_ready_wait(FMC_TIMEOUT_COUNT);
@@ -755,6 +750,27 @@ void ob_boot_mode_config(uint32_t boot_mode)
     reg &= ~FMC_OBCTL0_BB;
     FMC_OBCTL0 = (reg | boot_mode);
 }
+
+#if defined (GD32F450) || defined (GD32F470)
+/*!
+    \brief    configure the option byte double bank select, only for 1MB flash memory series
+    \param[in]  double_bank: specifies the option byte double bank select
+                only one parameter can be selected which is shown as below:
+      \arg        OB_DBS_DISABLE: single bank when flash size is 1M bytes
+      \arg        OB_DBS_ENABLE: double banks when flash size is 1M bytes
+    \param[out] none
+    \retval     none
+*/
+void ob_double_bank_select(uint32_t double_bank)
+{
+    uint32_t reg;
+
+    reg = FMC_OBCTL0;
+    /* set option byte double bank select */
+    reg &= ~FMC_OBCTL0_DBS;
+    FMC_OBCTL0 = (reg | double_bank);
+}
+#endif
 
 /*!
     \brief    get the FMC user option byte

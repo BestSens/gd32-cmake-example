@@ -2,14 +2,11 @@
     \file    main.c
     \brief   USART DMA transmitter receiver
 
-    \version 2016-08-15, V1.0.0, firmware for GD32F4xx
-    \version 2018-12-12, V2.0.0, firmware for GD32F4xx
-    \version 2020-09-30, V2.1.0, firmware for GD32F4xx
-    \version 2022-03-09, V3.0.0, firmware for GD32F4xx
+    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2022, GigaDevice Semiconductor Inc.
+    Copyright (c) 2023, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -42,7 +39,7 @@ OF SUCH DAMAGE.
 uint8_t rxbuffer[10];
 uint8_t txbuffer[] = "\n\rUSART DMA receive and transmit example, please input 10 bytes:\n\r";
 #define ARRAYNUM(arr_name)     (uint32_t)(sizeof(arr_name) / sizeof(*(arr_name)))
-
+#define USART0_DATA_ADDRESS    ((uint32_t)&USART_DATA(USART0))
 /*!
     \brief      main function
     \param[in]  none
@@ -63,7 +60,7 @@ int main(void)
     dma_init_struct.memory_inc = DMA_MEMORY_INCREASE_ENABLE;
     dma_init_struct.periph_memory_width = DMA_PERIPH_WIDTH_8BIT;
     dma_init_struct.number = ARRAYNUM(txbuffer);
-    dma_init_struct.periph_addr = (uint32_t)&USART_DATA(USART0);
+    dma_init_struct.periph_addr = USART0_DATA_ADDRESS;
     dma_init_struct.periph_inc = DMA_PERIPH_INCREASE_DISABLE;
     dma_init_struct.priority = DMA_PRIORITY_ULTRA_HIGH;
     dma_single_data_mode_init(DMA1, DMA_CH7, &dma_init_struct);
@@ -74,19 +71,21 @@ int main(void)
     dma_channel_enable(DMA1, DMA_CH7);
 
     /* USART DMA enable for transmission and reception */
-    usart_dma_transmit_config(USART0, USART_DENT_ENABLE);
-    usart_dma_receive_config(USART0, USART_DENR_ENABLE);
+    usart_dma_transmit_config(USART0, USART_TRANSMIT_DMA_ENABLE);
+    usart_dma_receive_config(USART0, USART_RECEIVE_DMA_ENABLE);
 
     /* wait DMA channel transfer complete */
     while(RESET == dma_flag_get(DMA1, DMA_CH7, DMA_FLAG_FTF));
     while(1) {
         /* deinitialize DMA channel2 (USART0 RX) */
         dma_deinit(DMA1, DMA_CH2);
+        usart_flag_clear(USART0, USART_FLAG_RBNE);
+        usart_dma_receive_config(USART0, USART_RECEIVE_DMA_ENABLE);
         dma_init_struct.direction = DMA_PERIPH_TO_MEMORY;
         dma_init_struct.memory0_addr = (uint32_t)rxbuffer;
         dma_init_struct.memory_inc = DMA_MEMORY_INCREASE_ENABLE;
         dma_init_struct.number = 10;
-        dma_init_struct.periph_addr = (uint32_t)&USART_DATA(USART0);
+        dma_init_struct.periph_addr = USART0_DATA_ADDRESS;
         dma_init_struct.periph_inc = DMA_PERIPH_INCREASE_DISABLE;
         dma_init_struct.periph_memory_width = DMA_PERIPH_WIDTH_8BIT;
         dma_init_struct.priority = DMA_PRIORITY_ULTRA_HIGH;
@@ -99,6 +98,7 @@ int main(void)
 
         /* wait DMA channel transfer complete */
         while(RESET == dma_flag_get(DMA1, DMA_CH2, DMA_FLAG_FTF));
+        usart_dma_receive_config(USART0, USART_RECEIVE_DMA_DISABLE);
         printf("\n\r%s\n\r", rxbuffer);
     }
 }

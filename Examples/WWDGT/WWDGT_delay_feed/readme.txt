@@ -2,14 +2,11 @@
     \file    readme.txt
     \brief   description of the WWDGT_delay_feed example
 
-    \version 2016-08-15, V1.0.0, firmware for GD32F4xx
-    \version 2018-12-12, V2.0.0, firmware for GD32F4xx
-    \version 2020-09-30, V2.1.0, firmware for GD32F4xx
-    \version 2022-03-09, V3.0.0, firmware for GD32F4xx
+    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2022, GigaDevice Semiconductor Inc.
+    Copyright (c) 2023, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -47,4 +44,4 @@ counter can reloaded normally,the LED1 is turn off, LED2 is blinking fast.
   If the value in the delay function is not set properly, the WWDGT counter is not 
 reloaded. As a result, the system reset and only the LED1 is remain illuminated.
   
-  In this example the system clock is set to 200 MHz , and the APB1 is set to 30MHz.
+  In this example the system clock is set to 200 MHz , and the APB1 is set to 50MHz.

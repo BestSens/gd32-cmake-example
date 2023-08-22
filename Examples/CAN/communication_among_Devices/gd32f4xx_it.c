@@ -2,14 +2,11 @@
     \file    gd32f4xx_it.c
     \brief   interrupt service routines
     
-    \version 2016-08-15, V1.0.0, firmware for GD32F4xx
-    \version 2018-12-12, V2.0.0, firmware for GD32F4xx
-    \version 2020-09-30, V2.1.0, firmware for GD32F4xx
-    \version 2022-03-09, V3.0.0, firmware for GD32F4xx
+    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2022, GigaDevice Semiconductor Inc.
+    Copyright (c) 2023, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -152,7 +149,7 @@ void CAN0_RX1_IRQHandler(void)
 {
     /* check the receive message */
     can_message_receive(CAN0, CAN_FIFO1, &receive_message);
-    if((0x321 == receive_message.rx_sfid)&&(CAN_FF_STANDARD == receive_message.rx_ff) && (1 == receive_message.rx_dlen)){
+    if((0xaabb == receive_message.rx_efid)&&(CAN_FF_EXTENDED == receive_message.rx_ff) && (8 == receive_message.rx_dlen)){
         receive_flag = SET;
     }
 }
@@ -167,7 +164,7 @@ void CAN1_RX1_IRQHandler(void)
 {
     /* check the receive message */
     can_message_receive(CAN1, CAN_FIFO1, &receive_message);
-    if((0x321 == receive_message.rx_sfid)&&(CAN_FF_STANDARD == receive_message.rx_ff) && (1 == receive_message.rx_dlen)){
+    if((0xaabb == receive_message.rx_efid)&&(CAN_FF_EXTENDED == receive_message.rx_ff) && (8 == receive_message.rx_dlen)){
         receive_flag = SET;
     }
 }

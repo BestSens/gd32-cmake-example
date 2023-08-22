@@ -2,13 +2,11 @@
     \file    drv_usb_host.c
     \brief   USB host mode low level driver
 
-    \version 2020-08-01, V3.0.0, firmware for GD32F4xx
-    \version 2022-03-09, V3.1.0, firmware for GD32F4xx
-    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
+    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2022, GigaDevice Semiconductor Inc.
+    Copyright (c) 2023, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -435,7 +433,7 @@ usb_status usb_pipe_ping (usb_core_driver *udev, uint8_t pipe_num)
 {
     uint32_t pp_ctl = 0U;
 
-    udev->regs.pr[pipe_num]->HCHLEN = HCHLEN_PING | (HCHLEN_PCNT & (1U << 19U));
+    udev->regs.pr[pipe_num]->HCHLEN = HCHLEN_PING;
 
     pp_ctl = udev->regs.pr[pipe_num]->HCHCTL;
 

@@ -2,13 +2,11 @@
     \file    usbh_usr.c
     \brief   user application layer for USBFS host-mode MSC class operation
 
-    \version 2020-08-01, V3.0.0, firmware for GD32F4xx
-    \version 2022-03-09, V3.1.0, firmware for GD32F4xx
-    \version 2022-06-30, V3.2.0, firmware for GD32F4xx
+    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2022, GigaDevice Semiconductor Inc.
+    Copyright (c) 2023, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -51,7 +49,7 @@ FIL file;
 uint8_t line_idx;
 uint8_t usbh_usr_application_state = USBH_USR_FS_INIT;
 
-/*  points to the DEVICE_PROP structure of current device */
+/* points to the usbh_user_cb structure */
 usbh_user_cb usr_cb =
 {
     usbh_user_init,
@@ -347,7 +345,7 @@ int usbh_usr_msc_application(void)
         LCD_UsrLog("> File System initialized.\r\n");
 
         if (USBH_OK == usbh_msc_lun_info_get(&usb_host_msc, 0, &info)){
-            LCD_UsrLog("> Disk capacity: %ud Bytes.\r\n", info.capacity.block_nbr * info.capacity.block_size);
+            LCD_UsrLog("> Disk capacity: %llu Bytes.\r\n", (uint64_t)info.capacity.block_nbr * info.capacity.block_size);
         }
 
         usbh_usr_application_state = USBH_USR_FS_READLIST;
