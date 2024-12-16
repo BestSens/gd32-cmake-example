@@ -2,11 +2,11 @@
     \file    gd32f4xx_pmu.c
     \brief   PMU driver
 
-    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
+    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2023, GigaDevice Semiconductor Inc.
+    Copyright (c) 2024, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -295,9 +295,10 @@ void pmu_to_standbymode(void)
     SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;
 
     REG32(0xE000E010U) &= 0x00010004U;
-    REG32(0xE000E180U)  = 0XFFFFFFF7U;
+    REG32(0xE000E180U)  = 0XFFFFFFF3U;
     REG32(0xE000E184U)  = 0XFFFFFDFFU;
     REG32(0xE000E188U)  = 0xFFFFFFFFU;
+    REG32(0xE000E18CU)  = 0xFFFFFFFFU;
 
     /* select WFI command to enter standby mode */
     __WFI();

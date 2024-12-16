@@ -2,11 +2,11 @@
     \file    gd32f4xx_usart.c
     \brief   USART driver
 
-    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
+    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2023, GigaDevice Semiconductor Inc.
+    Copyright (c) 2024, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -873,8 +873,12 @@ FlagStatus usart_flag_get(uint32_t usart_periph, usart_flag_enum flag)
 */
 void usart_flag_clear(uint32_t usart_periph, usart_flag_enum flag)
 {
-    USART_REG_VAL(usart_periph, flag) &= ~BIT(USART_BIT_POS(flag));
-}
+    if (USART_FLAG_EPERR == flag) {
+        USART_REG_VAL(usart_periph, flag) &= ~BIT(USART_BIT_POS(flag));
+    } else {
+        USART_REG_VAL(usart_periph, flag) = ~BIT(USART_BIT_POS(flag));
+    }
+} 
 
 /*!
     \brief    enable USART interrupt

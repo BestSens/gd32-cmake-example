@@ -2,11 +2,11 @@
     \file    usbh_transc.c
     \brief   USB host mode transactions driver
 
-    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
+    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2023, GigaDevice Semiconductor Inc.
+    Copyright (c) 2024, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -233,8 +233,7 @@ static usb_urb_state usbh_urb_wait (usbh_host *uhost, uint8_t pp_num, uint32_t w
         } else if (URB_ERROR == urb_status) {
             uhost->control.ctl_state = CTL_ERROR;
             break;
-        } else if ((wait_time > 0U) && (((usb_curframe_get(uhost->data) > timeout) && ((usb_curframe_get(uhost->data) - timeout) > wait_time)) \
-              || ((usb_curframe_get(uhost->data) < timeout) && ((usb_curframe_get(uhost->data) + 0x3FFFU - timeout) > wait_time)))){
+        } else if ((wait_time > 0U) && ((uhost->control.timer - timeout) > wait_time)) {
             /* timeout for in transfer */
             uhost->control.ctl_state = CTL_ERROR;
             break;
@@ -275,9 +274,6 @@ static void usbh_setup_transc (usbh_host *uhost)
                 uhost->control.ctl_state = CTL_STATUS_IN;
             }
         }
-
-        /* set the delay timer to enable timeout for data stage completion */
-        uhost->control.timer = (uint16_t)usb_curframe_get(uhost->data);
     }
 }
 

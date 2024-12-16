@@ -2,11 +2,11 @@
     \file    lcd_log.c
     \brief   this file provides all the LCD Log firmware functions
 
-    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
+    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2023, GigaDevice Semiconductor Inc.
+    Copyright (c) 2024, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -166,7 +166,7 @@ LCD_LOG_PUTCHAR
             LCD_ScrollBackStep = 0;
         }
 
-        if ((LCD_CacheBuffer_xptr < LCD_FLAG_HEIGHT / cFont->width) && (ch != '\n')) {
+        if ((LCD_CacheBuffer_xptr < (LCD_FLAG_HEIGHT - 2) / cFont->width) && (ch != '\n')) {
             if (ch != '\r') {
                 LCD_CacheBuffer[LCD_CacheBuffer_yptr_bottom].line[LCD_CacheBuffer_xptr++] = (uint16_t)ch;
             }
@@ -183,7 +183,7 @@ LCD_LOG_PUTCHAR
                 }
             }
 
-            for (idx = LCD_CacheBuffer_xptr; idx < LCD_FLAG_HEIGHT / cFont->width; idx++) {
+            for (idx = LCD_CacheBuffer_xptr; idx < (LCD_FLAG_HEIGHT - 2) / cFont->width; idx++) {
                 LCD_CacheBuffer[LCD_CacheBuffer_yptr_bottom].line[LCD_CacheBuffer_xptr++] = ' ';
             }
 

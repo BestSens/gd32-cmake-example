@@ -2,11 +2,11 @@
     \file    gd32f4xx_enet.c
     \brief   ENET driver
 
-    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
+    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2023, GigaDevice Semiconductor Inc.
+    Copyright (c) 2024, GigaDevice Semiconductor Inc.
     Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
 
@@ -3469,6 +3469,18 @@ static void enet_default_init(void)
 
     /* configure ENET_MAC_VLT register */
     ENET_MAC_VLT = ENET_VLANTAGCOMPARISON_16BIT | MAC_VLT_VLTI(0);
+
+    /* disable MAC interrupt */
+    ENET_MAC_INTMSK |= ENET_MAC_INTMSK_TMSTIM | ENET_MAC_INTMSK_WUMIM;
+
+    /* MSC */
+    /* disable MSC Rx interrupt */
+    ENET_MSC_RINTMSK |= ENET_MSC_RINTMSK_RFAEIM | ENET_MSC_RINTMSK_RFCEIM \
+                        | ENET_MSC_RINTMSK_RGUFIM;
+
+    /* disable MSC Tx interrupt */
+    ENET_MSC_TINTMSK |= ENET_MSC_TINTMSK_TGFIM | ENET_MSC_TINTMSK_TGFMSCIM \
+                        | ENET_MSC_TINTMSK_TGFSCIM;
 
     /* DMA */
     /* configure ENET_DMA_CTL register */

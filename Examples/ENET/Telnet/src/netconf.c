@@ -2,11 +2,11 @@
     \file    netconf.c
     \brief   network connection configuration
 
-    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
+    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2023, GigaDevice Semiconductor Inc.
+    Copyright (c) 2024, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -118,12 +118,9 @@ void lwip_stack_init(void)
     /* registers the default network interface */
     netif_set_default(&g_mynetif);
     netif_set_status_callback(&g_mynetif, lwip_netif_status_callback);
-#ifdef USE_DHCP
-    dhcp_start(&g_mynetif);
-#else
+
     /* when the netif is fully configured this function must be called */
     netif_set_up(&g_mynetif);
-#endif /* USE_DHCP */
 }
 
 /*!
@@ -213,6 +210,7 @@ void lwip_dhcp_process_handle(void)
                    ip4_addr2_16(&ip_address), ip4_addr3_16(&ip_address), ip4_addr4_16(&ip_address));
         } else {
             /* DHCP timeout */
+            dhcp_client = netif_dhcp_data(&g_mynetif);
             if(dhcp_client->tries > MAX_DHCP_TRIES) {
                 dhcp_state = DHCP_TIMEOUT;
                 /* stop DHCP */

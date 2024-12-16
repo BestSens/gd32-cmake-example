@@ -2,11 +2,11 @@
     \file    at24cxx.c
     \brief   the read and write function file
 
-    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
+    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2023, GigaDevice Semiconductor Inc.
+    Copyright (c) 2024, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -168,7 +168,7 @@ void eeprom_buffer_write_interrupt(uint8_t *p_buffer, uint8_t write_address, uin
             }
             /* write page */
             while(number_of_page--) {
-                i2c_nbytes = number_of_page;
+                i2c_nbytes = I2C_PAGE_SIZE;
                 i2c_write_dress = write_address;
                 i2c_write = p_buffer;
                 /* write data by interrupt */
@@ -180,7 +180,7 @@ void eeprom_buffer_write_interrupt(uint8_t *p_buffer, uint8_t write_address, uin
             }
             /* write single */
             if(0 != number_of_single) {
-                i2c_nbytes = number_of_page;
+                i2c_nbytes = number_of_single;
                 i2c_write_dress = write_address;
                 i2c_write = p_buffer;
                 /* write data by interrupt */

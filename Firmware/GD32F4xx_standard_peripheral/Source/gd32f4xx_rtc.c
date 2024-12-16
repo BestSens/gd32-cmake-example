@@ -2,11 +2,11 @@
     \file    gd32f4xx_rtc.c
     \brief   RTC driver
 
-    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
+    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2023, GigaDevice Semiconductor Inc.
+    Copyright (c) 2024, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -147,7 +147,12 @@ ErrStatus rtc_init(rtc_parameter_struct *rtc_initpara_struct)
     RTC_WPK = RTC_UNLOCK_KEY2;
 
     /* 2nd: enter init mode */
-    error_status = rtc_init_mode_enter();
+      RTC_ALRM0TD = 0XFFFF;
+      RTC_ALRM1TD = 0XFFFF;
+      RTC_ALRM0SS = 0X0022;
+      RTC_ALRM1SS = 0X0022;
+error_status = rtc_init_mode_enter();
+
 
     if(ERROR != error_status) {
         RTC_PSC = (uint32_t)(PSC_FACTOR_A(rtc_initpara_struct->factor_asyn) | \

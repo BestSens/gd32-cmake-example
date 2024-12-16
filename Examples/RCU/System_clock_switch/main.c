@@ -2,11 +2,11 @@
     \file  main.c
     \brief system clock switch demo
     
-    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
+    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2023, GigaDevice Semiconductor Inc.
+    Copyright (c) 2024, GigaDevice Semiconductor Inc.
 
     All rights reserved.
 
@@ -41,7 +41,7 @@ OF SUCH DAMAGE.
 
 static void _delay(uint32_t timeout);
 static void switch_system_clock_to_36m_hxtal(void);
-static void switch_system_clock_to_72m_irc8m(void);
+static void switch_system_clock_to_72m_irc16m(void);
 
 /*!
     \brief      main function
@@ -68,8 +68,8 @@ int main(void)
     printf("\r\nCK_SYS is %d", rcu_clock_freq_get(CK_SYS));
     _delay(1000);
     
-    /* switch system clock to 72MHz by IRC8M */
-    switch_system_clock_to_72m_irc8m();
+    /* switch system clock to 72MHz by IRC16M */
+    switch_system_clock_to_72m_irc16m();
     gd_eval_com_init(EVAL_COM0);
 
     /* print out the clock frequency of system */
@@ -162,7 +162,7 @@ static void switch_system_clock_to_36m_hxtal(void)
     \param[out] none
     \retval     none
 */
-static void switch_system_clock_to_72m_irc8m(void)
+static void switch_system_clock_to_72m_irc16m(void)
 {
     uint32_t timeout = 0U;
     uint32_t stab_flag = 0U;

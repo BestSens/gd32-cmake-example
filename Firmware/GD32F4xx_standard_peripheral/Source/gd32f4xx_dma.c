@@ -1,11 +1,11 @@
 /*!
     \file    gd32f4xx_dma.c
     \brief   DMA driver
-    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
+    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2023, GigaDevice Semiconductor Inc.
+    Copyright (c) 2024, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -752,11 +752,11 @@ void dma_flag_clear(uint32_t dma_periph, dma_channel_enum channelx, uint32_t fla
       \arg        DMA_CHx(x=0..7)
     \param[in]  source: specify which interrupt to enbale
                 only one parameters can be selected which are shown as below:
-      \arg        DMA_CHXCTL_SDEIE: single data mode exception interrupt enable
-      \arg        DMA_CHXCTL_TAEIE: tranfer access error interrupt enable
-      \arg        DMA_CHXCTL_HTFIE: half transfer finish interrupt enable
-      \arg        DMA_CHXCTL_FTFIE: full transfer finish interrupt enable
-      \arg        DMA_CHXFCTL_FEEIE: FIFO exception interrupt enable
+      \arg        DMA_INT_SDE: single data mode exception interrupt enable
+      \arg        DMA_INT_TAE: tranfer access error interrupt enable
+      \arg        DMA_INT_HTF: half transfer finish interrupt enable
+      \arg        DMA_INT_FTF: full transfer finish interrupt enable
+      \arg        DMA_INT_FEE: FIFO exception interrupt enable
     \param[out] none
     \retval     none
 */
@@ -777,11 +777,11 @@ void dma_interrupt_enable(uint32_t dma_periph, dma_channel_enum channelx, uint32
       \arg        DMA_CHx(x=0..7)
     \param[in]  source: specify which interrupt to disbale
                 only one parameters can be selected which are shown as below:
-      \arg        DMA_CHXCTL_SDEIE: single data mode exception interrupt enable
-      \arg        DMA_CHXCTL_TAEIE: tranfer access error interrupt enable
-      \arg        DMA_CHXCTL_HTFIE: half transfer finish interrupt enable
-      \arg        DMA_CHXCTL_FTFIE: full transfer finish interrupt enable
-      \arg        DMA_CHXFCTL_FEEIE: FIFO exception interrupt enable
+      \arg        DMA_INT_SDE: single data mode exception interrupt enable
+      \arg        DMA_INT_TAE: tranfer access error interrupt enable
+      \arg        DMA_INT_HTF: half transfer finish interrupt enable
+      \arg        DMA_INT_FTF: full transfer finish interrupt enable
+      \arg        DMA_INT_FEE: FIFO exception interrupt enable
     \param[out] none
     \retval     none
 */

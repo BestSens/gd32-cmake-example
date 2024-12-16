@@ -2,11 +2,11 @@
     \file    usbh_core.h
     \brief   USB host core state machine header file
 
-    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
+    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2023, GigaDevice Semiconductor Inc.
+    Copyright (c) 2024, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -136,7 +136,7 @@ typedef struct _usbh_control
 
     uint8_t               *buf;
     uint16_t              ctl_len;
-    uint16_t              timer;
+    __IO uint32_t         timer;
 
     usb_setup             setup;
     usbh_ctl_state        ctl_state;

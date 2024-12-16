@@ -5,6 +5,7 @@
 */
 
 /* Copyright (c) 2012 ARM LIMITED
+   Copyright (c) 2024, GigaDevice Semiconductor Inc.
 
    All rights reserved.
    Redistribution and use in source and binary forms, with or without
@@ -56,15 +57,22 @@
 //#define __SYSTEM_CLOCK_240M_PLL_8M_HXTAL        (uint32_t)(240000000)
 //#define __SYSTEM_CLOCK_240M_PLL_25M_HXTAL       (uint32_t)(240000000)
 
+#define RCU_MODIFY(__delay)     do{                                     \
+                                    volatile uint32_t i;                \
+                                    if(0 != __delay){                   \
+                                        RCU_CFG0 |= RCU_AHB_CKSYS_DIV2; \
+                                        for(i=0; i<__delay; i++){       \
+                                        }                               \
+                                        RCU_CFG0 |= RCU_AHB_CKSYS_DIV4; \
+                                        for(i=0; i<__delay; i++){       \
+                                        }                               \
+                                    }                                   \
+                                }while(0)
+
 #define SEL_IRC16M      0x00U
 #define SEL_HXTAL       0x01U
 #define SEL_PLLP        0x02U
-#define RCU_MODIFY      {volatile uint32_t i; \
-                         RCU_CFG0 |= RCU_AHB_CKSYS_DIV2; \
-                         for(i=0;i<50000;i++); \
-                         RCU_CFG0 |= RCU_AHB_CKSYS_DIV4; \
-                         for(i=0;i<50000;i++);}
-                        
+
 /* set the system clock frequency and declare the system clock configuration function */
 #ifdef __SYSTEM_CLOCK_IRC16M
 uint32_t SystemCoreClock = __SYSTEM_CLOCK_IRC16M;
@@ -129,8 +137,9 @@ void SystemInit (void)
     /* Reset the RCU clock configuration to the default reset state */
     /* Set IRC16MEN bit */
     RCU_CTL |= RCU_CTL_IRC16MEN;
-
-    RCU_MODIFY
+    while(0U == (RCU_CTL & RCU_CTL_IRC16MSTB)){
+    }
+    RCU_MODIFY(0x50);
     
     RCU_CFG0 &= ~RCU_CFG0_SCS;
     
@@ -262,7 +271,8 @@ static void system_clock_hxtal(void)
     
     /* if fail */
     if(0U == (RCU_CTL & RCU_CTL_HXTALSTB)){
-        while(1){
+        while(0U == (RCU_CTL & RCU_CTL_HXTALSTB))
+        {
         }
     }
     
@@ -373,7 +383,8 @@ static void system_clock_120m_8m_hxtal(void)
 
     /* if fail */
     if(0U == (RCU_CTL & RCU_CTL_HXTALSTB)){
-        while(1){
+        while(0U == (RCU_CTL & RCU_CTL_HXTALSTB))
+        {
         }
     }
          
@@ -441,7 +452,8 @@ static void system_clock_120m_25m_hxtal(void)
 
     /* if fail */
     if(0U == (RCU_CTL & RCU_CTL_HXTALSTB)){
-        while(1){
+        while(0U == (RCU_CTL & RCU_CTL_HXTALSTB))
+        {
         }
     }
          
@@ -574,7 +586,8 @@ static void system_clock_168m_8m_hxtal(void)
 
     /* if fail */
     if(0U == (RCU_CTL & RCU_CTL_HXTALSTB)){
-        while(1){
+        while(0U == (RCU_CTL & RCU_CTL_HXTALSTB))
+        {
         }
     }
 
@@ -641,7 +654,8 @@ static void system_clock_168m_25m_hxtal(void)
 
     /* if fail */
     if(0U == (RCU_CTL & RCU_CTL_HXTALSTB)){
-        while(1){
+        while(0U == (RCU_CTL & RCU_CTL_HXTALSTB))
+        {
         }
     }
          
@@ -777,7 +791,8 @@ static void system_clock_200m_8m_hxtal(void)
 
     /* if fail */
     if(0U == (RCU_CTL & RCU_CTL_HXTALSTB)){
-        while(1){
+        while(0U == (RCU_CTL & RCU_CTL_HXTALSTB))
+        {
         }
     }
          
@@ -845,7 +860,8 @@ static void system_clock_200m_25m_hxtal(void)
 
     /* if fail */
     if(0U == (RCU_CTL & RCU_CTL_HXTALSTB)){
-        while(1){
+        while(0U == (RCU_CTL & RCU_CTL_HXTALSTB))
+        {
         }
     }
          
@@ -981,7 +997,8 @@ static void system_clock_240m_8m_hxtal(void)
 
     /* if fail */
     if(0U == (RCU_CTL & RCU_CTL_HXTALSTB)){
-        while(1){
+        while(0U == (RCU_CTL & RCU_CTL_HXTALSTB))
+        {
         }
     }
          
@@ -1049,7 +1066,8 @@ static void system_clock_240m_25m_hxtal(void)
 
     /* if fail */
     if(0U == (RCU_CTL & RCU_CTL_HXTALSTB)){
-        while(1){
+        while(0U == (RCU_CTL & RCU_CTL_HXTALSTB))
+        {
         }
     }
          

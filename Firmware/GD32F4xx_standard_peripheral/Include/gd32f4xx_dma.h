@@ -1,11 +1,11 @@
 /*!
     \file    gd32f4xx_dma.h
     \brief   definitions for the DMA
-    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
+    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2023, GigaDevice Semiconductor Inc.
+    Copyright (c) 2024, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -344,6 +344,13 @@ typedef struct
 #define DMA_FLAG_HTF                      DMA_INTF_HTFIF                            /*!< half transfer finish flag */
 #define DMA_FLAG_FTF                      DMA_INTF_FTFIF                            /*!< full transfer finish flag */
 
+/* DMA_CHxCTL register */
+/* interrupt enable bits */
+#define DMA_INT_SDE                       DMA_CHXCTL_SDEIE                          /*!< enable bit for channel x single data mode exception interrupt */
+#define DMA_INT_TAE                       DMA_CHXCTL_TAEIE                          /*!< enable bit for channel x tranfer access error interrupt */
+#define DMA_INT_HTF                       DMA_CHXCTL_HTFIE                          /*!< enable bit for channel x half transfer finish interrupt */
+#define DMA_INT_FTF                       DMA_CHXCTL_FTFIE                          /*!< enable bit for channel x full transfer finish interrupt */    
+#define DMA_INT_FEE                       DMA_CHXFCTL_FEEIE                         /*!< FIFO exception interrupt enable */
 
 /* function declarations */
 /* DMA deinitialization and initialization functions */

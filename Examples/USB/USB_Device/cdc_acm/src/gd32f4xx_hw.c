@@ -2,11 +2,11 @@
     \file    gd32f4xx_hw.c
     \brief   USB hardware configuration for GD32F4xx
 
-    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
+    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2023, GigaDevice Semiconductor Inc.
+    Copyright (c) 2024, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -53,7 +53,15 @@ static void hw_delay    (uint32_t ntime, uint8_t unit);
 void usb_rcu_config(void)
 {
 #ifdef USE_USB_FS
-    rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLQ);
+    /* configure the PLLSAIP = 48MHz, PLLSAI_N = 288, PLLSAI_P = 6, PLLSAI_R = 2 */
+    rcu_pllsai_config(288, 6, 2);
+    /* enable PLLSAI */
+    RCU_CTL |= RCU_CTL_PLLSAIEN;
+    /* wait until PLLSAI is stable */
+    while(0U == (RCU_CTL & RCU_CTL_PLLSAISTB)){
+    }
+
+    rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLSAIP);
     rcu_ck48m_clock_config(RCU_CK48MSRC_PLL48M);
 
     rcu_periph_clock_enable(RCU_USBFS);

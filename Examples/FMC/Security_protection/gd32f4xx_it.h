@@ -2,11 +2,11 @@
     \file    gd32f4xx_it.h
     \brief   the header file of the ISR
 
-    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
+    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2023, GigaDevice Semiconductor Inc.
+    Copyright (c) 2024, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -54,8 +54,6 @@ void SVC_Handler(void);
 void DebugMon_Handler(void);
 /* this function handles PendSV exception */
 void PendSV_Handler(void);
-/* this function handles SysTick exception */
-void SysTick_Handler(void);
 /* this function handles external lines 10 to 15 interrupt request */
 void EXTI10_15_IRQHandler(void);
 

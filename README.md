@@ -8,7 +8,7 @@ I've also commented out the documentation building for lwip in the ENET example 
 I've removed '&'s from various Example paths as they are note compatible with CMake and did some fixes that break compilation on Unix based systems.
 
 ## Dependencies
-To build this package you need a working GNU Arm Embedded Toolchain (tested with 11.3-rel1 and 12.3.Rel1), CMake and a build system installed. I'm using Ninja in my examples.
+To build this package you need a working GNU Arm Embedded Toolchain (tested with 14.2.Rel1), CMake and a build system installed. I'm using Ninja in my examples.
 
 I've tested this on Windows and Linux but with a bit of luck it may work on macOS as well.
 
@@ -43,3 +43,5 @@ The `.vscode/tasks.json` also contains examples of how to use OpenOCD to flash o
 * USB-Device examples are broken since firmware library update to v3.0.2 and I don't think it's my fault
 * Retargeting only works by providing custom _write() override due to newlib used in arm-none-eabi-gcc
 * Linking on gcc 11.2 fails when retargeting
+* GigaDevices broke many DAC examples with firmware library v3.2.0
+* Linker will warn on unimplemented functions

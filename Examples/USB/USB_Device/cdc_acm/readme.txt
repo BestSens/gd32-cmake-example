@@ -2,11 +2,11 @@
     \file    readme.txt
     \brief   description of the CDC ACM demo
 
-    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
+    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2023, GigaDevice Semiconductor Inc.
+    Copyright (c) 2024, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -55,3 +55,6 @@ from the device.
   - IN transfers (to send the data received from the GD32 to the PC):
   When a packet is sent from the GD32 on the IN pipe (EP1), by calling cdc_acm_data_send(),
   put the data into the usb_data_buffer[] buffer for sending data to the host.
+
+  Note: In the USBFS_cdc_acm target, PLL48MSEL clock source is PLLSAIP, and the system clock can be a non-integer 
+multiple of 48MHz.

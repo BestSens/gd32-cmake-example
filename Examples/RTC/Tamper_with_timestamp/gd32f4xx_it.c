@@ -2,11 +2,11 @@
     \file    gd32f4xx_it.c
     \brief   interrupt service routines
 
-    \version 2023-06-25, V3.1.0, firmware for GD32F4xx
+    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2023, GigaDevice Semiconductor Inc.
+    Copyright (c) 2024, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -37,6 +37,7 @@ OF SUCH DAMAGE.
 #include "main.h"
 
 extern void rtc_show_timestamp(void);
+
 /*!
     \brief      this function handles NMI exception
     \param[in]  none
@@ -45,6 +46,9 @@ extern void rtc_show_timestamp(void);
 */
 void NMI_Handler(void)
 {
+    /* if NMI exception occurs, go to infinite loop */
+    while(1) {
+    }
 }
 
 /*!
@@ -56,7 +60,8 @@ void NMI_Handler(void)
 void HardFault_Handler(void)
 {
     /* if Hard Fault exception occurs, go to infinite loop */
-    while (1);
+    while(1) {
+    }
 }
 
 /*!
@@ -68,7 +73,8 @@ void HardFault_Handler(void)
 void MemManage_Handler(void)
 {
     /* if Memory Manage exception occurs, go to infinite loop */
-    while (1);
+    while(1) {
+    }
 }
 
 /*!
@@ -80,7 +86,8 @@ void MemManage_Handler(void)
 void BusFault_Handler(void)
 {
     /* if Bus Fault exception occurs, go to infinite loop */
-    while (1);
+    while(1) {
+    }
 }
 
 /*!
@@ -92,7 +99,8 @@ void BusFault_Handler(void)
 void UsageFault_Handler(void)
 {
     /* if Usage Fault exception occurs, go to infinite loop */
-    while (1);
+    while(1) {
+    }
 }
 
 /*!
@@ -103,6 +111,9 @@ void UsageFault_Handler(void)
 */
 void SVC_Handler(void)
 {
+    /* if SVC exception occurs, go to infinite loop */
+    while(1) {
+    }
 }
 
 /*!
@@ -113,6 +124,9 @@ void SVC_Handler(void)
 */
 void DebugMon_Handler(void)
 {
+    /* if DebugMon exception occurs, go to infinite loop */
+    while(1) {
+    }
 }
 
 /*!
@@ -123,6 +137,9 @@ void DebugMon_Handler(void)
 */
 void PendSV_Handler(void)
 {
+    /* if PendSV exception occurs, go to infinite loop */
+    while(1) {
+    }
 }
 
 /*!
