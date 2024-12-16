@@ -43,5 +43,5 @@ The `.vscode/tasks.json` also contains examples of how to use OpenOCD to flash o
 * USB-Device examples are broken since firmware library update to v3.0.2 and I don't think it's my fault
 * Retargeting only works by providing custom _write() override due to newlib used in arm-none-eabi-gcc
 * Linking on gcc 11.2 fails when retargeting
-* GigaDevices broke many DAC examples with firmware library v3.2.0
+* GigaDevice broke many DAC examples with firmware library v3.2.0
 * Linker will warn on unimplemented functions
