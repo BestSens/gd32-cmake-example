@@ -36,6 +36,12 @@ if (${FORCE_COLORED_OUTPUT})
     endif ()
 endif ()
 
+if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 12.0)
+add_link_options(
+	-Wl,--no-warn-rwx-segments
+)
+endif()
+
 add_definitions(
 	-DGD32F450
 	-DGD32F450I_EVAL
