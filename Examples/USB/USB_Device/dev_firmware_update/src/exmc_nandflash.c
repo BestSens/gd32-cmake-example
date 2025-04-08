@@ -2,7 +2,7 @@
     \file    exmc_nandflash.c
     \brief   nandflash(GD9FU1G8F2AMG) driver
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -35,7 +35,7 @@ OF SUCH DAMAGE.
 #include "exmc_nandflash.h"
 
 /* define the physical address of nand flash, and it is determined by the hardware */
-#define BANK1_NAND_ADDR     ((uint32_t)0x70000000)
+#define BANK1_NAND_ADDR     ((uint32_t)0x70000000U)
 #define BANK_NAND_ADDR      BANK1_NAND_ADDR
 
 /* define operating nand flash macro */
@@ -47,10 +47,10 @@ OF SUCH DAMAGE.
 #define ROW_ADDRESS         (addr.page + (addr.block + (addr.zone * NAND_ZONE_SIZE)) * NAND_BLOCK_SIZE)
 
 /* define NWATI operation */
-#define NWAIT_OPERA_FUNC()    while(gpio_input_bit_get(GPIOD, GPIO_PIN_6) == 0)
+#define NWAIT_OPERA_FUNC()  while(0U == gpio_input_bit_get(GPIOD, GPIO_PIN_6))
 
 /* static variable definition */
-static uint16_t cur_zone = 0;
+static uint16_t cur_zone = 0U;
 static uint16_t LUT_tab[NAND_BLOCK_COUNT];
 static uint8_t temp_buf[NAND_PAGE_TOTAL_SIZE];
 
@@ -78,7 +78,7 @@ static void nand_mark_bad_block(uint32_t blocknum);
 static uint8_t nand_mark_logic_block(uint32_t blocknum, uint16_t logblock);
 
 /*!
-    \brief      initialize nand flash peripheral 
+    \brief      initialize nand flash peripheral
     \param[in]  none
     \param[out] none
     \retval     NAND_OK, NAND_FAIL
@@ -125,10 +125,10 @@ uint8_t exmc_nandflash_init(uint32_t nand_bank)
     gpio_output_options_set(GPIOD, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_7);
 
     /* EXMC configuration */
-    nand_timing_init_struct.setuptime = 5;
-    nand_timing_init_struct.waittime = 4;
-    nand_timing_init_struct.holdtime = 2;
-    nand_timing_init_struct.databus_hiztime = 2;
+    nand_timing_init_struct.setuptime = 5U;
+    nand_timing_init_struct.waittime = 4U;
+    nand_timing_init_struct.holdtime = 2U;
+    nand_timing_init_struct.databus_hiztime = 2U;
 
     nand_init_struct.nand_bank = nand_bank;
     nand_init_struct.ecc_size = EXMC_ECC_SIZE_2048BYTES;
@@ -146,7 +146,7 @@ uint8_t exmc_nandflash_init(uint32_t nand_bank)
     exmc_nand_enable(nand_bank);
 
     /* build LUT(Look up table) */
-    return nand_build_LUT(0);
+    return nand_build_LUT(0U);
 }
 
 /*!
@@ -157,11 +157,11 @@ uint8_t exmc_nandflash_init(uint32_t nand_bank)
 */
 void nand_read_id(nand_id_struct *nand_id)
 {
-    uint32_t data = 0;
+    uint32_t data = 0U;
 
     /* send command to the command area */
-    *(__IO uint8_t *)(BANK_NAND_ADDR | EXMC_CMD_AREA) = 0x90;
-    *(__IO uint8_t *)(BANK_NAND_ADDR | EXMC_ADDR_AREA) = 0x00;
+    *(__IO uint8_t *)(BANK_NAND_ADDR | EXMC_CMD_AREA) = 0x90U;
+    *(__IO uint8_t *)(BANK_NAND_ADDR | EXMC_ADDR_AREA) = 0x00U;
 
     /* sequence to read ID from NAND flash */
     data = *(__IO uint32_t *)(BANK_NAND_ADDR | EXMC_DATA_AREA);
@@ -204,12 +204,12 @@ uint8_t nand_write(uint32_t mem_addr, uint8_t *pwritebuf, uint16_t size)
         logaddr.block++;
         pwritebuf += block_remain_size;
         size -= block_remain_size;
-        logaddr.page = 0;
-        logaddr.page_in_offset = 0;
+        logaddr.page = 0U;
+        logaddr.page_in_offset = 0U;
         block_remain_size = (NAND_BLOCK_SIZE * NAND_PAGE_SIZE);
     }
 
-    if(size > 0) {
+    if(size > 0U) {
         if(NAND_FAIL == nand_write_block(logaddr, pwritebuf, size)) {
             return NAND_FAIL;
         }
@@ -250,12 +250,12 @@ uint8_t nand_read(uint32_t mem_addr, uint8_t *preadbuf, uint16_t size)
         logaddr.block++;
         preadbuf += block_remain_size;
         size -= block_remain_size;
-        logaddr.page = 0;
-        logaddr.page_in_offset = 0;
+        logaddr.page = 0U;
+        logaddr.page_in_offset = 0U;
         block_remain_size = (NAND_BLOCK_SIZE * NAND_PAGE_SIZE);
     }
 
-    if(size > 0) {
+    if(size > 0U) {
         if(NAND_FAIL == nand_read_block(logaddr, preadbuf, size)) {
             return NAND_FAIL;
         }
@@ -277,10 +277,10 @@ uint8_t nand_scan_block(uint32_t blocknum)
 
     addr.zone = cur_zone;
     addr.block = blocknum;
-    addr.page = 0;
+    addr.page = 0U;
     addr.page_in_offset = NAND_PAGE_SIZE;
 
-    memset(temp_buf, 0x00, NAND_PAGE_TOTAL_SIZE);
+    memset(temp_buf, 0x00U, NAND_PAGE_TOTAL_SIZE);
 
     for(i = 0; i < BAD_BALOK_TEST_CYCLE; i++) {
         if(NAND_READY != exmc_nand_erase_block(blocknum)) {
@@ -288,11 +288,11 @@ uint8_t nand_scan_block(uint32_t blocknum)
             return NAND_FAIL;
         }
 
-        addr.page = 0;
-        for(k = 0; k < NAND_BLOCK_SIZE; k++) {
+        addr.page = 0U;
+        for(k = 0U; k < NAND_BLOCK_SIZE; k++) {
             exmc_nand_read_page(temp_buf, addr, NAND_PAGE_TOTAL_SIZE);
 
-            if(NAND_OK != nand_judge_buf_ok(temp_buf, NAND_PAGE_TOTAL_SIZE, 0xFF)) {
+            if(NAND_OK != nand_judge_buf_ok(temp_buf, NAND_PAGE_TOTAL_SIZE, 0xFFU)) {
                 nand_mark_bad_block(blocknum);
                 return NAND_FAIL;
             }
@@ -300,10 +300,10 @@ uint8_t nand_scan_block(uint32_t blocknum)
             addr.page++;
         }
 
-        addr.page = 0;
+        addr.page = 0U;
 
-        for(k = 0; k < NAND_BLOCK_SIZE; k++) {
-            memset(temp_buf, 0x00, NAND_PAGE_TOTAL_SIZE);
+        for(k = 0U; k < NAND_BLOCK_SIZE; k++) {
+            memset(temp_buf, 0x00U, NAND_PAGE_TOTAL_SIZE);
 
             if(NAND_OK != exmc_nand_write_page(temp_buf, addr, NAND_PAGE_TOTAL_SIZE)) {
                 nand_mark_bad_block(blocknum);
@@ -312,7 +312,7 @@ uint8_t nand_scan_block(uint32_t blocknum)
 
             exmc_nand_read_page(temp_buf, addr, NAND_PAGE_TOTAL_SIZE);
 
-            if(NAND_OK != nand_judge_buf_ok(temp_buf, NAND_PAGE_TOTAL_SIZE, 0x00)) {
+            if(NAND_OK != nand_judge_buf_ok(temp_buf, NAND_PAGE_TOTAL_SIZE, 0x00U)) {
                 nand_mark_bad_block(blocknum);
                 return NAND_FAIL;
             }
@@ -326,12 +326,12 @@ uint8_t nand_scan_block(uint32_t blocknum)
         return NAND_FAIL;
     }
 
-    addr.page = 0;
+    addr.page = 0U;
 
-    for(k = 0; k < NAND_BLOCK_SIZE; k++) {
+    for(k = 0U; k < NAND_BLOCK_SIZE; k++) {
         exmc_nand_read_page(temp_buf, addr, NAND_PAGE_TOTAL_SIZE);
 
-        if(NAND_OK != nand_judge_buf_ok(temp_buf, NAND_PAGE_TOTAL_SIZE, 0xFF)) {
+        if(NAND_OK != nand_judge_buf_ok(temp_buf, NAND_PAGE_TOTAL_SIZE, 0xFFU)) {
             nand_mark_bad_block(blocknum);
             return NAND_FAIL;
         }
@@ -348,27 +348,27 @@ uint8_t nand_scan_block(uint32_t blocknum)
     \param[out] none
     \retval     NAND_OK, NAND_FAIL
 */
- uint8_t nand_judge_free_block(uint32_t blocknum)
+uint8_t nand_judge_free_block(uint32_t blocknum)
 {
     uint8_t flag;
     nand_address_struct addr;
 
     addr.zone = cur_zone;
     addr.block = blocknum;
-    addr.page = 0;
+    addr.page = 0U;
     addr.page_in_offset = NAND_PAGE_SIZE + USED_OFFSET;
 
     if(nand_isbad_block(blocknum)) {
-        return 0;
+        return 0U;
     }
 
-    exmc_nand_read_page(&flag, addr, 1);
+    exmc_nand_read_page(&flag, addr, 1U);
 
-    if(0xFF == flag) {
-        return 1;
+    if(0xFFU == flag) {
+        return 1U;
     }
 
-    return 0;
+    return 0U;
 }
 
 /*!
@@ -382,10 +382,10 @@ static uint8_t exmc_nand_page_copyback(uint32_t src_pageno, uint32_t dest_pageno
 {
     NAND_CMD_AREA = NAND_CMD_COPYBACK_A;
 
-    NAND_ADDR_AREA = 0;
-    NAND_ADDR_AREA = 0;
+    NAND_ADDR_AREA = 0U;
+    NAND_ADDR_AREA = 0U;
     NAND_ADDR_AREA = src_pageno;
-    NAND_ADDR_AREA = (src_pageno & 0xFF00) >> 8;
+    NAND_ADDR_AREA = (src_pageno & 0xFF00U) >> 8U;
 
     NAND_CMD_AREA = NAND_CMD_COPYBACK_B;
 
@@ -394,10 +394,10 @@ static uint8_t exmc_nand_page_copyback(uint32_t src_pageno, uint32_t dest_pageno
 
     NAND_CMD_AREA = NAND_CMD_COPYBACK_C;
 
-    NAND_ADDR_AREA = 0;
-    NAND_ADDR_AREA = 0;
+    NAND_ADDR_AREA = 0U;
+    NAND_ADDR_AREA = 0U;
     NAND_ADDR_AREA = dest_pageno;
-    NAND_ADDR_AREA = (dest_pageno & 0xFF00) >> 8;
+    NAND_ADDR_AREA = (dest_pageno & 0xFF00U) >> 8U;
 
     NAND_CMD_AREA = NAND_CMD_COPYBACK_D;
 
@@ -425,8 +425,8 @@ static uint8_t exmc_nand_page_copyback_ex(uint32_t src_pageno, uint32_t dest_pag
 
     NAND_CMD_AREA = NAND_CMD_COPYBACK_A;
 
-    NAND_ADDR_AREA = 0;
-    NAND_ADDR_AREA = 0;
+    NAND_ADDR_AREA = 0U;
+    NAND_ADDR_AREA = 0U;
     NAND_ADDR_AREA = src_pageno;
     NAND_ADDR_AREA = (src_pageno & 0xFF00U) >> 8U;
 
@@ -437,8 +437,8 @@ static uint8_t exmc_nand_page_copyback_ex(uint32_t src_pageno, uint32_t dest_pag
 
     NAND_CMD_AREA = NAND_CMD_COPYBACK_C;
 
-    NAND_ADDR_AREA = 0;
-    NAND_ADDR_AREA = 0;
+    NAND_ADDR_AREA = 0U;
+    NAND_ADDR_AREA = 0U;
     NAND_ADDR_AREA = dest_pageno;
     NAND_ADDR_AREA = (dest_pageno & 0xFF00U) >> 8U;
 
@@ -449,7 +449,7 @@ static uint8_t exmc_nand_page_copyback_ex(uint32_t src_pageno, uint32_t dest_pag
     NAND_ADDR_AREA = offset >> 8U;
 
     /* send data */
-    for(i = 0; i < size; i++) {
+    for(i = 0U; i < size; i++) {
         NAND_DATA_AREA = pbuf[i];
     }
 
@@ -484,7 +484,7 @@ static uint8_t exmc_nand_write_page(uint8_t *pbuf, nand_address_struct addr, uin
     NAND_ADDR_AREA = ADDR_2ND_CYCLE(ROW_ADDRESS);
 
     /* write data */
-    for(i = 0; i < bytecnt; i++) {
+    for(i = 0U; i < bytecnt; i++) {
         NAND_DATA_AREA = pbuf[i];
     }
 
@@ -514,7 +514,7 @@ static uint8_t exmc_nand_read_page(uint8_t *pbuf, nand_address_struct addr, uint
     NAND_CMD_AREA = NAND_CMD_READ1_1ST;
 
     NAND_ADDR_AREA = addr.page_in_offset;
-    NAND_ADDR_AREA = addr.page_in_offset >> 8;
+    NAND_ADDR_AREA = addr.page_in_offset >> 8U;
     NAND_ADDR_AREA = ADDR_1ST_CYCLE(ROW_ADDRESS);
     NAND_ADDR_AREA = ADDR_2ND_CYCLE(ROW_ADDRESS);
 
@@ -524,7 +524,7 @@ static uint8_t exmc_nand_read_page(uint8_t *pbuf, nand_address_struct addr, uint
     NWAIT_OPERA_FUNC();
 
     /* read data to buffer */
-    for(i = 0; i < bytecnt; i++) {
+    for(i = 0U; i < bytecnt; i++) {
         pbuf[i] = NAND_DATA_AREA;
     }
 
@@ -595,10 +595,10 @@ static uint8_t exmc_nand_write_data(uint8_t *pbuf, nand_address_struct addr, uin
         bytecnt -= NAND_PAGE_SIZE - addr.page_in_offset;
         temppbuf += NAND_PAGE_SIZE - addr.page_in_offset;
         addr.page++;
-        addr.page_in_offset = 0;
+        addr.page_in_offset = 0U;
     }
 
-    if(bytecnt > 0) {
+    if(bytecnt > 0U) {
         if(NAND_OK != exmc_nand_write_page(temppbuf, addr, bytecnt)) {
             return NAND_FAIL;
         }
@@ -627,10 +627,10 @@ static uint8_t exmc_nand_read_data(uint8_t *pbuf, nand_address_struct addr, uint
         addr.page++;
         temppbuf += NAND_PAGE_SIZE - addr.page_in_offset;
         bytecnt -= NAND_PAGE_SIZE - addr.page_in_offset;
-        addr.page_in_offset = 0;
+        addr.page_in_offset = 0U;
     }
 
-    if(bytecnt > 0) {
+    if(bytecnt > 0U) {
         if(NAND_OK != exmc_nand_read_page(temppbuf, addr, bytecnt)) {
             return NAND_FAIL;
         }
@@ -650,9 +650,9 @@ static uint8_t exmc_nand_erase_block(uint32_t blocknum)
     /* send erase command */
     NAND_CMD_AREA = NAND_CMD_ERASE_1ST;
 
-    blocknum <<= 6;
+    blocknum <<= 6U;
     NAND_ADDR_AREA = blocknum;
-    NAND_ADDR_AREA = blocknum >> 8;
+    NAND_ADDR_AREA = blocknum >> 8U;
 
     NAND_CMD_AREA = NAND_CMD_ERASE_2ND;
 
@@ -693,7 +693,7 @@ static uint8_t exmc_nand_read_status(void)
 */
 static uint8_t exmc_nand_get_status(void)
 {
-    uint32_t timeout = 0x10000;
+    uint32_t timeout = 0x10000U;
     uint8_t status = NAND_READY;
 
     status = exmc_nand_read_status();
@@ -704,7 +704,7 @@ static uint8_t exmc_nand_get_status(void)
         timeout--;
     }
 
-    if(0x00 == timeout) {
+    if(0x00U == timeout) {
         status =  NAND_TIMEOUT_ERROR;
     }
 
@@ -725,8 +725,8 @@ static uint8_t nand_write_new_block(nand_address_struct addr, nand_address_struc
     uint16_t n, i, offset;
     uint16_t newblock;
 
-    for(n = 0; n < 5; n++) {
-        if(addr.block & 0x0001) {
+    for(n = 0U; n < 5U; n++) {
+        if(addr.block & 0x0001U) {
             newblock = nand_find_free_block(BLOCK_EVEN);
         } else {
             newblock = nand_find_free_block(BLOCK_ODD);
@@ -736,14 +736,14 @@ static uint8_t nand_write_new_block(nand_address_struct addr, nand_address_struc
             return NAND_FAIL;
         }
 
-        for(i = 0; i < NAND_BLOCK_SIZE; i++) {
+        for(i = 0U; i < NAND_BLOCK_SIZE; i++) {
             if(i == addr.page) {
                 offset = addr.page_in_offset;
                 while(offset + size > NAND_PAGE_SIZE) {
-                    if(exmc_nand_page_copyback_ex(addr.block * NAND_BLOCK_SIZE + i,
-                                                  newblock * NAND_BLOCK_SIZE + i,
-                                                  pwritebuf, offset,
-                                                  NAND_PAGE_SIZE - offset) == NAND_FAIL) {
+                    if(NAND_FAIL == exmc_nand_page_copyback_ex(addr.block * NAND_BLOCK_SIZE + i, \
+                                                               newblock * NAND_BLOCK_SIZE + i, \
+                                                               pwritebuf, offset, \
+                                                               NAND_PAGE_SIZE - offset)) {
                         nand_mark_bad_block(newblock);
                         nand_build_LUT(addr.zone);
 
@@ -752,22 +752,22 @@ static uint8_t nand_write_new_block(nand_address_struct addr, nand_address_struc
 
                     pwritebuf += NAND_PAGE_SIZE - offset;
                     size -= NAND_PAGE_SIZE - offset;
-                    offset = 0;
+                    offset = 0U;
                     i++;
                 }
 
-                if(size > 0) {
-                    if(exmc_nand_page_copyback_ex(addr.block * NAND_BLOCK_SIZE + i,
-                                                  newblock * NAND_BLOCK_SIZE + i,
-                                                  pwritebuf, offset, size) == NAND_FAIL) {
+                if(size > 0U) {
+                    if(NAND_FAIL == exmc_nand_page_copyback_ex(addr.block * NAND_BLOCK_SIZE + i, \
+                                                               newblock * NAND_BLOCK_SIZE + i, \
+                                                               pwritebuf, offset, size)) {
                         nand_mark_bad_block(newblock);
                         nand_build_LUT(addr.zone);
                         break;
                     }
                 }
             } else {
-                if(exmc_nand_page_copyback(addr.block * NAND_BLOCK_SIZE + i,
-                                           newblock * NAND_BLOCK_SIZE + i) == NAND_FAIL) {
+                if(NAND_FAIL == exmc_nand_page_copyback(addr.block * NAND_BLOCK_SIZE + i, \
+                                                        newblock * NAND_BLOCK_SIZE + i)) {
                     nand_mark_bad_block(newblock);
                     nand_build_LUT(addr.zone);
                     break;
@@ -775,7 +775,7 @@ static uint8_t nand_write_new_block(nand_address_struct addr, nand_address_struc
             }
         }
 
-        if(i == NAND_BLOCK_SIZE) {
+        if(NAND_BLOCK_SIZE == i) {
             if(NAND_FAIL == nand_mark_used_block(newblock)) {
                 nand_mark_bad_block(newblock);
                 nand_build_LUT(addr.zone);
@@ -822,7 +822,7 @@ static uint8_t nand_write_block(nand_address_struct logaddr, uint8_t *pwritebuf,
     }
 
     addr.zone = logaddr.zone;
-    addr.block = PBN & 0x03FF;
+    addr.block = PBN & 0x03FFU;
     addr.page = logaddr.page;
     addr.page_in_offset = logaddr.page_in_offset;
 
@@ -864,7 +864,7 @@ static uint8_t nand_read_block(nand_address_struct logaddr, uint8_t *preadbuf, u
     }
 
     PBN = LUT_tab[logaddr.block];
-    addr.block = PBN & 0x03FF;
+    addr.block = PBN & 0x03FFU;
 
     if(addr.block >= NAND_BLOCK_COUNT) {
         return NAND_FAIL;
@@ -896,33 +896,33 @@ static uint8_t nand_build_LUT(uint16_t zone)
 
     cur_zone = zone;
     addr.zone = cur_zone;
-    addr.block = 0x00;
-    addr.page = 0x00;
+    addr.block = 0x00U;
+    addr.page = 0x00U;
     addr.page_in_offset = NAND_PAGE_SIZE;
 
     /* 1st step : init */
-    for(cur_block = 0; cur_block < NAND_ZONE_SIZE; cur_block++) {
+    for(cur_block = 0U; cur_block < NAND_ZONE_SIZE; cur_block++) {
         LUT_tab[cur_block] = FREE_BLOCK;
     }
 
     /* init Pointers */
-    bad_block = NAND_ZONE_SIZE - 1;
-    cur_block = 0;
+    bad_block = NAND_ZONE_SIZE - 1U;
+    cur_block = 0U;
 
     /* 2nd step : locate used and bad blocks */
     while(cur_block < NAND_ZONE_SIZE) {
         addr.block = cur_block;
         exmc_nand_read_spare(spare_area, addr, NAND_SPARE_AREA_SIZE);
 
-        if(spare_area[BI_OFFSET] != 0xFF) {
+        if(0xFFU != spare_area[BI_OFFSET]) {
             LUT_tab[bad_block--] |= cur_block | (uint16_t)BAD_BLOCK;
             LUT_tab[cur_block] &= (uint16_t)~FREE_BLOCK;
 
             if(bad_block <= MAX_LOG_BLOCKS_PER_ZONE + EXCHANGE_BLOCKS_NUM) {
                 return NAND_FAIL;
             }
-        } else if(spare_area[USED_OFFSET] == 0xFE) {
-            logic_blockID = (spare_area[LBN0_OFFSET] + (spare_area[LBN1_OFFSET] * 256)) & 0x03FF;
+        } else if(0xFEU == spare_area[USED_OFFSET]) {
+            logic_blockID = (spare_area[LBN0_OFFSET] + (spare_area[LBN1_OFFSET] * 256U)) & 0x03FFU;
             LUT_tab[logic_blockID] |= cur_block | VALID_BLOCK | USED_BLOCK;
             LUT_tab[cur_block] &= (uint16_t)(~FREE_BLOCK);
         }
@@ -931,9 +931,9 @@ static uint8_t nand_build_LUT(uint16_t zone)
     }
 
     /* 3rd step : locate free blocks by scanning the LUT already built partially */
-    free_block = 0;
-    for(cur_block = 0; cur_block < NAND_ZONE_SIZE; cur_block++) {
-        if(cur_block == 81) {
+    free_block = 0U;
+    for(cur_block = 0U; cur_block < NAND_ZONE_SIZE; cur_block++) {
+        if(81U == cur_block) {
         }
 
         if(!(LUT_tab[cur_block] & USED_BLOCK)) {
@@ -961,12 +961,12 @@ static uint8_t nand_build_LUT(uint16_t zone)
 static uint16_t nand_find_free_block(uint8_t odd_even)
 {
     if(BLOCK_ODD == odd_even) {
-        return LUT_tab[MAX_LOG_BLOCKS_PER_ZONE] & 0x03FF;
+        return LUT_tab[MAX_LOG_BLOCKS_PER_ZONE] & 0x03FFU;
     } else if(BLOCK_EVEN == odd_even) {
-        return LUT_tab[MAX_LOG_BLOCKS_PER_ZONE + 1] & 0x03FF;
+        return LUT_tab[MAX_LOG_BLOCKS_PER_ZONE + 1U] & 0x03FFU;
     }
 
-    return 0xFFFF;
+    return 0xFFFFU;
 }
 
 /*!
@@ -981,7 +981,7 @@ static uint8_t nand_judge_buf_ok(uint8_t *pbuf, uint32_t len, uint8_t value)
 {
     uint32_t i;
 
-    for(i = 0; i < len; i++) {
+    for(i = 0U; i < len; i++) {
         if(pbuf[i] != value) {
             return NAND_FAIL;
         }
@@ -1003,10 +1003,10 @@ static uint8_t nand_isbad_block(uint32_t blocknum)
 
     addr.zone = cur_zone;
     addr.block = blocknum;
-    addr.page = 0;
+    addr.page = 0U;
     addr.page_in_offset = NAND_PAGE_SIZE + BI_OFFSET;
 
-    exmc_nand_read_spare(&flag, addr, 1);
+    exmc_nand_read_spare(&flag, addr, 1U);
 
     if(0xFFU != flag) {
         return NAND_FAIL;
@@ -1028,12 +1028,12 @@ static uint8_t nand_mark_used_block(uint32_t blocknum)
 
     addr.zone = cur_zone;
     addr.block = blocknum;
-    addr.page = 0;
+    addr.page = 0U;
     addr.page_in_offset = NAND_PAGE_SIZE + USED_OFFSET;
 
     flag = NAND_USED_BLOCK_FLAG;
 
-    if(NAND_FAIL == exmc_nand_write_spare(&flag, addr, 1)) {
+    if(NAND_FAIL == exmc_nand_write_spare(&flag, addr, 1U)) {
         return NAND_FAIL;
     }
 
@@ -1053,14 +1053,14 @@ static void nand_mark_bad_block(uint32_t blocknum)
 
     addr.zone = cur_zone;
     addr.block = blocknum;
-    addr.page = 0;
+    addr.page = 0U;
     addr.page_in_offset = NAND_PAGE_SIZE + BI_OFFSET;
 
     flag = NAND_BAD_BLOCK_FLAG;
 
-    if(NAND_FAIL == exmc_nand_write_spare(&flag, addr, 1)) {
-        addr.page = 1;
-        exmc_nand_write_spare(&flag, addr, 1);
+    if(NAND_FAIL == exmc_nand_write_spare(&flag, addr, 1U)) {
+        addr.page = 1U;
+        exmc_nand_write_spare(&flag, addr, 1U);
     }
 }
 
@@ -1077,10 +1077,10 @@ static uint8_t nand_mark_logic_block(uint32_t blocknum, uint16_t logblock)
 
     addr.zone = cur_zone;
     addr.block = blocknum;
-    addr.page = 0;
+    addr.page = 0U;
     addr.page_in_offset = NAND_PAGE_SIZE + LBN0_OFFSET;
 
-    if(NAND_FAIL == exmc_nand_write_spare((uint8_t *)&logblock, addr, 2)) {
+    if(NAND_FAIL == exmc_nand_write_spare((uint8_t *)&logblock, addr, 2U)) {
         return NAND_FAIL;
     }
 

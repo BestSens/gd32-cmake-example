@@ -2,7 +2,7 @@
     \file    gd25qxx.h
     \brief   the header file of SPI flash gd25qxx driver
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -37,10 +37,10 @@ OF SUCH DAMAGE.
 
 #include "gd32f4xx.h"
 
-#define  SPI_FLASH_BLOCK_SIZE      0x8000
-#define  SPI_FLASH_PAGE_SIZE       0x100
-#define  SPI_FLASH_CS_LOW()        gpio_bit_reset(GPIOI,GPIO_PIN_8)
-#define  SPI_FLASH_CS_HIGH()       gpio_bit_set(GPIOI,GPIO_PIN_8)
+#define  SPI_FLASH_BLOCK_SIZE      0x8000U
+#define  SPI_FLASH_PAGE_SIZE       0x100U
+#define  SPI_FLASH_CS_LOW()        gpio_bit_reset(GPIOI, GPIO_PIN_8)
+#define  SPI_FLASH_CS_HIGH()       gpio_bit_set(GPIOI, GPIO_PIN_8)
 
 /* initialize SPI5 GPIO and parameter */
 void spi_flash_init(void);
@@ -51,11 +51,11 @@ void spi_flash_block_erase(uint32_t block_addr);
 /* erase the entire flash */
 void spi_flash_bulk_erase(void);
 /* write more than one byte to the flash */
-void spi_flash_page_write(uint8_t* pbuffer,uint32_t write_addr,uint16_t num_byte_to_write);
+void spi_flash_page_write(uint8_t *pbuffer, uint32_t write_addr, uint16_t num_byte_to_write);
 /* write block of data to the flash */
-void spi_flash_buffer_write(uint8_t* pbuffer,uint32_t write_addr,uint16_t num_byte_to_write);
+void spi_flash_buffer_write(uint8_t *pbuffer, uint32_t write_addr, uint16_t num_byte_to_write);
 /* read a block of data from the flash */
-void spi_flash_buffer_read(uint8_t* pbuffer,uint32_t read_addr,uint16_t num_byte_to_read);
+void spi_flash_buffer_read(uint8_t *pbuffer, uint32_t read_addr, uint16_t num_byte_to_read);
 /* read flash identification */
 uint32_t spi_flash_read_id(void);
 /* start a read data byte (read) sequence from the flash */
@@ -74,10 +74,10 @@ void spi_flash_wait_for_write_end(void);
 /* enable the flash quad mode */
 void spi_quad_flash_quad_enable(void);
 /* write block of data to the flash using spi quad */
-void spi_quad_flash_buffer_write(uint8_t* pbuffer, uint32_t write_addr, uint16_t num_byte_to_write);
+void spi_quad_flash_buffer_write(uint8_t *pbuffer, uint32_t write_addr, uint16_t num_byte_to_write);
 /* read a block of data from the flash using spi quad */
-void spi_quad_flash_buffer_read(uint8_t* pbuffer, uint32_t read_addr, uint16_t num_byte_to_read);
+void spi_quad_flash_buffer_read(uint8_t *pbuffer, uint32_t read_addr, uint16_t num_byte_to_read);
 /* write more than one byte to the flash using spi quad */
-void spi_quad_flash_page_write(uint8_t* pbuffer, uint32_t write_addr, uint16_t num_byte_to_write);
+void spi_quad_flash_page_write(uint8_t *pbuffer, uint32_t write_addr, uint16_t num_byte_to_write);
 
 #endif /* GD25QXX_H */

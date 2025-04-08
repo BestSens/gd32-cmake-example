@@ -2,7 +2,7 @@
     \file    usb_lcd_conf.h
     \brief   LCD driver configuration
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,8 +32,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __USB_LCD_CONF_H
-#define __USB_LCD_CONF_H
+#ifndef USB_LCD_CONF_H
+#define USB_LCD_CONF_H
 
 #include <stdio.h>
 #include "usb_conf.h"
@@ -42,33 +42,33 @@ OF SUCH DAMAGE.
 #define LCD_LOG_DEFAULT_COLOR         LCD_COLOR_WHITE
 
 /* define the cache depth */
-#define CACHE_SIZE                    100
+#define CACHE_SIZE                    100U
 
-#define YWINDOW_MIN                   3
-#define YWINDOW_SIZE                  22
+#define YWINDOW_MIN                   3U
+#define YWINDOW_SIZE                  22U
 
-#define LCD_HEADER_X                  0
-#define LCD_HEADER_Y                  0
+#define LCD_HEADER_X                  0U
+#define LCD_HEADER_Y                  0U
 
-#define LCD_FLAG_WIDTH                30
-#define LCD_FLAG_HEIGHT               272
+#define LCD_FLAG_WIDTH                30U
+#define LCD_FLAG_HEIGHT               272U
 
-#define LCD_FOOTER_X                  450
-#define LCD_FOOTER_Y                  0
+#define LCD_FOOTER_X                  450U
+#define LCD_FOOTER_Y                  0U
 
 #define LCD_TEXT_ZONE_X               LCD_FLAG_WIDTH
-#define LCD_TEXT_ZONE_Y               0
-#define LCD_TEXT_ZONE_WIDTH           LCD_PIXEL_WIDTH - 2 * LCD_FLAG_WIDTH
+#define LCD_TEXT_ZONE_Y               0U
+#define LCD_TEXT_ZONE_WIDTH           LCD_PIXEL_WIDTH - 2U * LCD_FLAG_WIDTH
 #define LCD_TEXT_ZONE_HEIGHT          LCD_PIXEL_HEIGHT
 
-#define LCD_TEXT_OFFSET               8
+#define LCD_TEXT_OFFSET               8U
 
 #define LCD_HEADER_LINE               LCD_HEADER_X + LCD_TEXT_OFFSET
 #define LCD_FOOTER_LINE               LCD_FOOTER_X + LCD_TEXT_OFFSET
 
-#define LCD_HINT_LINE0                400
-#define LCD_HINT_LINE1                410
-#define LCD_HINT_LINE2                430
+#define LCD_HINT_LINE0                400U
+#define LCD_HINT_LINE1                410U
+#define LCD_HINT_LINE2                430U
 
 /* redirect the printf to the LCD */
 #ifdef __GNUC__
@@ -79,4 +79,4 @@ OF SUCH DAMAGE.
     #define LCD_LOG_PUTCHAR int fputc(int ch, FILE *f)
 #endif /* __GNUC__ */
 
-#endif /* __USB_LCD_CONF_H */
+#endif /* USB_LCD_CONF_H */

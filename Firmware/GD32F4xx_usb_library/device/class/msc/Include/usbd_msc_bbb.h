@@ -2,7 +2,7 @@
     \file    usbd_msc_bbb.h
     \brief   the header file of the usbd_msc_bbb.c file
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,12 +32,11 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __USBD_MSC_BBB_H
-#define __USBD_MSC_BBB_H
+#ifndef USBD_MSC_BBB_H
+#define USBD_MSC_BBB_H
 
-#include "usbd_core.h"
 #include "msc_bbb.h"
-#include "usbd_msc_mem.h"
+#include "msc_scsi.h"
 #include "usbd_msc_scsi.h"
 
 /* MSC BBB state */
@@ -56,46 +55,46 @@ enum msc_bbb_status {
     BBB_STATUS_ERROR        /*!< error status */
 };
 
-typedef struct
-{
-    uint8_t bbb_data[MSC_MEDIA_PACKET_SIZE];
+typedef struct {
+    uint8_t bbb_data[MSC_MEDIA_PACKET_SIZE];                                    /*!< MSC BBB data buff */
 
-    uint8_t max_lun;
-    uint8_t bbb_state;
-    uint8_t bbb_status;
+    uint8_t max_lun;                                                            /*!< maximum LUN */
 
-    uint32_t bbb_datalen;
+    uint8_t bbb_state;                                                          /*!< BBB state */
+    uint8_t bbb_status;                                                         /*!< BBB status */
 
-    msc_bbb_cbw bbb_cbw;
-    msc_bbb_csw bbb_csw;
+    uint32_t bbb_datalen;                                                       /*!< BBB data length */
 
-    uint8_t scsi_sense_head;
-    uint8_t scsi_sense_tail;
+    msc_bbb_cbw bbb_cbw;                                                        /*!< MSC BBB CBW structural */
+    msc_bbb_csw bbb_csw;                                                        /*!< MSC BBB CSW structural */
 
-    uint32_t scsi_blk_size[MEM_LUN_NUM];
-    uint32_t scsi_blk_nbr[MEM_LUN_NUM];
+    uint8_t scsi_sense_head;                                                    /*!< SCSI sense header */
+    uint8_t scsi_sense_tail;                                                    /*!< SCSI sense tail */
 
-    uint32_t scsi_blk_addr;
-    uint32_t scsi_blk_len;
-    uint32_t scsi_disk_pop;
+    uint32_t scsi_blk_size[MEM_LUN_NUM];                                        /*!< SCSI block size */
+    uint32_t scsi_blk_nbr[MEM_LUN_NUM];                                         /*!< SCSI block number */
 
-    msc_scsi_sense scsi_sense[SENSE_LIST_DEEPTH];
+    uint32_t scsi_blk_addr;                                                     /*!< SCSI block address */
+    uint32_t scsi_blk_len;                                                      /*!< SCSI block length */
+    uint32_t scsi_disk_pop;                                                     /*!< SCSI disk pop */
+
+    msc_scsi_sense scsi_sense[SENSE_LIST_DEEPTH];                               /*!< MSC SCSI sense structural buff */
 } usbd_msc_handler;
 
 /* function declarations */
 /* initialize the BBB process */
-void msc_bbb_init (usb_core_driver *udev);
+void msc_bbb_init(usb_core_driver *udev);
 /* reset the BBB machine */
-void msc_bbb_reset (usb_core_driver *udev);
+void msc_bbb_reset(usb_core_driver *udev);
 /* deinitialize the BBB machine */
-void msc_bbb_deinit (usb_core_driver *udev);
+void msc_bbb_deinit(usb_core_driver *udev);
 /* handle BBB data IN stage */
-void msc_bbb_data_in (usb_core_driver *udev, uint8_t ep_num);
+void msc_bbb_data_in(usb_core_driver *udev, uint8_t ep_num);
 /* handle BBB data OUT stage */
-void msc_bbb_data_out (usb_core_driver *udev, uint8_t ep_num);
+void msc_bbb_data_out(usb_core_driver *udev, uint8_t ep_num);
 /* send the CSW(command status wrapper) */
-void msc_bbb_csw_send (usb_core_driver *udev, uint8_t csw_status);
+void msc_bbb_csw_send(usb_core_driver *udev, uint8_t csw_status);
 /* complete the clear feature request */
-void msc_bbb_clrfeature (usb_core_driver *udev, uint8_t ep_num);
+void msc_bbb_clrfeature(usb_core_driver *udev, uint8_t ep_num);
 
-#endif /* __USBD_MSC_BBB_H */
+#endif /* USBD_MSC_BBB_H */

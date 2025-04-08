@@ -2,7 +2,7 @@
     \file    app.c
     \brief   USB main routine for CDC device
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -49,7 +49,7 @@ int main(void)
     usb_rcu_config();
     usb_timer_init();
 
-    usbd_init (&cdc_acm,
+    usbd_init(&cdc_acm,
 #ifdef USE_USB_FS
               USB_CORE_ENUM_FS,
 #elif defined(USE_USB_HS)
@@ -61,9 +61,9 @@ int main(void)
     usb_intr_config();
 
     /* main loop */
-    while (1) {
-        if (USBD_CONFIGURED == cdc_acm.dev.cur_status) {
-            if (0U == cdc_acm_check_ready(&cdc_acm)) {
+    while(1) {
+        if(USBD_CONFIGURED == cdc_acm.dev.cur_status) {
+            if(0U == cdc_acm_check_ready(&cdc_acm)) {
                 cdc_acm_data_receive(&cdc_acm);
             } else {
                 cdc_acm_data_send(&cdc_acm);

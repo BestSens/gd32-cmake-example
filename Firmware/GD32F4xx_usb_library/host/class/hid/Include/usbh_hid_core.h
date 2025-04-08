@@ -2,7 +2,7 @@
     \file    usbh_hid_core.h
     \brief   header file for the usbh_hid_core.c
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,76 +32,72 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __USBH_HID_CORE_H
-#define __USBH_HID_CORE_H
+#ifndef USBH_HID_CORE_H
+#define USBH_HID_CORE_H
 
 #include "usb_hid.h"
 #include "usbh_enum.h"
 #include "usbh_transc.h"
 
-#define HID_MIN_POLL                                    10U
-#define HID_REPORT_SIZE                                 16U
-#define HID_QUEUE_SIZE                                  10U
+#define HID_MIN_POLL                                    10U              /*!< HID minimum polling */
+#define HID_REPORT_SIZE                                 16U              /*!< HID report size */
+#define HID_QUEUE_SIZE                                  10U              /*!< HID queue size */
 
-#define USB_HID_DESC_SIZE                               9U
+#define USB_HID_DESC_SIZE                               9U               /*!< HID descriptor size */
 
 /* states for HID state machine */
 typedef enum {
-    HID_INIT = 0U,
-    HID_IDLE,
-    HID_SEND_DATA,
-    HID_BUSY,
-    HID_GET_DATA,
-    HID_SYNC,
-    HID_POLL,
-    HID_ERROR,
+    HID_INIT = 0U,                                                       /*!< HID init state */
+    HID_IDLE,                                                            /*!< HID idle state */
+    HID_SEND_DATA,                                                       /*!< HID send data state */
+    HID_BUSY,                                                            /*!< HID busy state */
+    HID_GET_DATA,                                                        /*!< HID get data state */
+    HID_SYNC,                                                            /*!< HID synchronous state */
+    HID_POLL,                                                            /*!< HID polling state */
+    HID_ERROR                                                            /*!< HID error state */
 } hid_state;
 
+/* state types of HID control request */
 typedef enum {
-    HID_REQ_INIT = 0U,
-    HID_REQ_IDLE,
-    HID_REQ_GET_REPORT_DESC,
-    HID_REQ_GET_HID_DESC,
-    HID_REQ_SET_IDLE,
-    HID_REQ_SET_PROTOCOL,
-    HID_REQ_SET_REPORT,
+    HID_REQ_INIT = 0U,                                                   /*!< HID init request */
+    HID_REQ_IDLE,                                                        /*!< HID idle request */
+    HID_REQ_GET_REPORT_DESC,                                             /*!< get report descriptor request */
+    HID_REQ_GET_HID_DESC,                                                /*!< get HID descriptor request */
+    HID_REQ_SET_IDLE,                                                    /*!< set idle request */
+    HID_REQ_SET_PROTOCOL,                                                /*!< set protocol request */
+    HID_REQ_SET_REPORT                                                   /*!< set report request */
 } hid_ctlstate;
 
-typedef enum
-{
-    HID_MOUSE    = 0x01U,
-    HID_KEYBOARD = 0x02U,
-    HID_UNKNOWN  = 0xFFU,
+/* HID types */
+typedef enum {
+    HID_MOUSE    = 0x01U,                                                /*!< HID mouse type */
+    HID_KEYBOARD = 0x02U,                                                /*!< HID keyboard type */
+    HID_UNKNOWN  = 0xFFU                                                 /*!< unknown type */
 } hid_type;
 
-typedef struct
-{
-     uint8_t  *buf;
-     uint16_t  head;
-     uint16_t  tail;
-     uint16_t  size;
-     uint8_t   lock;
+typedef struct {
+     uint8_t  *buf;                                                      /*!< data FIFO buff pointer */
+     uint16_t  head;                                                     /*!< data FIFO header */
+     uint16_t  tail;                                                     /*!< data FIFO tail */
+     uint16_t  size;                                                     /*!< data FIFO size */
+     uint8_t   lock;                                                     /*!< data FIFO lock */
 } data_fifo;
 
 /* structure for HID process */
-typedef struct _hid_process
-{
-    uint8_t              pipe_in;
-    uint8_t              pipe_out;
-    uint8_t              ep_addr;
-    uint8_t              ep_in;
-    uint8_t              ep_out;
-    uint8_t              *pdata;
-    __IO uint8_t         data_ready;
-    uint16_t             len;
-    uint16_t             poll;
-
-    __IO uint32_t        timer;
-    usb_desc_hid         hid_desc;
-
-    hid_state            state;
-    hid_ctlstate         ctl_state;
-
+typedef struct _hid_process {
+    uint8_t              pipe_in;                                 /*!< pipe IN */
+    uint8_t              pipe_out;                                /*!< pipe OUT */
+    uint8_t              ep_addr;                                 /*!< endpoint address */
+    uint8_t              ep_in;                                   /*!< endpoint IN */
+    uint8_t              ep_out;                                  /*!< endpoint OUT */
+    uint8_t              *pdata;                                  /*!< HID data pointer */
+    __IO uint8_t         data_ready;                              /*!< HID data ready */
+    uint16_t             len;                                     /*!< HID data length */
+    uint16_t             poll;                                    /*!< HID polling */
+    __IO uint32_t        timer;                                   /*!< HID timer */
+    usb_desc_hid         hid_desc;                                /*!< HID descriptor */
+    hid_state            state;                                   /*!< HID state structure */
+    hid_ctlstate         ctl_state;                               /*!< control request state structure */
     usbh_status          (*init)(usb_core_driver *udev, usbh_host *uhost);
     usbh_status          (*decode)(uint8_t *data);
 } usbh_hid_handler;
@@ -110,11 +106,11 @@ extern usbh_class usbh_hid;
 
 /* function declarations */
 /* set HID report */
-usbh_status usbh_set_report (usb_core_driver *udev,
-                             usbh_host *uhost,
-                             uint8_t  report_type,
-                             uint8_t  report_ID,
-                             uint8_t  report_len,
-                             uint8_t *report_buf);
+usbh_status usbh_set_report(usb_core_driver *udev, \
+                            usbh_host *uhost, \
+                            uint8_t report_type, \
+                            uint8_t report_ID, \
+                            uint8_t report_len, \
+                            uint8_t *report_buf);
 
-#endif /* __USBH_HID_CORE_H */
+#endif /* USBH_HID_CORE_H */

@@ -2,7 +2,7 @@
     \file    usbh_usr.c
     \brief   user application layer for USBFS host-mode MSC class operation
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,12 +32,9 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#include <string.h>
 #include "usbh_usr.h"
 #include "drv_usb_hw.h"
 #include "usbh_msc_core.h"
-#include "usbh_msc_scsi.h"
-#include "usbh_msc_bbb.h"
 #include "ff.h"
 
 extern usb_core_driver usbh_core;
@@ -47,16 +44,15 @@ FIL file;
 FATFS fatfs;
 FRESULT res;
 
-char ReadTextBuff[100];
-char WriteTextBuff[] = "GD32 USB Host Demo application using FAT_FS   ";
-uint16_t bytesWritten, bytesToWrite, bytesRead;
+__ALIGN_BEGIN char ReadTextBuff[100] __ALIGN_END;
+__ALIGN_BEGIN char WriteTextBuff[] __ALIGN_END = "GD32 USB Host Demo application using FAT_FS   ";
+uint32_t bytesWritten, bytesToWrite, bytesRead;
 
 uint8_t line_idx;
 uint8_t usbh_usr_application_state = USBH_USR_FS_INIT;
 
 /* points to the usbh_user_cb structure */
-usbh_user_cb usr_cb =
-{
+usbh_user_cb usr_cb = {
     usbh_user_init,
     usbh_user_deinit,
     usbh_user_device_connected,
@@ -81,8 +77,8 @@ const uint8_t MSG_HOST_HEADER[] = "USBFS & USBHS MSC Host";
 const uint8_t MSG_HOST_FOOTER[] = "USB Host Library v3.0.0";
 
 /* local function prototypes ('static') */
-static uint8_t explore_disk (char* path, uint8_t recu_level);
-static void toggle_leds (void);
+static uint8_t explore_disk(char *path, uint8_t recu_level);
+static void toggle_leds(void);
 
 /*!
     \brief      user operation for host-mode initialization
@@ -94,7 +90,7 @@ void usbh_user_init(void)
 {
     static uint8_t startup = 0U;
 
-    if (0U == startup) {
+    if(0U == startup) {
         startup = 1U;
 
         /* configure the LEDs and KEYs*/
@@ -144,7 +140,7 @@ void usbh_user_device_connected(void)
     \param[out] none
     \retval     none
 */
-void usbh_user_unrecovered_error (void)
+void usbh_user_unrecovered_error(void)
 {
     LCD_ErrLog("> Unrecovered error state .\r\n");
 }
@@ -155,7 +151,7 @@ void usbh_user_unrecovered_error (void)
     \param[out] none
     \retval     none
 */
-void usbh_user_device_disconnected (void)
+void usbh_user_device_disconnected(void)
 {
     LCD_UsrLog("> Device Disconnected.\r\n");
 }
@@ -179,13 +175,13 @@ void usbh_user_device_reset(void)
 */
 void usbh_user_device_speed_detected(uint32_t device_speed)
 {
-    if(PORT_SPEED_HIGH == device_speed){
+    if(PORT_SPEED_HIGH == device_speed) {
         LCD_UsrLog("> High speed device detected.\r\n");
-    }else if(PORT_SPEED_FULL == device_speed){
+    } else if(PORT_SPEED_FULL == device_speed) {
         LCD_UsrLog("> Full speed device detected.\r\n");
-    }else if(PORT_SPEED_LOW == device_speed){
+    } else if(PORT_SPEED_LOW == device_speed) {
         LCD_UsrLog("> Low speed device detected.\r\n");
-    }else{
+    } else {
         LCD_ErrLog("> Device Fault.\r\n");
     }
 }
@@ -205,7 +201,7 @@ void usbh_user_device_desc_available(void *device_desc)
 }
 
 /*!
-    \brief      usb device is successfully assigned the address 
+    \brief      usb device is successfully assigned the address
     \param[in]  none
     \param[out] none
     \retval     none
@@ -222,15 +218,15 @@ void usbh_user_device_address_assigned(void)
     \param[out] none
     \retval     none
 */
-void usbh_user_configuration_descavailable(usb_desc_config *cfg_desc,
-                                           usb_desc_itf *itf_desc,
+void usbh_user_configuration_descavailable(usb_desc_config *cfg_desc, \
+                                           usb_desc_itf *itf_desc, \
                                            usb_desc_ep *ep_desc)
 {
     usb_desc_itf *id = itf_desc;
 
-    if(0x08U  == (*id).bInterfaceClass){
+    if(0x08U  == (*id).bInterfaceClass) {
         LCD_UsrLog("> Mass storage device connected.\r\n");
-    }else if (0x03U  == (*id).bInterfaceClass){
+    } else if(0x03U  == (*id).bInterfaceClass) {
         LCD_UsrLog("> HID device connected.\r\n");
     }
 }
@@ -279,10 +275,10 @@ void usbh_user_enumeration_finish(void)
     LCD_UsrLog("> Enumeration completed.\r\n");
 
     lcd_text_color_set(LCD_COLOR_RED);
-    lcd_vertical_string_display(LCD_HINT_LINE0, 0, (uint8_t *)"---------------------------------------");
+    lcd_vertical_string_display(LCD_HINT_LINE0, 0U, (uint8_t *)"---------------------------------------");
     lcd_text_color_set(LCD_COLOR_GREEN);
-    lcd_vertical_string_display(LCD_HINT_LINE1, 0, (uint8_t *)"To see the disk information:  ");
-    lcd_vertical_string_display(LCD_HINT_LINE2, 0, (uint8_t *)"Press User Key...             ");
+    lcd_vertical_string_display(LCD_HINT_LINE1, 0U, (uint8_t *)"To see the disk information:  ");
+    lcd_vertical_string_display(LCD_HINT_LINE2, 0U, (uint8_t *)"Press User Key...             ");
 }
 
 /*!
@@ -307,7 +303,7 @@ usbh_user_status usbh_user_userinput(void)
     usbh_user_status usbh_usr_status = USR_IN_NO_RESP;
 
     /*key User is in polling mode to detect user action */
-    if (RESET == gd_eval_key_state_get(KEY_USER)) {
+    if(RESET == gd_eval_key_state_get(KEY_USER)) {
         usbh_usr_status = USR_IN_RESP_OK;
     }
 
@@ -320,7 +316,7 @@ usbh_user_status usbh_user_userinput(void)
     \param[out] none
     \retval     none
 */
-void usbh_user_over_current_detected (void)
+void usbh_user_over_current_detected(void)
 {
     LCD_ErrLog("> Overcurrent detected.\r\n");
 }
@@ -335,10 +331,10 @@ int usbh_usr_msc_application(void)
 {
     msc_lun info;
 
-    switch(usbh_usr_application_state){
+    switch(usbh_usr_application_state) {
     case USBH_USR_FS_INIT:
         /* initializes the file system */
-        if (FR_OK != f_mount(&fatfs, "0:/", 0)) {
+        if(FR_OK != f_mount(&fatfs, "0:/", 0U)) {
             LCD_ErrLog("> Cannot initialize File System.\r\n");
 
             return(-1);
@@ -346,7 +342,7 @@ int usbh_usr_msc_application(void)
 
         LCD_UsrLog("> File System initialized.\r\n");
 
-        if (USBH_OK == usbh_msc_lun_info_get(&usb_host_msc, 0, &info)){
+        if(USBH_OK == usbh_msc_lun_info_get(&usb_host_msc, 0U, &info)) {
             LCD_UsrLog("> Disk capacity: %llu Bytes.\r\n", (uint64_t)info.capacity.block_nbr * info.capacity.block_size);
         }
 
@@ -357,56 +353,56 @@ int usbh_usr_msc_application(void)
         LCD_UsrLog("> Exploring disk flash ...\r\n");
 
         lcd_text_color_set(LCD_COLOR_GREEN);
-        lcd_vertical_string_display(LCD_HINT_LINE1, 0, (uint8_t *)"To see the root content of disk");
-        lcd_vertical_string_display(LCD_HINT_LINE2, 0, (uint8_t *)"Press Tamper Key...            ");
+        lcd_vertical_string_display(LCD_HINT_LINE1, 0U, (uint8_t *)"To see the root content of disk");
+        lcd_vertical_string_display(LCD_HINT_LINE2, 0U, (uint8_t *)"Press Tamper Key...            ");
 
         /* Key TAMPER in polling */
-        while ((usbh_core.host.connect_status) && \
-            (SET == gd_eval_key_state_get (KEY_TAMPER))) {
+        while((usbh_core.host.connect_status) && \
+              (SET == gd_eval_key_state_get(KEY_TAMPER))) {
             toggle_leds();
         }
 
-        explore_disk("0:/", 1);
-        line_idx = 0;
+        explore_disk("0:/", 1U);
+        line_idx = 0U;
         usbh_usr_application_state = USBH_USR_FS_WRITEFILE;
         break;
 
     case USBH_USR_FS_WRITEFILE:
-        usb_mdelay(100);
+        usb_mdelay(100U);
 
         lcd_text_color_set(LCD_COLOR_GREEN);
-        lcd_vertical_string_display(LCD_HINT_LINE1, 0, (uint8_t *)"                                  ");
-        lcd_vertical_string_display(LCD_HINT_LINE2, 0, (uint8_t *)"Press Wakeup Key to write file");
+        lcd_vertical_string_display(LCD_HINT_LINE1, 0U, (uint8_t *)"                                  ");
+        lcd_vertical_string_display(LCD_HINT_LINE2, 0U, (uint8_t *)"Press Wakeup Key to write file");
 
         /* key Wakeup in polling */
-        while ((usbh_core.host.connect_status) && \
-                (SET == gd_eval_key_state_get (KEY_WAKEUP))) {
+        while((usbh_core.host.connect_status) && \
+              (SET == gd_eval_key_state_get(KEY_WAKEUP))) {
             toggle_leds();
         }
 
         LCD_UsrLog("> Writing File to disk flash ...\r\n");
 
         /* register work area for logical drives */
-        f_mount(&fatfs, "0:/", 1);
+        f_mount(&fatfs, "0:/", 1U);
 
-        if (FR_OK == f_open(&file, "0:GD32.TXT", FA_CREATE_ALWAYS | FA_WRITE)) {
+        if(FR_OK == f_open(&file, "0:GD32.TXT", FA_CREATE_ALWAYS | FA_WRITE)) {
             LCD_UsrLog("> GD32.TXT be opened for write.\n");
             /* write buffer to file */
             bytesToWrite = strlen(WriteTextBuff);
-            res = f_write (&file, WriteTextBuff, bytesToWrite, (void *)&bytesWritten);
+            res = f_write(&file, WriteTextBuff, bytesToWrite, (void *)&bytesWritten);
             f_sync(&file);
             /* EOF or error */
-            if ((0U == bytesWritten) || (FR_OK != res)) {
+            if((0U == bytesWritten) || (FR_OK != res)) {
                 LCD_ErrLog("> GD32.TXT CANNOT be written.\r\n");
             } else {
-                if (FR_OK == f_open(&file, "0:GD32.TXT", FA_READ)) {
+                if(FR_OK == f_open(&file, "0:GD32.TXT", FA_READ)) {
                     res = f_read(&file, ReadTextBuff, sizeof(ReadTextBuff), (void *)&bytesRead);
                     /* EOF or error */
-                    if ((bytesRead == 0) || (res != FR_OK)) {
+                    if((0U == bytesRead) || (res != FR_OK)) {
                         LCD_ErrLog("> GD32.TXT CANNOT be read.\r\n");
                     } else {
                         /* compare file content */
-                       if ((bytesRead == bytesWritten) && (0 == strncmp(ReadTextBuff, WriteTextBuff, bytesRead))) {
+                        if((bytesRead == bytesWritten) && (0U == strncmp(ReadTextBuff, WriteTextBuff, bytesRead))) {
                             LCD_UsrLog("> File content compare: SUCCESS.\r\n");
                         } else {
                             LCD_ErrLog("> File content compare: ERROR.\r\n");
@@ -424,7 +420,7 @@ int usbh_usr_msc_application(void)
         }
 
         /* unmount file system */
-        f_mount(NULL, "0:/", 1);
+        f_mount(NULL, "0:/", 1U);
 
         usbh_usr_application_state = USBH_USR_FS_DEMOEND;
         LCD_UsrLog("> The MSC host demo is end.\r\n");
@@ -437,7 +433,7 @@ int usbh_usr_msc_application(void)
         break;
     }
 
-    return(0);
+    return 0;
 }
 
 /*!
@@ -447,7 +443,7 @@ int usbh_usr_msc_application(void)
     \param[out] none
     \retval     status
 */
-static uint8_t explore_disk (char* path, uint8_t recu_level)
+static uint8_t explore_disk(char *path, uint8_t recu_level)
 {
     FILINFO fno;
     DIR dir;
@@ -455,14 +451,14 @@ static uint8_t explore_disk (char* path, uint8_t recu_level)
 
     res = f_opendir(&dir, path);
 
-    if (res == FR_OK) {
-        while ((usbh_core.host.connect_status)) {
+    if(FR_OK == res) {
+        while((usbh_core.host.connect_status)) {
             res = f_readdir(&dir, &fno);
-            if (FR_OK != res || 0U == fno.fname[0]) {
+            if(FR_OK != res || 0U == fno.fname[0]) {
                 break;
             }
 
-            if ('.' == fno.fname[0]) {
+            if('.' == fno.fname[0]) {
                 continue;
             }
 
@@ -470,34 +466,34 @@ static uint8_t explore_disk (char* path, uint8_t recu_level)
 
             line_idx++;
 
-            if (line_idx > 4) {
-                line_idx = 0;
+            if(line_idx > 4U) {
+                line_idx = 0U;
 
                 lcd_text_color_set(LCD_COLOR_GREEN);
-                lcd_vertical_string_display(LCD_HINT_LINE1, 0, (uint8_t *)"                                ");
-                lcd_vertical_string_display(LCD_HINT_LINE2, 0, (uint8_t *)"Press User Key to continue");
+                lcd_vertical_string_display(LCD_HINT_LINE1, 0U, (uint8_t *)"                                ");
+                lcd_vertical_string_display(LCD_HINT_LINE2, 0U, (uint8_t *)"Press User Key to continue");
 
                 /*key User in polling*/
-                while ((usbh_core.host.connect_status) && \
-                    (SET == gd_eval_key_state_get (KEY_USER))) {
+                while((usbh_core.host.connect_status) && \
+                      (SET == gd_eval_key_state_get(KEY_USER))) {
                     toggle_leds();
                 }
             }
 
-            if (1U == recu_level) {
+            if(1U == recu_level) {
                 LCD_UsrLog("   |__");
             } else if(2U == recu_level) {
                 LCD_UsrLog("   |   |__");
             }
 
-            if (AM_DIR == fno.fattrib) {
+            if(AM_DIR == fno.fattrib) {
                 LCD_UsrLog("%s\r\n", fno.fname);
             } else {
                 LCD_UsrLog("%s\r\n", fno.fname);
             }
 
-            if ((AM_DIR == fno.fattrib) && (1U == recu_level)) {
-                explore_disk(fn, 2);
+            if((AM_DIR == fno.fattrib) && (1U == recu_level)) {
+                explore_disk(fn, 2U);
             }
         }
     }
@@ -515,9 +511,9 @@ static void toggle_leds(void)
 {
     static uint32_t i;
 
-    if (0x10000U == i++) {
+    if(0x10000U == i++) {
         gd_eval_led_toggle(LED2);
         gd_eval_led_toggle(LED3);
-        i = 0;
+        i = 0U;
     }
 }

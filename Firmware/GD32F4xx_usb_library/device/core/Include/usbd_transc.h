@@ -2,7 +2,7 @@
     \file    usbd_transc.h
     \brief   USB transaction core functions prototype
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,25 +32,25 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __USBD_TRANSC_H
-#define __USBD_TRANSC_H
+#ifndef USBD_TRANSC_H
+#define USBD_TRANSC_H
 
 #include "usbd_core.h"
 
 /* function declarations */
 /* USB send data in the control transaction */
-usbd_status usbd_ctl_send (usb_core_driver *udev);
-/* USB receive data in control transaction */
-usbd_status usbd_ctl_recev (usb_core_driver *udev);
+usbd_status usbd_ctl_send(usb_core_driver *udev);
+/* USB receive data in the control transaction */
+usbd_status usbd_ctl_recev(usb_core_driver *udev);
 /* USB send control transaction status */
-usbd_status usbd_ctl_status_send (usb_core_driver *udev);
+usbd_status usbd_ctl_status_send(usb_core_driver *udev);
 /* USB control receive status */
-usbd_status usbd_ctl_status_recev (usb_core_driver *udev);
-/* USB setup stage processing */
-uint8_t usbd_setup_transc (usb_core_driver *udev);
-/* data out stage processing */
-uint8_t usbd_out_transc (usb_core_driver *udev, uint8_t ep_num);
-/* data in stage processing */
-uint8_t usbd_in_transc (usb_core_driver *udev, uint8_t ep_num);
+usbd_status usbd_ctl_status_recev(usb_core_driver *udev);
+/* USB SETUP stage processing */
+uint8_t usbd_setup_transc(usb_core_driver *udev);
+/* data OUT stage processing */
+uint8_t usbd_out_transc(usb_core_driver *udev, uint8_t ep_num);
+/* data IN stage processing */
+uint8_t usbd_in_transc(usb_core_driver *udev, uint8_t ep_num);
 
-#endif /* __USBD_TRANSC_H */
+#endif /* USBD_TRANSC_H */

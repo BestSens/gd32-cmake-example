@@ -2,7 +2,7 @@
     \file    gd32f4xx_rtc.c
     \brief   RTC driver
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -147,12 +147,7 @@ ErrStatus rtc_init(rtc_parameter_struct *rtc_initpara_struct)
     RTC_WPK = RTC_UNLOCK_KEY2;
 
     /* 2nd: enter init mode */
-      RTC_ALRM0TD = 0XFFFF;
-      RTC_ALRM1TD = 0XFFFF;
-      RTC_ALRM0SS = 0X0022;
-      RTC_ALRM1SS = 0X0022;
-error_status = rtc_init_mode_enter();
-
+    error_status = rtc_init_mode_enter();
 
     if(ERROR != error_status) {
         RTC_PSC = (uint32_t)(PSC_FACTOR_A(rtc_initpara_struct->factor_asyn) | \

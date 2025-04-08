@@ -2,7 +2,7 @@
     \file    main.c
     \brief   enet demo
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -68,7 +68,7 @@ int main(void)
         /* check if any packet received */
         if(enet_rxframe_size_get()) {
             /* process received ethernet packet */
-            lwip_pkt_handle();
+            lwip_frame_recv();
         }
 #endif /* USE_ENET_INTERRUPT */
 
@@ -77,11 +77,11 @@ int main(void)
         sys_check_timeouts();
 
 #ifdef USE_DHCP
-        lwip_dhcp_process_handle();
+        lwip_dhcp_address_get();
 #endif /* USE_DHCP */
 
 #else
-        lwip_periodic_handle(g_localtime);
+        lwip_timeouts_check(g_localtime);
 #endif /* TIMEOUT_CHECK_USE_LWIP */
     }
 }

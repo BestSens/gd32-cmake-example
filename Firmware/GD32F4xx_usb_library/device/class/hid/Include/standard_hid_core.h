@@ -2,7 +2,7 @@
     \file    standard_hid_core.h
     \brief   definitions for HID core
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,28 +32,27 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __STANDARD_HID_CORE_H
-#define __STANDARD_HID_CORE_H
+#ifndef STANDARD_HID_CORE_H
+#define STANDARD_HID_CORE_H
 
 #include "usbd_enum.h"
 #include "usb_hid.h"
 
-#define USB_HID_CONFIG_DESC_LEN          0x22U
-#define USB_HID_REPORT_DESC_LEN          0x2EU
+#define USB_HID_CONFIG_DESC_LEN          0x22U                     /*!< HID device configuration descriptor length */
+#define USB_HID_REPORT_DESC_LEN          0x2EU                     /*!< HID device report descriptor length */
 
-#define NO_CMD                           0xFFU
+#define NO_CMD                           0xFFU                     /*!< no command */
 
 typedef struct {
-    uint32_t protocol;
-    uint32_t idle_state;
-
-    uint8_t data[HID_IN_PACKET];
-    __IO uint8_t prev_transfer_complete;
+    uint32_t protocol;                                             /*!< control request protocol */
+    uint32_t idle_state;                                           /*!< HID device idle state */
+    uint8_t data[HID_IN_PACKET];                                   /*!< data transfer buff */
+    __IO uint8_t prev_transfer_complete;                           /*!< previous transfer complete flag */
 } standard_hid_handler;
 
 typedef struct {
-    void (*hid_itf_config) (void);
-    void (*hid_itf_data_process) (usb_dev *udev);
+    void (*hid_itf_config)(void);
+    void (*hid_itf_data_process)(usb_dev *udev);
 } hid_fop_handler;
 
 extern usb_desc hid_desc;
@@ -61,8 +60,8 @@ extern usb_class_core usbd_hid_cb;
 
 /* function declarations */
 /* register HID interface operation functions */
-uint8_t hid_itfop_register (usb_dev *udev, hid_fop_handler *hid_fop);
+uint8_t hid_itfop_register(usb_dev *udev, hid_fop_handler *hid_fop);
 /* send keyboard report */
-uint8_t hid_report_send (usb_dev *udev, uint8_t *report, uint32_t len);
+uint8_t hid_report_send(usb_dev *udev, uint8_t *report, uint32_t len);
 
-#endif /* __STANDARD_HID_CORE_H */
+#endif /* STANDARD_HID_CORE_H */

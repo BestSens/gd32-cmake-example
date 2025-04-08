@@ -2,7 +2,7 @@
     \file    gd32f4xx_it.c
     \brief   interrupt service routines
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -36,7 +36,7 @@ OF SUCH DAMAGE.
 #include "gd32f4xx_it.h"
 #include "main.h"
 
-extern void lwip_pkt_handle(void);
+extern void lwip_frame_recv(void);
 extern void time_update(void);
 
 /*!
@@ -181,7 +181,7 @@ void ENET_IRQHandler(void)
         reval = enet_rxframe_size_get();
 
         if(reval > 1) {
-            lwip_pkt_handle();
+            lwip_frame_recv();
         }
     } while(reval != 0);
 

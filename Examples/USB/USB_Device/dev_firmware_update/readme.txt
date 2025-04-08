@@ -2,7 +2,7 @@
     \file    readme.txt
     \brief   description of the USB DFU device demo
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -61,7 +61,7 @@ internal flash memory or the external falsh memory using the GD tool "GD32 MCU D
 
   The GD tool "GD32AllInOneProgrammer" can operate the option Byte in the internal flash.
 
-  Step 4: After each device reset, hold down the TAMPER key on the GD32450i-EVAL board into app 
-routine in the internal flash.
+  Step 4: After each device reset, hold down the TAMPER key on the GD32450i-EVAL board into DFU 
+routine, otherwise into app routine in the internal flash.
 
   JP12,JP13,JP20 must be fitted to SPI ports.

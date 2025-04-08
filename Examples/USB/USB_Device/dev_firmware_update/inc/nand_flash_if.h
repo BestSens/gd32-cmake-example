@@ -2,7 +2,7 @@
     \file    nand_flash_if.h
     \brief   USB DFU device nand flash interface header file
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,16 +32,16 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __NAND_FLASH_IF
-#define __NAND_FLASH_IF
+#ifndef NAND_FLASH_IF_H
+#define NAND_FLASH_IF_H
 
 #include "dfu_mem.h"
 
-#define NAND_FLASH_START_ADDR       0x70000000
-#define NAND_FLASH_END_ADDR         0x78000000
+#define NAND_FLASH_START_ADDR       0x70000000U
+#define NAND_FLASH_END_ADDR         0x78000000U
 
 #define NAND_FLASH_IF_STR           "@Nand Flash /0x70000000/4096*032Kg"
 
 extern dfu_mem_prop dfu_nand_flash_cb;
 
-#endif /* __NAND_FLASH_IF */
+#endif /* NAND_FLASH_IF_H */

@@ -2,7 +2,7 @@
     \file    flash_msd.c
     \brief   flash access functions
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -40,9 +40,10 @@ OF SUCH DAMAGE.
     \param[out] none
     \retval     status
   */
-uint32_t flash_init (void)
+uint32_t flash_init(void)
 {
     fmc_unlock();
+
     return 0U;
 }
 
@@ -55,17 +56,17 @@ uint32_t flash_init (void)
     \param[out] none
     \retval     status
 */
-uint32_t flash_read_multi_blocks (uint8_t *buf, 
-                                  uint32_t read_addr, 
-                                  uint16_t blk_size,
-                                  uint32_t blk_num)
+uint32_t flash_read_multi_blocks(uint8_t *buf, \
+                                 uint32_t read_addr, \
+                                 uint16_t blk_size, \
+                                 uint32_t blk_num)
 {
     uint32_t i;
     uint8_t *source = (uint8_t *)(read_addr + FLASH_BASE_ADDR);
 
     /* data transfer */
-    while (blk_num--){
-        for (i = 0U; i < blk_size; i++){
+    while(blk_num--) {
+        for(i = 0U; i < blk_size; i++) {
             *buf++ = *source++;
         }
     }
@@ -82,10 +83,10 @@ uint32_t flash_read_multi_blocks (uint8_t *buf,
     \param[out] none
     \retval     status
 */
-uint32_t flash_write_multi_blocks (uint8_t *buf,
-                                   uint32_t write_addr,
-                                   uint16_t blk_size,
-                                   uint32_t blk_num)
+uint32_t flash_write_multi_blocks(uint8_t *buf, \
+                                  uint32_t write_addr, \
+                                  uint16_t blk_size, \
+                                  uint32_t blk_num)
 {
     return 0U;
 }

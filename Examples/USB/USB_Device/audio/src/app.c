@@ -2,7 +2,7 @@
     \file    app.c
     \brief   USB main routine for Audio device
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -37,13 +37,13 @@ OF SUCH DAMAGE.
 #include "audio_out_itf.h"
 
 #ifdef USE_USB_AD_MICPHONE
-    #include "wave_data.h"
+#include "wave_data.h"
 #endif
 
 usb_core_driver usb_audio;
 
 #ifdef USE_USB_AD_MICPHONE
-    volatile uint32_t count_data = 0;
+volatile uint32_t count_data = 0U;
 #endif
 
 /*!
@@ -58,7 +58,7 @@ int main(void)
     usb_rcu_config();
     usb_timer_init();
 
-    usbd_init (&usb_audio,
+    usbd_init(&usb_audio,
 #ifdef USE_USB_FS
               USB_CORE_ENUM_FS,
 #elif defined(USE_USB_HS)
@@ -72,15 +72,15 @@ int main(void)
     while(USBD_CONFIGURED != usb_audio.dev.cur_status);
 
 #ifdef USE_USB_AD_MICPHONE
-    for(__IO uint32_t i = 0U; i < 2000U; i++){
-        for(__IO uint32_t j = 0; j < 10000U; j++);
+    for(__IO uint32_t i = 0U; i < 2000U; i++) {
+        for(__IO uint32_t j = 0U; j < 10000U; j++);
     }
 
-    usbd_ep_send(&usb_audio, AD_IN_EP, (uint8_t*)wavetestdata, MIC_IN_PACKET);
+    usbd_ep_send(&usb_audio, AD_IN_EP, (uint8_t *)wavetestdata, MIC_IN_PACKET);
     count_data = MIC_IN_PACKET;
 #endif /* USE_USB_AD_MICPHONE */
 
     /* Main loop */
-    while (1) {
+    while(1) {
     }
 }

@@ -2,7 +2,7 @@
     \file    usbh_usr.h
     \brief   user application layer header file
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,13 +32,10 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __USBH_USR_H
-#define __USBH_USR_H
+#ifndef USBH_USR_H
+#define USBH_USR_H
 
-#include "usbh_core.h"
 #include "usbh_usr_lcd.h"
-#include "usb_conf.h"
-#include <stdio.h>
 
 extern usbh_user_cb usr_cb;
 
@@ -80,4 +77,4 @@ void usbh_user_device_not_supported(void);
 /* user operation for unrecovered error happens */
 void usbh_user_unrecovered_error(void);
 
-#endif /*__USBH_USR_H */
+#endif /* USBH_USR_H */

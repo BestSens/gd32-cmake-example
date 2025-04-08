@@ -2,7 +2,7 @@
     \file    usbh_hid_usr.h
     \brief   user application layer header file
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,12 +32,9 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __USBH_HID_USR_H
-#define __USBH_HID_USR_H
+#ifndef USBH_HID_USR_H
+#define USBH_HID_USR_H
 
-#include <stdio.h>
-#include "usbh_core.h"
-#include "usb_conf.h"
 #include "usbh_standard_hid.h"
 
 extern usbh_user_cb hid_usr_cb;
@@ -46,10 +43,10 @@ extern usbh_user_cb hid_usr_cb;
 /* init mouse window */
 void usr_mouse_init(void);
 /* process mouse data */
-void usr_mouse_process_data(hid_mouse_info *data);
+void usr_mouse_process_data(mouse_report_data *data);
 /* init keyboard window */
 void usr_keybrd_init(void);
 /* process keyboard data */
 void usr_keybrd_process_data(uint8_t data);
 
-#endif /*__USBH_HID_USR_H */
+#endif /* USBH_HID_USR_H */

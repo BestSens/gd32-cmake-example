@@ -718,7 +718,7 @@
         </option>
         <option>
           <name>IlinkIcfOverride</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>IlinkIcfFile</name>
@@ -960,7 +960,7 @@
       <name>$PROJ_DIR$\..\src\app.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\src\gd32f450i_audio_codec.c</name>
+      <name>$PROJ_DIR$\..\src\audio_codec.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\src\gd32f4xx_hw.c</name>

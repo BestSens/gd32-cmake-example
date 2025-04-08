@@ -2,7 +2,7 @@
     \file    usbh_pipe.h
     \brief   USB host mode pipe header file
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,8 +32,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __USBH_PIPE_H
-#define __USBH_PIPE_H
+#ifndef USBH_PIPE_H
+#define USBH_PIPE_H
 
 #include "usbh_core.h"
 
@@ -41,10 +41,10 @@ OF SUCH DAMAGE.
 #define HP_MAX                  8U
 
 /* host pipe status */
-#define HP_OK                   0x0000U
-#define HP_USED                 0x8000U
-#define HP_ERROR                0xFFFFU
-#define HP_USED_MASK            0x7FFFU
+#define HP_OK                   0x0000U           /*!< host pipe status */
+#define HP_USED                 0x8000U           /*!< host pipe used status */
+#define HP_ERROR                0xFFFFU           /*!< host pipe error status */
+#define HP_USED_MASK            0x7FFFU           /*!< host pipe used mask */
 
 /*!
     \brief      set toggle for a pipe
@@ -52,11 +52,11 @@ OF SUCH DAMAGE.
     \param[in]  pp_num: pipe number
     \param[in]  toggle: toggle (0/1)
     \param[out] none
-    \retval     operation status
+    \retval     none
 */
-__STATIC_INLINE void usbh_pipe_toggle_set (usb_core_driver *udev, uint8_t pp_num, uint8_t toggle)
+__STATIC_INLINE void usbh_pipe_toggle_set(usb_core_driver *udev, uint8_t pp_num, uint8_t toggle)
 {
-    if (udev->host.pipe[pp_num].ep.dir) {
+    if(udev->host.pipe[pp_num].ep.dir) {
         udev->host.pipe[pp_num].data_toggle_in = toggle;
     } else {
         udev->host.pipe[pp_num].data_toggle_out = toggle;
@@ -68,11 +68,11 @@ __STATIC_INLINE void usbh_pipe_toggle_set (usb_core_driver *udev, uint8_t pp_num
     \param[in]  udev: pointer to USB core instance
     \param[in]  pp_num: pipe number
     \param[out] none
-    \retval     operation status
+    \retval     toggle flag
 */
-__STATIC_INLINE uint8_t usbh_pipe_toggle_get (usb_core_driver *udev, uint8_t pp_num)
+__STATIC_INLINE uint8_t usbh_pipe_toggle_get(usb_core_driver *udev, uint8_t pp_num)
 {
-    if (udev->host.pipe[pp_num].ep.dir) {
+    if(udev->host.pipe[pp_num].ep.dir) {
         return udev->host.pipe[pp_num].data_toggle_in;
     } else {
         return udev->host.pipe[pp_num].data_toggle_out;
@@ -81,22 +81,22 @@ __STATIC_INLINE uint8_t usbh_pipe_toggle_get (usb_core_driver *udev, uint8_t pp_
 
 /* function declarations */
 /* create a pipe */
-uint8_t usbh_pipe_create (usb_core_driver *udev,
-                          usb_dev_prop *dev,
-                          uint8_t  pp_num,
-                          uint8_t  ep_type,
-                          uint16_t ep_mpl);
+uint8_t usbh_pipe_create(usb_core_driver *udev, \
+                         usb_dev_prop *dev, \
+                         uint8_t  pp_num, \
+                         uint8_t  ep_type, \
+                         uint16_t ep_mpl);
 /* modify a pipe */
-uint8_t usbh_pipe_update (usb_core_driver *udev,
-                          uint8_t  pp_num,
-                          uint8_t  dev_addr,
-                          uint32_t dev_speed,
-                          uint16_t ep_mpl);
+uint8_t usbh_pipe_update(usb_core_driver *udev, \
+                         uint8_t  pp_num, \
+                         uint8_t  dev_addr, \
+                         uint32_t dev_speed, \
+                         uint16_t ep_mpl);
 /* allocate a new pipe */
-uint8_t usbh_pipe_allocate (usb_core_driver *udev, uint8_t ep_addr);
+uint8_t usbh_pipe_allocate(usb_core_driver *udev, uint8_t ep_addr);
 /* free a pipe */
-uint8_t usbh_pipe_free (usb_core_driver *udev, uint8_t pp_num);
+uint8_t usbh_pipe_free(usb_core_driver *udev, uint8_t pp_num);
 /* delete all USB host pipe */
-uint8_t usbh_pipe_delete (usb_core_driver *udev);
+uint8_t usbh_pipe_delete(usb_core_driver *udev);
 
-#endif /* __USBH_PIPE_H */
+#endif /* USBH_PIPE_H */

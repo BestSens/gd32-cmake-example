@@ -2,7 +2,7 @@
     \file    usbh_msc_usr.c
     \brief   user application layer for USBHS host-mode MSC class operation
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,12 +32,11 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
+#include <stdio.h>
 #include <string.h>
-#include "usbh_msc_usr.h"
 #include "drv_usb_hw.h"
+#include "usbh_msc_usr.h"
 #include "usbh_msc_core.h"
-#include "usbh_msc_scsi.h"
-#include "usbh_msc_bbb.h"
 #include "ff.h"
 
 extern usb_core_driver usbhs_core;
@@ -47,11 +46,10 @@ FIL file;
 FATFS fatfs;
 FRESULT res;
 
-char ReadTextBuff[100];
-char WriteTextBuff[] = "GD32 USB Host Demo application using FAT_FS   ";
-uint16_t bytesWritten, bytesToWrite, bytesRead;
+__ALIGN_BEGIN char ReadTextBuff[100] __ALIGN_END;
+__ALIGN_BEGIN char WriteTextBuff[] __ALIGN_END = "GD32 USB Host Demo application using FAT_FS   ";
+uint32_t bytesWritten, bytesToWrite, bytesRead;
 
-uint8_t line_idx;
 uint8_t usbh_usr_application_state = USBH_USR_FS_INIT;
 
 /* local function prototypes ('static') */
@@ -64,8 +62,8 @@ static void usbh_user_device_reset(void);
 static void usbh_user_device_speed_detected(uint32_t DeviceSpeed);
 static void usbh_user_device_desc_available(void *device_desc);
 static void usbh_user_device_address_assigned(void);
-static void usbh_user_configuration_descavailable(usb_desc_config *cfgDesc,
-                                                  usb_desc_itf *itfDesc,
+static void usbh_user_configuration_descavailable(usb_desc_config *cfgDesc, \
+                                                  usb_desc_itf *itfDesc, \
                                                   usb_desc_ep *epDesc);
 static void usbh_user_manufacturer_string(void *manufacturer_string);
 static void usbh_user_product_string(void *product_string);
@@ -74,13 +72,12 @@ static void usbh_user_enumeration_finish(void);
 static void usbh_user_device_not_supported(void);
 static usbh_user_status usbh_user_userinput(void);
 static void usbh_user_over_current_detected(void);
-static uint8_t explore_disk(char* path, uint8_t recu_level);
+static uint8_t explore_disk(char *path, uint8_t recu_level);
 static void toggle_leds(void);
 static int usbh_usr_msc_application(void);
 
 /* points to the usbh_user_cb structure */
-usbh_user_cb msc_usr_cb =
-{
+usbh_user_cb msc_usr_cb = {
     usbh_user_init,
     usbh_user_deinit,
     usbh_user_device_connected,
@@ -111,7 +108,7 @@ static void usbh_user_init(void)
 {
     static uint8_t startup = 0U;
 
-    if (0U == startup) {
+    if(0U == startup) {
         startup = 1U;
 
         /* configure the LEDs and KEYs*/
@@ -153,7 +150,7 @@ static void usbh_user_device_connected(void)
     \param[out] none
     \retval     none
 */
-static void usbh_user_unrecovered_error (void)
+static void usbh_user_unrecovered_error(void)
 {
     printf("> UNRECOVERED ERROR STATE.\n");
 }
@@ -164,7 +161,7 @@ static void usbh_user_unrecovered_error (void)
     \param[out] none
     \retval     none
 */
-static void usbh_user_device_disconnected (void)
+static void usbh_user_device_disconnected(void)
 {
     printf("> Device Disconnected.\n");
 }
@@ -188,13 +185,13 @@ static void usbh_user_device_reset(void)
 */
 static void usbh_user_device_speed_detected(uint32_t device_speed)
 {
-    if(PORT_SPEED_HIGH == device_speed){
+    if(PORT_SPEED_HIGH == device_speed) {
         printf("> High speed device detected.\n");
-    }else if(PORT_SPEED_FULL == device_speed){
+    } else if(PORT_SPEED_FULL == device_speed) {
         printf("> Full speed device detected.\n");
-    }else if(PORT_SPEED_LOW == device_speed){
+    } else if(PORT_SPEED_LOW == device_speed) {
         printf("> Low speed device detected.\n");
-    }else{
+    } else {
         printf("> Device Fault.\n");
     }
 }
@@ -231,15 +228,15 @@ static void usbh_user_device_address_assigned(void)
     \param[out] none
     \retval     none
 */
-static void usbh_user_configuration_descavailable(usb_desc_config *cfg_desc,
-                                                  usb_desc_itf *itf_desc,
+static void usbh_user_configuration_descavailable(usb_desc_config *cfg_desc, \
+                                                  usb_desc_itf *itf_desc, \
                                                   usb_desc_ep *ep_desc)
 {
     usb_desc_itf *id = itf_desc;
 
-    if(0x08U == (*id).bInterfaceClass){
+    if(0x08U == (*id).bInterfaceClass) {
         printf("> Mass storage device connected.\n");
-    }else if (0x03U == (*id).bInterfaceClass){
+    } else if(0x03U == (*id).bInterfaceClass) {
         printf("> HID device connected.\n");
     }
 }
@@ -313,7 +310,7 @@ static usbh_user_status usbh_user_userinput(void)
     usbh_user_status usbh_usr_status = USR_IN_NO_RESP;
 
     /*key USER is in polling mode to detect user action */
-    if (RESET == gd_eval_key_state_get(KEY_USER)) {
+    if(RESET == gd_eval_key_state_get(KEY_USER)) {
         usbh_usr_status = USR_IN_RESP_OK;
     }
 
@@ -341,10 +338,10 @@ static int usbh_usr_msc_application(void)
 {
     msc_lun info;
 
-    switch(usbh_usr_application_state){
+    switch(usbh_usr_application_state) {
     case USBH_USR_FS_INIT:
         /* initializes the file system */
-        if (FR_OK != f_mount(&fatfs, "0:/", 0)) {
+        if(FR_OK != f_mount(&fatfs, "0:/", 0U)) {
             printf("> Cannot initialize File System.\n");
 
             return(-1);
@@ -352,7 +349,7 @@ static int usbh_usr_msc_application(void)
 
         printf("> File System initialized.\n");
 
-        if (USBH_OK == usbh_msc_lun_info_get(&usb_host_msc, 0, &info)){
+        if(USBH_OK == usbh_msc_lun_info_get(&usb_host_msc, 0U, &info)) {
             printf("> Disk capacity: %llu Bytes.\n", (uint64_t)info.capacity.block_nbr * info.capacity.block_size);
         }
 
@@ -366,51 +363,50 @@ static int usbh_usr_msc_application(void)
         printf("> Press Tamper Key...            \n");
 
         /*Key TAMPER in polling*/
-        while ((usbhs_core.host.connect_status) && \
-            (SET == gd_eval_key_state_get (KEY_TAMPER))) {
+        while((usbhs_core.host.connect_status) && \
+                (SET == gd_eval_key_state_get(KEY_TAMPER))) {
             toggle_leds();
         }
 
-        explore_disk("0:/", 1);
-        line_idx = 0;
+        explore_disk("0:/", 1U);
         usbh_usr_application_state = USBH_USR_FS_WRITEFILE;
         break;
 
     case USBH_USR_FS_WRITEFILE:
-        usb_mdelay(100);
+        usb_mdelay(100U);
 
         printf("                                \n");
         printf("> Press Wakeup Key to write file\n");
 
         /* key Wakeup in polling */
-        while ((usbhs_core.host.connect_status) && \
-                (SET == gd_eval_key_state_get (KEY_WAKEUP))) {
+        while((usbhs_core.host.connect_status) && \
+                (SET == gd_eval_key_state_get(KEY_WAKEUP))) {
             toggle_leds();
         }
 
         printf("> Writing File to disk flash ...\n");
 
         /* register work area for logical drives */
-        f_mount(&fatfs, "0:/", 1);
+        f_mount(&fatfs, "0:/", 1U);
 
-        if (FR_OK == f_open(&file, "0:GD32.TXT", FA_CREATE_ALWAYS | FA_WRITE)) {
+        if(FR_OK == f_open(&file, "0:GD32.TXT", FA_CREATE_ALWAYS | FA_WRITE)) {
             printf("> GD32.TXT be opened for write.\n");
             /* write buffer to file */
             bytesToWrite = strlen(WriteTextBuff);
-            res = f_write (&file, WriteTextBuff, bytesToWrite, (void *)&bytesWritten);
+            res = f_write(&file, WriteTextBuff, bytesToWrite, (void *)&bytesWritten);
             f_sync(&file);
             /* EOF or error */
-            if ((0U == bytesWritten) || (FR_OK != res)) {
+            if((0U == bytesWritten) || (FR_OK != res)) {
                 printf("> GD32.TXT CANNOT be written.\n");
             } else {
-                if (FR_OK == f_open(&file, "0:GD32.TXT", FA_READ)) {
+                if(FR_OK == f_open(&file, "0:GD32.TXT", FA_READ)) {
                     res = f_read(&file, ReadTextBuff, sizeof(ReadTextBuff), (void *)&bytesRead);
                     /* EOF or error */
-                    if ((bytesRead == 0) || (res != FR_OK)) {
+                    if((0U == bytesRead) || (res != FR_OK)) {
                         printf("> GD32.TXT CANNOT be read.\n");
                     } else {
                         /* compare file content */
-                        if ((bytesRead == bytesWritten) && (0 == strncmp(ReadTextBuff, WriteTextBuff, bytesRead))) {
+                        if((bytesRead == bytesWritten) && (0U == strncmp(ReadTextBuff, WriteTextBuff, bytesRead))) {
                             printf("> File content compare: SUCCESS.\n");
                         } else {
                             printf("> File content compare: ERROR.\n");
@@ -428,7 +424,7 @@ static int usbh_usr_msc_application(void)
         }
 
         /* unmount file system */
-        f_mount(NULL, "0:/", 1);
+        f_mount(NULL, "0:/", 1U);
 
         usbh_usr_application_state = USBH_USR_FS_DEMOEND;
         printf("> The MSC host demo is end.\n");
@@ -451,7 +447,7 @@ static int usbh_usr_msc_application(void)
     \param[out] none
     \retval     status
 */
-static uint8_t explore_disk (char* path, uint8_t recu_level)
+static uint8_t explore_disk(char *path, uint8_t recu_level)
 {
     FILINFO fno;
     DIR dir;
@@ -459,48 +455,33 @@ static uint8_t explore_disk (char* path, uint8_t recu_level)
 
     res = f_opendir(&dir, path);
 
-    if (res == FR_OK) {
-        while ((usbhs_core.host.connect_status)) {
+    if(FR_OK == res) {
+        while((usbhs_core.host.connect_status)) {
             res = f_readdir(&dir, &fno);
-            if (FR_OK != res || 0U == fno.fname[0]) {
+            if(FR_OK != res || 0U == fno.fname[0]) {
                 break;
             }
 
-            if ('.' == fno.fname[0]) {
+            if('.' == fno.fname[0]) {
                 continue;
             }
 
             fn = fno.fname;
 
-            line_idx++;
-
-            if (line_idx > 4) {
-                line_idx = 0;
-
-                printf("                                 \n");
-                printf("> Press User Key to continue\n");
-
-                /*key USER in polling*/
-                while ((usbhs_core.host.connect_status) && \
-                    (SET == gd_eval_key_state_get (KEY_USER))) {
-                    toggle_leds();
-                }
-            }
-
-            if(1U == recu_level){
+            if(1U == recu_level) {
                 printf("   |__");
-            }else if(2U == recu_level){
+            } else if(2U == recu_level) {
                 printf("   |   |__");
             }
 
-            if(AM_DIR == fno.fattrib){
+            if(AM_DIR == fno.fattrib) {
                 printf("%s\n", fno.fname);
-            }else{
+            } else {
                 printf("%s\n", fno.fname);
             }
 
-            if((AM_DIR == fno.fattrib) && (1U == recu_level)){
-                explore_disk(fn, 2);
+            if((AM_DIR == fno.fattrib) && (1U == recu_level)) {
+                explore_disk(fn, 2U);
             }
         }
     }
@@ -518,9 +499,9 @@ static void toggle_leds(void)
 {
     static uint32_t i;
 
-    if (0x10000U == i++) {
+    if(0x10000U == i++) {
         gd_eval_led_toggle(LED2);
         gd_eval_led_toggle(LED3);
-        i = 0;
+        i = 0U;
     }
 }

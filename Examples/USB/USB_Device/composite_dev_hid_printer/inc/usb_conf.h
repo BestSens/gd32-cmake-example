@@ -2,7 +2,7 @@
     \file    usb_conf.h
     \brief   USB core driver basic configuration
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,21 +32,13 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __USB_CONF_H
-#define __USB_CONF_H
+#ifndef USB_CONF_H
+#define USB_CONF_H
 
-#include "stdlib.h"
 #include "gd32f4xx.h"
 #include "gd32f450i_eval.h"
 
-/* USB Core and PHY interface configuration */
-
-/****************** USB FS PHY CONFIGURATION *******************************
- *  The USB FS Core supports one on-chip Full Speed PHY.
- *  The USE_EMBEDDED_PHY symbol is defined in the project compiler preprocessor
- *  when FS core is used.
-*******************************************************************************/
-
+/* USB FS/HS PHY CONFIGURATION */
 #ifdef USE_USB_FS
     #define USB_FS_CORE
 #endif /* USE_USB_FS */
@@ -55,64 +47,26 @@ OF SUCH DAMAGE.
     #define USB_HS_CORE
 #endif /* USE_USB_HS */
 
-/*******************************************************************************
- *                      FIFO Size Configuration in Device mode
- *
- *  (i) Receive data FIFO size = RAM for setup packets + 
- *                   OUT endpoint control information +
- *                   data OUT packets + miscellaneous
- *      Space = ONE 32-bits words
- *      --> RAM for setup packets = 10 spaces
- *          (n is the nbr of CTRL EPs the device core supports)
- *      --> OUT EP CTRL info = 1 space
- *          (one space for status information written to the FIFO along with each 
- *          received packet)
- *      --> Data OUT packets = (Largest Packet Size / 4) + 1 spaces 
- *          (MINIMUM to receive packets)
- *      --> OR data OUT packets  = at least 2* (Largest Packet Size / 4) + 1 spaces 
- *          (if high-bandwidth EP is enabled or multiple isochronous EPs)
- *      --> Miscellaneous = 1 space per OUT EP
- *          (one space for transfer complete status information also pushed to the 
- *          FIFO with each endpoint's last packet)
- *
- *  (ii) MINIMUM RAM space required for each IN EP Tx FIFO = MAX packet size for 
- *       that particular IN EP. More space allocated in the IN EP Tx FIFO results
- *       in a better performance on the USB and can hide latencies on the AHB.
- *
- *  (iii) TXn min size = 16 words. (n:Transmit FIFO index)
- *
- *  (iv) When a TxFIFO is not used, the Configuration should be as follows:
- *       case 1: n > m and Txn is not used (n,m:Transmit FIFO indexes)
- *       --> Txm can use the space allocated for Txn.
- *       case 2: n < m and Txn is not used (n,m:Transmit FIFO indexes)
- *       --> Txn should be configured with the minimum space of 16 words
- *
- *  (v) The FIFO is used optimally when used TxFIFOs are allocated in the top 
- *      of the FIFO.Ex: use EP1 and EP2 as IN instead of EP1 and EP3 as IN ones.
- *
- *  (vi) In HS case12 FIFO locations should be reserved for internal DMA registers
- *       so total FIFO size should be 1012 Only instead of 1024
-*******************************************************************************/
-
+/* USB FIFO size config */
 #ifdef USB_FS_CORE
-    #define RX_FIFO_FS_SIZE                         128
-    #define TX0_FIFO_FS_SIZE                        32
-    #define TX1_FIFO_FS_SIZE                        32
-    #define TX2_FIFO_FS_SIZE                        32
-    #define TX3_FIFO_FS_SIZE                        32
+    #define RX_FIFO_FS_SIZE                         128U
+    #define TX0_FIFO_FS_SIZE                        32U
+    #define TX1_FIFO_FS_SIZE                        32U
+    #define TX2_FIFO_FS_SIZE                        32U
+    #define TX3_FIFO_FS_SIZE                        32U
 
-    #define USBFS_SOF_OUTPUT                        0
-    #define USBFS_LOW_POWER                         0
+    #define USBFS_SOF_OUTPUT                        0U
+    #define USBFS_LOW_POWER                         0U
 #endif /* USB_FS_CORE */
 
 #ifdef USB_HS_CORE
-    #define RX_FIFO_HS_SIZE                          512
-    #define TX0_FIFO_HS_SIZE                         64
-    #define TX1_FIFO_HS_SIZE                         192
-    #define TX2_FIFO_HS_SIZE                         192
-    #define TX3_FIFO_HS_SIZE                         0
-    #define TX4_FIFO_HS_SIZE                         0
-    #define TX5_FIFO_HS_SIZE                         0
+    #define RX_FIFO_HS_SIZE                         512U
+    #define TX0_FIFO_HS_SIZE                        64U
+    #define TX1_FIFO_HS_SIZE                        192U
+    #define TX2_FIFO_HS_SIZE                        192U
+    #define TX3_FIFO_HS_SIZE                        0U
+    #define TX4_FIFO_HS_SIZE                        0U
+    #define TX5_FIFO_HS_SIZE                        0U
 
     #ifdef USE_ULPI_PHY
         #define USB_ULPI_PHY_ENABLED
@@ -125,10 +79,11 @@ OF SUCH DAMAGE.
 //    #define USB_HS_INTERNAL_DMA_ENABLED
 //    #define USB_HS_DEDICATED_EP1_ENABLED
 
-    #define USBHS_SOF_OUTPUT                        0
-    #define USBHS_LOW_POWER                         0
+    #define USBHS_SOF_OUTPUT                        0U
+    #define USBHS_LOW_POWER                         0U
 #endif /* USB_HS_CORE */
 
+/* if uncomment it, need jump to USB JP */
 //#define VBUS_SENSING_ENABLED
 
 //#define USE_HOST_MODE
@@ -153,24 +108,23 @@ OF SUCH DAMAGE.
     #endif
 #endif
 
-/* In HS mode and when the DMA is used, all variables and data structures dealing
-   with the DMA during the transaction process should be 4-bytes aligned */
+/* all variables and data structures during the transaction process should be 4-bytes aligned */
 
 #ifdef USB_HS_INTERNAL_DMA_ENABLED
     #if defined (__GNUC__)         /* GNU Compiler */
-        #define __ALIGN_END __attribute__ ((aligned (4)))
+        #define __ALIGN_END __attribute__ ((aligned (4U)))
         #define __ALIGN_BEGIN
     #else
         #define __ALIGN_END
 
         #if defined (__CC_ARM)     /* ARM Compiler */
-            #define __ALIGN_BEGIN __align(4)  
+            #define __ALIGN_BEGIN __align(4U)
         #elif defined (__ICCARM__) /* IAR Compiler */
-            #define __ALIGN_BEGIN 
+            #define __ALIGN_BEGIN
         #elif defined (__TASKING__)/* TASKING Compiler */
-            #define __ALIGN_BEGIN __align(4) 
-        #endif /* __CC_ARM */  
-    #endif /* __GNUC__ */ 
+            #define __ALIGN_BEGIN __align(4U)
+        #endif /* __CC_ARM */
+    #endif /* __GNUC__ */
 #else
     #define __ALIGN_BEGIN
     #define __ALIGN_END
@@ -179,10 +133,10 @@ OF SUCH DAMAGE.
 /* __packed keyword used to decrease the data type alignment to 1-byte */
 #if defined (__GNUC__)       /* GNU Compiler */
     #ifndef __packed
-        #define __packed __attribute__ ((__packed__))
+        #define __packed __unaligned
     #endif
 #elif defined (__TASKING__)    /* TASKING Compiler */
     #define __packed __unaligned
-#endif /* __CC_ARM */
+#endif /* __GNUC__ */
 
-#endif /* __USB_CONF_H */
+#endif /* USB_CONF_H */

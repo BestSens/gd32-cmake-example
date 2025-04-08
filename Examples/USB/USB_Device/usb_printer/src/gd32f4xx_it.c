@@ -2,7 +2,7 @@
     \file    gd32f4xx_it.c
     \brief   main interrupt service routines
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -37,7 +37,7 @@ OF SUCH DAMAGE.
 
 extern usb_core_driver usbd_printer;
 
-void usb_timer_irq (void);
+extern void usb_timer_irq(void);
 
 /* local function prototypes ('static') */
 static void resume_mcu_clk(void);
@@ -147,7 +147,7 @@ void PendSV_Handler(void)
 }
 
 /*!
-    \brief      this function handles timer2 Handler
+    \brief      this function handles timer2 interrupt request
     \param[in]  none
     \param[out] none
     \retval     none
@@ -160,14 +160,14 @@ void TIMER2_IRQHandler(void)
 #ifdef USE_USB_FS
 
 /*!
-    \brief      this function handles USBFS wakeup interrupt handler
+    \brief      this function handles USBFS wakeup interrupt request
     \param[in]  none
     \param[out] none
     \retval     none
 */
 void USBFS_WKUP_IRQHandler(void)
 {
-    if (usbd_printer.bp.low_power) {
+    if(usbd_printer.bp.low_power) {
         resume_mcu_clk();
 
         rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLQ);
@@ -184,23 +184,23 @@ void USBFS_WKUP_IRQHandler(void)
 #elif defined(USE_USB_HS)
 
 /*!
-    \brief      this function handles USBHS wakeup interrupt handler
+    \brief      this function handles USBHS wakeup interrupt request
     \param[in]  none
     \param[out] none
     \retval     none
 */
 void USBHS_WKUP_IRQHandler(void)
 {
-    if (usbd_printer.bp.low_power) {
+    if(usbd_printer.bp.low_power) {
         resume_mcu_clk();
 
-        #ifdef USE_EMBEDDED_PHY
-            rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLQ);
+#ifdef USE_EMBEDDED_PHY
+        rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLQ);
 
-            rcu_ck48m_clock_config(RCU_CK48MSRC_PLL48M);
-        #elif defined(USE_ULPI_PHY)
-            rcu_periph_clock_enable(RCU_USBHSULPI);
-        #endif
+        rcu_ck48m_clock_config(RCU_CK48MSRC_PLL48M);
+#elif defined(USE_ULPI_PHY)
+        rcu_periph_clock_enable(RCU_USBHSULPI);
+#endif
 
         rcu_periph_clock_enable(RCU_USBHS);
 
@@ -215,20 +215,20 @@ void USBHS_WKUP_IRQHandler(void)
 #ifdef USE_USB_FS
 
 /*!
-    \brief      this function handles USBFS IRQ Handler
+    \brief      this function handles USBFS global interrupt request
     \param[in]  none
     \param[out] none
     \retval     none
 */
 void USBFS_IRQHandler(void)
 {
-    usbd_isr (&usbd_printer);
+    usbd_isr(&usbd_printer);
 }
 
 #elif defined(USE_USB_HS)
 
 /*!
-    \brief      this function handles USBHS IRQ Handler
+    \brief      this function handles USBHS global interrupt request
     \param[in]  none
     \param[out] none
     \retval     none
@@ -243,25 +243,25 @@ void USBHS_IRQHandler(void)
 #ifdef USB_HS_DEDICATED_EP1_ENABLED
 
 /*!
-    \brief      this function handles EP1_IN Handler
+    \brief      this function handles EP1_IN interrupt request
     \param[in]  none
     \param[out] none
     \retval     none
 */
 void USBHS_EP1_In_IRQHandler(void)
 {
-    usbd_int_dedicated_ep1in (&usbd_printer);
+    usbd_int_dedicated_ep1in(&usbd_printer);
 }
 
 /*!
-    \brief      this function handles EP1_OUT Handler
+    \brief      this function handles EP1_OUT interrupt request
     \param[in]  none
     \param[out] none
     \retval     none
 */
 void USBHS_EP1_Out_IRQHandler(void)
 {
-    usbd_int_dedicated_ep1out (&usbd_printer);
+    usbd_int_dedicated_ep1out(&usbd_printer);
 }
 
 #endif /* USB_HS_DEDICATED_EP1_ENABLED */
@@ -278,20 +278,20 @@ static void resume_mcu_clk(void)
     rcu_osci_on(RCU_HXTAL);
 
     /* wait till HXTAL is ready */
-    while(RESET == rcu_flag_get(RCU_FLAG_HXTALSTB)){
+    while(RESET == rcu_flag_get(RCU_FLAG_HXTALSTB)) {
     }
 
     /* enable PLL */
     rcu_osci_on(RCU_PLL_CK);
 
     /* wait till PLL is ready */
-    while(RESET == rcu_flag_get(RCU_FLAG_PLLSTB)){
+    while(RESET == rcu_flag_get(RCU_FLAG_PLLSTB)) {
     }
 
     /* select PLL as system clock source */
     rcu_system_clock_source_config(RCU_CKSYSSRC_PLLP);
 
     /* wait till PLL is used as system clock source */
-    while(RCU_SCSS_PLLP != rcu_system_clock_source_get()){
+    while(RCU_SCSS_PLLP != rcu_system_clock_source_get()) {
     }
 }

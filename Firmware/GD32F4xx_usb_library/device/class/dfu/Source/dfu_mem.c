@@ -2,7 +2,7 @@
     \file    dfu_mem.c
     \brief   USB DFU device media access layer functions
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -33,7 +33,6 @@ OF SUCH DAMAGE.
 */
 
 #include "dfu_mem.h"
-#include "drv_usb_hw.h"
 #include "usbd_transc.h"
 
 extern usb_core_driver usb_dfu_dev;
@@ -45,7 +44,7 @@ extern struct {
     uint32_t base_addr;
 } prog;
 
-dfu_mem_prop* mem_tab[MAX_USED_MEMORY_MEDIA] = {
+dfu_mem_prop *mem_tab[MAX_USED_MEMORY_MEDIA] = {
     &dfu_inter_flash_cb,
     &dfu_nor_flash_cb,
     &dfu_nand_flash_cb,
@@ -53,29 +52,28 @@ dfu_mem_prop* mem_tab[MAX_USED_MEMORY_MEDIA] = {
 
 /* The list of memory interface string descriptor pointers. This list
    can be updated whenever a memory has to be added or removed */
-const uint8_t* USBD_DFU_StringDesc[MAX_USED_MEMORY_MEDIA] = 
-{
+const uint8_t *USBD_DFU_StringDesc[MAX_USED_MEMORY_MEDIA] = {
     (const uint8_t *)INTER_FLASH_IF_STR,
     (const uint8_t *)NOR_FLASH_IF_STR,
     (const uint8_t *)NAND_FLASH_IF_STR
 };
 
-static uint8_t dfu_mem_checkaddr (uint32_t addr);
+static uint8_t dfu_mem_checkaddr(uint32_t addr);
 
 /*!
-    \brief      initialize the memory media on the GD32
+    \brief      initialize the memory media
     \param[in]  none
     \param[out] none
     \retval     MEM_OK
 */
-uint8_t dfu_mem_init (void)
+uint8_t dfu_mem_init(void)
 {
     uint32_t mem_index = 0U;
 
     /* initialize all supported memory medias */
-    for (mem_index = 0U; mem_index < MAX_USED_MEMORY_MEDIA; mem_index++) {
+    for(mem_index = 0U; mem_index < MAX_USED_MEMORY_MEDIA; mem_index++) {
         /* check if the memory media exists */
-        if (NULL != mem_tab[mem_index]->mem_init) {
+        if(NULL != mem_tab[mem_index]->mem_init) {
             mem_tab[mem_index]->mem_init();
         }
     }
@@ -84,19 +82,19 @@ uint8_t dfu_mem_init (void)
 }
 
 /*!
-    \brief      deinitialize the memory media on the GD32
+    \brief      deinitialize the memory media
     \param[in]  none
     \param[out] none
     \retval     MEM_OK
 */
-uint8_t dfu_mem_deinit (void)
+uint8_t dfu_mem_deinit(void)
 {
     uint32_t mem_index = 0U;
 
     /* deinitialize all supported memory medias */
-    for (mem_index = 0U; mem_index < MAX_USED_MEMORY_MEDIA; mem_index++) {
+    for(mem_index = 0U; mem_index < MAX_USED_MEMORY_MEDIA; mem_index++) {
         /* check if the memory media exists */
-        if (NULL != mem_tab[mem_index]->mem_deinit) {
+        if(NULL != mem_tab[mem_index]->mem_deinit) {
             mem_tab[mem_index]->mem_deinit();
         }
     }
@@ -110,18 +108,18 @@ uint8_t dfu_mem_deinit (void)
     \param[out] none
     \retval     MEM_OK
 */
-uint8_t dfu_mem_erase (uint32_t addr)
+uint8_t dfu_mem_erase(uint32_t addr)
 {
     uint32_t mem_index = dfu_mem_checkaddr(addr);
 
     /* check if the address is in protected area */
-    if (IS_PROTECTED_AREA(addr)) {
+    if(IS_PROTECTED_AREA(addr)) {
         return MEM_FAIL;
     }
 
-    if (mem_index < MAX_USED_MEMORY_MEDIA) {
+    if(mem_index < MAX_USED_MEMORY_MEDIA) {
         /* check if the operation is supported */
-        if (NULL != mem_tab[mem_index]->mem_erase) {
+        if(NULL != mem_tab[mem_index]->mem_erase) {
             return mem_tab[mem_index]->mem_erase(addr);
         } else {
             return MEM_FAIL;
@@ -139,25 +137,25 @@ uint8_t dfu_mem_erase (uint32_t addr)
     \param[out] none
     \retval     MEM_OK
 */
-uint8_t dfu_mem_write (uint8_t *buf, uint32_t addr, uint32_t len)
+uint8_t dfu_mem_write(uint8_t *buf, uint32_t addr, uint32_t len)
 {
     uint32_t mem_index = dfu_mem_checkaddr(addr);
 
     /* check if the address is in protected area */
-    if (IS_PROTECTED_AREA(addr)) {
+    if(IS_PROTECTED_AREA(addr)) {
         return MEM_FAIL;
     }
 
-    if ((addr & MAL_MASK_OB) == OB_RDPT0) {
+    if(OB_RDPT0 == (addr & MAL_MASK_OB)) {
         option_byte_write(addr, buf);
         NVIC_SystemReset();
 
         return MEM_OK;
     }
 
-    if (mem_index < MAX_USED_MEMORY_MEDIA) {
+    if(mem_index < MAX_USED_MEMORY_MEDIA) {
         /* check if the operation is supported */
-        if (NULL != mem_tab[mem_index]->mem_write) {
+        if(NULL != mem_tab[mem_index]->mem_write) {
             return mem_tab[mem_index]->mem_write(buf, addr, len);
         } else {
             return MEM_FAIL;
@@ -175,17 +173,17 @@ uint8_t dfu_mem_write (uint8_t *buf, uint32_t addr, uint32_t len)
     \param[out] none
     \retval     pointer to buffer
 */
-uint8_t* dfu_mem_read (uint8_t *buf, uint32_t addr, uint32_t len)
+uint8_t *dfu_mem_read(uint8_t *buf, uint32_t addr, uint32_t len)
 {
     uint32_t mem_index = 0U;
 
-    if ((OB_RDPT0 != addr) && (OB_RDPT1 != addr)) {
+    if((OB_RDPT0 != addr) && (OB_RDPT1 != addr)) {
         mem_index = dfu_mem_checkaddr(addr);
     }
 
-    if (mem_index < MAX_USED_MEMORY_MEDIA) {
+    if(mem_index < MAX_USED_MEMORY_MEDIA) {
         /* check if the operation is supported */
-        if (NULL != mem_tab[mem_index]->mem_read) {
+        if(NULL != mem_tab[mem_index]->mem_read) {
             return mem_tab[mem_index]->mem_read(buf, addr, len);
         } else {
             return buf;
@@ -203,12 +201,12 @@ uint8_t* dfu_mem_read (uint8_t *buf, uint32_t addr, uint32_t len)
     \param[out] none
     \retval     MEM_OK if all operations are OK, MEM_FAIL else
 */
-uint8_t dfu_mem_getstatus (uint32_t addr, uint8_t cmd, uint8_t *buffer)
+uint8_t dfu_mem_getstatus(uint32_t addr, uint8_t cmd, uint8_t *buffer)
 {
     uint32_t mem_index = dfu_mem_checkaddr(addr);
 
-    if (mem_index < MAX_USED_MEMORY_MEDIA) {
-        if (cmd & 0x01U) {
+    if(mem_index < MAX_USED_MEMORY_MEDIA) {
+        if(cmd & 0x01U) {
             POLLING_TIMEOUT_SET(mem_tab[mem_index]->write_timeout);
         } else {
             POLLING_TIMEOUT_SET(mem_tab[mem_index]->erase_timeout);
@@ -226,14 +224,14 @@ uint8_t dfu_mem_getstatus (uint32_t addr, uint8_t cmd, uint8_t *buffer)
     \param[out] none
     \retval     index of the addressed memory
 */
-static uint8_t dfu_mem_checkaddr (uint32_t addr)
+static uint8_t dfu_mem_checkaddr(uint32_t addr)
 {
     uint8_t mem_index = 0U;
 
     /* check with all supported memories */
-    for (mem_index = 0U; mem_index < MAX_USED_MEMORY_MEDIA; mem_index++) {
+    for(mem_index = 0U; mem_index < MAX_USED_MEMORY_MEDIA; mem_index++) {
         /* if the check address is supported, return the memory index */
-        if (MEM_OK == mem_tab[mem_index]->mem_checkaddr(addr)) {
+        if(MEM_OK == mem_tab[mem_index]->mem_checkaddr(addr)) {
             return mem_index;
         }
     }

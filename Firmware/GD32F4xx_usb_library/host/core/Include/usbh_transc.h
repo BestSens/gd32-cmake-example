@@ -2,7 +2,7 @@
     \file    usbh_transc.h
     \brief   USB host mode transactions header file
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,19 +32,19 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __USBH_TRANSC_H
-#define __USBH_TRANSC_H
+#ifndef USBH_TRANSC_H
+#define USBH_TRANSC_H
 
 #include "usbh_core.h"
 
 /* function declarations */
-/* send the setup packet to the USB device */
-usbh_status usbh_ctlsetup_send (usb_core_driver *udev, uint8_t *buf, uint8_t pp_num);
+/* send the SETUP packet to the USB device */
+usbh_status usbh_ctlsetup_send(usb_core_driver *udev, uint8_t *buf, uint8_t pp_num);
 /* send a data packet to the USB device */
-usbh_status usbh_data_send (usb_core_driver *udev, uint8_t *buf, uint8_t pp_num, uint16_t len);
+usbh_status usbh_data_send(usb_core_driver *udev, uint8_t *buf, uint8_t pp_num, uint16_t len);
 /* receive a data packet from the USB device */
-usbh_status usbh_data_recev (usb_core_driver *udev, uint8_t *buf, uint8_t pp_num, uint16_t len);
+usbh_status usbh_data_recev(usb_core_driver *udev, uint8_t *buf, uint8_t pp_num, uint16_t len);
 /* USB control transfer handler */
-usbh_status usbh_ctl_handler (usbh_host *uhost);
+usbh_status usbh_ctl_handler(usbh_host *uhost);
 
-#endif /* __USBH_TRANSC_H */
+#endif /* USBH_TRANSC_H */

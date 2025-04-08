@@ -2,7 +2,7 @@
     \file    drv_usbh_int.h.h
     \brief   USB host mode interrupt management header file
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,23 +32,22 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __DRV_USBH_INT_H
-#define __DRV_USBH_INT_H
+#ifndef DRV_USBH_INT_H
+#define DRV_USBH_INT_H
 
 #include "drv_usb_host.h"
 #include "usbh_core.h"
 
-typedef struct _usbh_ev_cb
-{
-    uint8_t (*connect)          (usbh_host *uhost);
-    uint8_t (*disconnect)       (usbh_host *uhost);
-    uint8_t (*SOF)              (usbh_host *uhost);
+typedef struct _usbh_ev_cb {
+    uint8_t (*connect)(usbh_host *uhost);
+    uint8_t (*disconnect)(usbh_host *uhost);
+    uint8_t (*SOF)(usbh_host *uhost);
 } usbh_ev_cb;
 
 extern usbh_ev_cb *usbh_int_fop;
 
 /* function declarations */
 /* handle global host interrupt */
-uint32_t usbh_isr (usb_core_driver *udev);
+uint32_t usbh_isr(usb_core_driver *udev);
 
-#endif /* __DRV_USBH_INT_H */
+#endif /* DRV_USBH_INT_H */

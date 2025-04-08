@@ -2,7 +2,7 @@
     \file    usbh_hid_usr.c
     \brief   user application layer for USBFS host-mode HID class operation
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -34,13 +34,13 @@ OF SUCH DAMAGE.
 
 #include "usbh_hid_usr.h"
 #include "usbh_standard_hid.h"
-#include <string.h>
+#include <stdio.h>
 
 extern int16_t XLoc, YLoc;
 extern __IO int16_t PrevX, PrevY;
 
-uint16_t KeybrdCharXpos = 0;
-uint16_t KeybrdCharYpos = 0;
+uint16_t KeybrdCharXpos = 0U;
+uint16_t KeybrdCharYpos = 0U;
 
 /* local function prototypes ('static') */
 static void usbh_user_init(void);
@@ -52,8 +52,8 @@ static void usbh_user_device_reset(void);
 static void usbh_user_device_speed_detected(uint32_t DeviceSpeed);
 static void usbh_user_device_desc_available(void *device_desc);
 static void usbh_user_device_address_assigned(void);
-static void usbh_user_configuration_descavailable(usb_desc_config *cfgDesc,
-                                                  usb_desc_itf *itfDesc,
+static void usbh_user_configuration_descavailable(usb_desc_config *cfgDesc, \
+                                                  usb_desc_itf *itfDesc, \
                                                   usb_desc_ep *epDesc);
 static void usbh_user_manufacturer_string(void *manufacturer_string);
 static void usbh_user_product_string(void *product_string);
@@ -64,8 +64,7 @@ static usbh_user_status usbh_user_userinput(void);
 static void usbh_user_over_current_detected(void);
 
 /* points to the usbh_user_cb structure */
-usbh_user_cb hid_usr_cb =
-{
+usbh_user_cb hid_usr_cb = {
     usbh_user_init,
     usbh_user_deinit,
     usbh_user_device_connected,
@@ -96,7 +95,7 @@ static void usbh_user_init(void)
 {
     static uint8_t startup = 0U;
 
-    if(0U == startup){
+    if(0U == startup) {
         startup = 1U;
 
         /* configure the User key */
@@ -133,7 +132,7 @@ static void usbh_user_device_connected(void)
     \param[out] none
     \retval     none
 */
-static void usbh_user_unrecovered_error (void)
+static void usbh_user_unrecovered_error(void)
 {
     printf("> UNRECOVERED ERROR STATE.\n");
 }
@@ -144,7 +143,7 @@ static void usbh_user_unrecovered_error (void)
     \param[out] none
     \retval     none
 */
-static void usbh_user_device_disconnected (void)
+static void usbh_user_device_disconnected(void)
 {
     printf("> Device Disconnected.\n");
 }
@@ -169,7 +168,7 @@ static void usbh_user_device_reset(void)
 */
 static void usbh_user_device_speed_detected(uint32_t device_speed)
 {
-    if (PORT_SPEED_HIGH == device_speed) {
+    if(PORT_SPEED_HIGH == device_speed) {
         printf("> High speed device detected.\r\n");
     } else if(PORT_SPEED_FULL == device_speed) {
         printf("> Full speed device detected.\r\n");
@@ -212,15 +211,15 @@ static void usbh_user_device_address_assigned(void)
     \param[out] none
     \retval     none
 */
-static void usbh_user_configuration_descavailable(usb_desc_config *cfg_desc,
-                                           usb_desc_itf *itf_desc,
-                                           usb_desc_ep *ep_desc)
+static void usbh_user_configuration_descavailable(usb_desc_config *cfg_desc, \
+                                                  usb_desc_itf *itf_desc, \
+                                                  usb_desc_ep *ep_desc)
 {
     usb_desc_itf *id = itf_desc;
 
-    if (0x08U == (*id).bInterfaceClass) {
+    if(0x08U == (*id).bInterfaceClass) {
         printf("> Mass storage device connected.\n");
-    } else if (0x03U == (*id).bInterfaceClass) {
+    } else if(0x03U == (*id).bInterfaceClass) {
         printf("> HID device connected.\n");
     } else {
 
@@ -296,7 +295,7 @@ static usbh_user_status usbh_user_userinput(void)
     usbh_user_status usbh_usr_status = USR_IN_NO_RESP;
 
     /*Key User is in polling mode to detect user action */
-    if(RESET == gd_eval_key_state_get(KEY_USER)){
+    if(RESET == gd_eval_key_state_get(KEY_USER)) {
         usbh_usr_status = USR_IN_RESP_OK;
     }
 
@@ -309,7 +308,7 @@ static usbh_user_status usbh_user_userinput(void)
     \param[out] none
     \retval     none
 */
-static void usbh_user_over_current_detected (void)
+static void usbh_user_over_current_detected(void)
 {
     printf("> Overcurrent detected.\n");
 }
@@ -320,7 +319,7 @@ static void usbh_user_over_current_detected (void)
     \param[out] none
     \retval     none
 */
-void usr_mouse_init (void)
+void usr_mouse_init(void)
 {
     printf("> HID Demo Device : Mouse.\n");
 }
@@ -331,10 +330,10 @@ void usr_mouse_init (void)
     \param[out] none
     \retval     none
 */
-void usr_mouse_process_data (hid_mouse_info *data)
+void usr_mouse_process_data(mouse_report_data *data)
 {
-    if ((0U != data->x) && (0U != data->y)) {
-       printf("> X = %d, Y = %d.\n", data->x, data->y);
+    if((0U != data->x) && (0U != data->y)) {
+        printf("> X = %d, Y = %d.\n", data->x, data->y);
     }
 }
 
@@ -344,7 +343,7 @@ void usr_mouse_process_data (hid_mouse_info *data)
     \param[out] none
     \retval     none
 */
-void usr_keybrd_init (void)
+void usr_keybrd_init(void)
 {
     printf("> HID Demo Device : Keyboard.\n");
     printf("> Use Keyboard to tape characters: \n");
@@ -356,7 +355,7 @@ void usr_keybrd_init (void)
     \param[out] none
     \retval     none
 */
-void usr_keybrd_process_data (uint8_t data)
+void usr_keybrd_process_data(uint8_t data)
 {
     printf("%c", data);
 }

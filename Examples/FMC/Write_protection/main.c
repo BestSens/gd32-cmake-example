@@ -1,34 +1,34 @@
 /*!
     \file    main.c
     \brief   main flash sectors write protection
-    
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
     Copyright (c) 2024, GigaDevice Semiconductor Inc.
 
-    Redistribution and use in source and binary forms, with or without modification, 
+    Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
 
-    1. Redistributions of source code must retain the above copyright notice, this 
+    1. Redistributions of source code must retain the above copyright notice, this
        list of conditions and the following disclaimer.
-    2. Redistributions in binary form must reproduce the above copyright notice, 
-       this list of conditions and the following disclaimer in the documentation 
+    2. Redistributions in binary form must reproduce the above copyright notice,
+       this list of conditions and the following disclaimer in the documentation
        and/or other materials provided with the distribution.
-    3. Neither the name of the copyright holder nor the names of its contributors 
-       may be used to endorse or promote products derived from this software without 
+    3. Neither the name of the copyright holder nor the names of its contributors
+       may be used to endorse or promote products derived from this software without
        specific prior written permission.
 
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
-IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
-INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
-NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
-PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
-WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
 OF SUCH DAMAGE.
 */
 
@@ -37,10 +37,10 @@ OF SUCH DAMAGE.
 #include "main.h"
 #include "gd32f450i_eval.h"
 
-#define WRITE_PROTECTION_DISABLE 
-//#define WRITE_PROTECTION_ENABLE
+//#define WRITE_PROTECTION_DISABLE
+#define WRITE_PROTECTION_ENABLE
 
-int32_t data_32_1[] = {-1,-2,-3,-4,-5,-6,-7,-8,-9,-10};
+int32_t data_32_1[] = {-1, -2, -3, -4, -5, -6, -7, -8, -9, -10};
 int32_t data_32_2[10];
 
 /*!
@@ -52,29 +52,29 @@ int32_t data_32_2[10];
 uint32_t fmc_sector_get(uint32_t address)
 {
     uint32_t sector = 0;
-    if((address < ADDR_FMC_SECTOR_1) && (address >= ADDR_FMC_SECTOR_0)){
+    if((address < ADDR_FMC_SECTOR_1) && (address >= ADDR_FMC_SECTOR_0)) {
         sector = CTL_SECTOR_NUMBER_0;
-    }else if((address < ADDR_FMC_SECTOR_2) && (address >= ADDR_FMC_SECTOR_1)){
+    } else if((address < ADDR_FMC_SECTOR_2) && (address >= ADDR_FMC_SECTOR_1)) {
         sector = CTL_SECTOR_NUMBER_1;
-    }else if((address < ADDR_FMC_SECTOR_3) && (address >= ADDR_FMC_SECTOR_2)){
+    } else if((address < ADDR_FMC_SECTOR_3) && (address >= ADDR_FMC_SECTOR_2)) {
         sector = CTL_SECTOR_NUMBER_2;
-    }else if((address < ADDR_FMC_SECTOR_4) && (address >= ADDR_FMC_SECTOR_3)){
-        sector = CTL_SECTOR_NUMBER_3;  
-    }else if((address < ADDR_FMC_SECTOR_5) && (address >= ADDR_FMC_SECTOR_4)){
+    } else if((address < ADDR_FMC_SECTOR_4) && (address >= ADDR_FMC_SECTOR_3)) {
+        sector = CTL_SECTOR_NUMBER_3;
+    } else if((address < ADDR_FMC_SECTOR_5) && (address >= ADDR_FMC_SECTOR_4)) {
         sector = CTL_SECTOR_NUMBER_4;
-    }else if((address < ADDR_FMC_SECTOR_6) && (address >= ADDR_FMC_SECTOR_5)){
+    } else if((address < ADDR_FMC_SECTOR_6) && (address >= ADDR_FMC_SECTOR_5)) {
         sector = CTL_SECTOR_NUMBER_5;
-    }else if((address < ADDR_FMC_SECTOR_7) && (address >= ADDR_FMC_SECTOR_6)){
+    } else if((address < ADDR_FMC_SECTOR_7) && (address >= ADDR_FMC_SECTOR_6)) {
         sector = CTL_SECTOR_NUMBER_6;
-    }else if((address < ADDR_FMC_SECTOR_8) && (address >= ADDR_FMC_SECTOR_7)){
-        sector = CTL_SECTOR_NUMBER_7;  
-    }else if((address < ADDR_FMC_SECTOR_9) && (address >= ADDR_FMC_SECTOR_8)){
+    } else if((address < ADDR_FMC_SECTOR_8) && (address >= ADDR_FMC_SECTOR_7)) {
+        sector = CTL_SECTOR_NUMBER_7;
+    } else if((address < ADDR_FMC_SECTOR_9) && (address >= ADDR_FMC_SECTOR_8)) {
         sector = CTL_SECTOR_NUMBER_8;
-    }else if((address < ADDR_FMC_SECTOR_10) && (address >= ADDR_FMC_SECTOR_9)){
+    } else if((address < ADDR_FMC_SECTOR_10) && (address >= ADDR_FMC_SECTOR_9)) {
         sector = CTL_SECTOR_NUMBER_9;
-    }else if((address < ADDR_FMC_SECTOR_11) && (address >= ADDR_FMC_SECTOR_10)){
+    } else if((address < ADDR_FMC_SECTOR_11) && (address >= ADDR_FMC_SECTOR_10)) {
         sector = CTL_SECTOR_NUMBER_10;
-    }else{
+    } else {
         sector = CTL_SECTOR_NUMBER_11;
     }
     return sector;
@@ -101,12 +101,15 @@ uint32_t fmc_sector_get(uint32_t address)
 void fmc_erase_sector(uint32_t fmc_sector)
 {
     /* unlock the flash program erase controller */
-    fmc_unlock(); 
+    fmc_unlock();
     /* clear pending flags */
     fmc_flag_clear(FMC_FLAG_END | FMC_FLAG_OPERR | FMC_FLAG_WPERR | FMC_FLAG_PGMERR | FMC_FLAG_PGSERR);
     /* wait the erase operation complete*/
-    if(FMC_READY != fmc_sector_erase(fmc_sector)){
+    if(FMC_READY != fmc_sector_erase(fmc_sector)) {
+        printf("\r\n erase sector is failed");
         while(1);
+    } else {
+        printf("\r\n erase sector is successful");
     }
     /* lock the flash program erase controller */
     fmc_lock();
@@ -120,27 +123,27 @@ void fmc_erase_sector(uint32_t fmc_sector)
     \param[out] none
     \retval     none
 */
-void fmc_write_32bit_data(uint32_t address, uint16_t length, int32_t* data_32)
+void fmc_write_32bit_data(uint32_t address, uint16_t length, int32_t *data_32)
 {
-    uint16_t StartSector, EndSector,i;
+    uint16_t StartSector, EndSector, i;
     /* unlock the flash program erase controller */
     fmc_unlock();
     /* clear pending flags */
     fmc_flag_clear(FMC_FLAG_END | FMC_FLAG_OPERR | FMC_FLAG_WPERR | FMC_FLAG_PGMERR | FMC_FLAG_PGSERR);
     /* get the number of the start and end sectors */
     StartSector = fmc_sector_get(address);
-    EndSector = fmc_sector_get(address + 4*length);
+    EndSector = fmc_sector_get(address + 4 * length);
     /* each time the sector number increased by 8, refer to the sector definition */
-    for(i = StartSector; i <= EndSector; i += 8){
-        if(FMC_READY != fmc_sector_erase(i)){
+    for(i = StartSector; i <= EndSector; i += 8) {
+        if(FMC_READY != fmc_sector_erase(i)) {
             while(1);
         }
     }
     /* write data_32 to the corresponding address */
-    for(i=0; i<length; i++){
-        if(FMC_READY == fmc_word_program(address, data_32[i])){
+    for(i = 0; i < length; i++) {
+        if(FMC_READY == fmc_word_program(address, data_32[i])) {
             address = address + 4;
-        }else{ 
+        } else {
             while(1);
         }
     }
@@ -156,12 +159,12 @@ void fmc_write_32bit_data(uint32_t address, uint16_t length, int32_t* data_32)
     \param[out] none
     \retval     none
 */
-void fmc_read_32bit_data(uint32_t address, uint16_t length, int32_t* data_32)
+void fmc_read_32bit_data(uint32_t address, uint16_t length, int32_t *data_32)
 {
     uint8_t i;
-    for(i=0; i<length; i++){
-        data_32[i] = *(__IO int32_t*)address;
-        address=address + 4;
+    for(i = 0; i < length; i++) {
+        data_32[i] = *(__IO int32_t *)address;
+        address = address + 4;
     }
 }
 
@@ -183,10 +186,11 @@ int main(void)
     printf("\r\n erase before:");
     /* read 32 bit length data from a given address */
     fmc_read_32bit_data(FLASH_USER_START_ADDR, 10, data_32_2);
-    for(j=0; j<10; j++){
+    for(j = 0; j < 10; j++) {
         printf(" %d ", data_32_2[j]);
     }
-#ifdef WRITE_PROTECTION_DISABLE 
+#ifdef WRITE_PROTECTION_DISABLE
+    printf("\r\n write protection is disabled");
     fmc_unlock();
     ob_unlock();
     ob_write_protection_disable(OB_WP_1);
@@ -198,7 +202,7 @@ int main(void)
     printf("\r\n erase after :");
     /* read 32 bit length data from a given address */
     fmc_read_32bit_data(FLASH_USER_START_ADDR, 10, data_32_2);
-    for(j=0; j<10; j++){
+    for(j = 0; j < 10; j++) {
         printf(" %d ", data_32_2[j]);
     }
     printf("\r\n write after :");
@@ -206,10 +210,11 @@ int main(void)
     fmc_write_32bit_data(FLASH_USER_START_ADDR, 10, data_32_1);
     /* read 32 bit length data from a given address */
     fmc_read_32bit_data(FLASH_USER_START_ADDR, 10, data_32_2);
-    for(j=0; j<10; j++){
+    for(j = 0; j < 10; j++) {
         printf(" %d ", data_32_2[j]);
     }
 #elif defined WRITE_PROTECTION_ENABLE
+    printf("\r\n write protection is enabled");
     fmc_unlock();
     ob_unlock();
     ob_write_protection_enable(OB_WP_1);
@@ -221,7 +226,7 @@ int main(void)
     printf("\r\n erase after :");
     /* read 32 bit length data from a given address */
     fmc_read_32bit_data(FLASH_USER_START_ADDR, 10, data_32_2);
-    for(j=0; j<10; j++){
+    for(j = 0; j < 10; j++) {
         printf(" %d ", data_32_2[j]);
     }
     printf("\r\n write after :");
@@ -229,10 +234,10 @@ int main(void)
     fmc_write_32bit_data(FLASH_USER_START_ADDR, 10, data_32_1);
     /* read 32 bit length data from a given address */
     fmc_read_32bit_data(FLASH_USER_START_ADDR, 10, data_32_2);
-    for(j=0; j<10; j++){
+    for(j = 0; j < 10; j++) {
         printf(" %d ", data_32_2[j]);
     }
-#endif 
+#endif
     while(1);
 }
 

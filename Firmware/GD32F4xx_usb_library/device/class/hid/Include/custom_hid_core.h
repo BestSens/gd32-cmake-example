@@ -2,7 +2,7 @@
     \file    custom_hid_core.h
     \brief   definitions for HID core
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,25 +32,22 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __CUSTOM_HID_CORE_H
-#define __CUSTOM_HID_CORE_H
+#ifndef CUSTOM_HID_CORE_H
+#define CUSTOM_HID_CORE_H
 
 #include "usbd_enum.h"
 #include "usb_hid.h"
 
-#define DESC_LEN_REPORT             96U
-#define DESC_LEN_CONFIG             41U
-
-#define NO_CMD                      0xFFU
-
-#define MAX_PERIPH_NUM              4U
+#define DESC_LEN_REPORT             96U                           /*!< report descriptor length */
+#define DESC_LEN_CONFIG             41U                           /*!< configuration descriptor length */
+#define NO_CMD                      0xFFU                         /*!< no command */
+#define MAX_PERIPH_NUM              4U                            /*!< maximum peripheral number */
 
 typedef struct {
-    uint8_t data[2];
-
-    uint8_t reportID;
-    uint8_t idlestate;
-    uint8_t protocol;
+    uint8_t data[2];                                              /*!< custom HID data packet buff */
+    uint8_t reportID;                                             /*!< custom HID report id */
+    uint8_t idlestate;                                            /*!< idle state */
+    uint8_t protocol;                                             /*!< HID protocol */
 } custom_hid_handler;
 
 typedef struct {
@@ -62,8 +59,8 @@ extern usb_class_core usbd_custom_hid_cb;
 
 /* function declarations */
 /* register HID interface operation functions */
-uint8_t custom_hid_itfop_register (usb_dev *udev, hid_fop_handler *hid_fop);
+uint8_t custom_hid_itfop_register(usb_dev *udev, hid_fop_handler *hid_fop);
 /* send custom HID report */
-uint8_t custom_hid_report_send (usb_dev *udev, uint8_t *report, uint32_t len);
+uint8_t custom_hid_report_send(usb_dev *udev, uint8_t *report, uint32_t len);
 
-#endif /* __CUSTOM_HID_CORE_H */
+#endif /* CUSTOM_HID_CORE_H */

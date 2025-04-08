@@ -2,7 +2,7 @@
     \file    nor_flash_if.c
     \brief   USB DFU device nor flash interface functions
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -36,15 +36,14 @@ OF SUCH DAMAGE.
 #include "nor_flash_if.h"
 
 /* local function prototypes ('static') */
-static uint8_t nor_flash_if_init (void);
-static uint8_t nor_flash_if_deinit (void);
-static uint8_t nor_flash_if_erase (uint32_t addr);
-static uint8_t nor_flash_if_write (uint8_t *buf, uint32_t addr, uint32_t len);
-static uint8_t* nor_flash_if_read (uint8_t *buf, uint32_t addr, uint32_t len);
-static uint8_t nor_flash_if_checkaddr (uint32_t addr);
+static uint8_t nor_flash_if_init(void);
+static uint8_t nor_flash_if_deinit(void);
+static uint8_t nor_flash_if_erase(uint32_t addr);
+static uint8_t nor_flash_if_write(uint8_t *buf, uint32_t addr, uint32_t len);
+static uint8_t *nor_flash_if_read(uint8_t *buf, uint32_t addr, uint32_t len);
+static uint8_t nor_flash_if_checkaddr(uint32_t addr);
 
-dfu_mem_prop dfu_nor_flash_cb =
-{
+dfu_mem_prop dfu_nor_flash_cb = {
     (const uint8_t *)NOR_FLASH_IF_STR,
 
     nor_flash_if_init,
@@ -53,8 +52,8 @@ dfu_mem_prop dfu_nor_flash_cb =
     nor_flash_if_write,
     nor_flash_if_read,
     nor_flash_if_checkaddr,
-    400, /* flash erase timeout in ms */
-    20  /* flash programming timeout in ms */
+    400U, /* flash erase timeout in ms */
+    20U   /* flash programming timeout in ms */
 };
 
 /*!
@@ -63,7 +62,7 @@ dfu_mem_prop dfu_nor_flash_cb =
     \param[out] none
     \retval     MEM_OK if the operation is right, MEM_FAIL else
 */
-static uint8_t nor_flash_if_init (void)
+static uint8_t nor_flash_if_init(void)
 {
     /* initialize spi interface*/
     spi_flash_init();
@@ -77,7 +76,7 @@ static uint8_t nor_flash_if_init (void)
     \param[out] none
     \retval     MEM_OK if the operation is right, MEM_FAIL else
 */
-static uint8_t nor_flash_if_deinit (void)
+static uint8_t nor_flash_if_deinit(void)
 {
     return MEM_OK;
 }
@@ -88,7 +87,7 @@ static uint8_t nor_flash_if_deinit (void)
     \param[out] none
     \retval     MEM_OK if the operation is right, MEM_FAIL else
 */
-static uint8_t nor_flash_if_erase (uint32_t addr)
+static uint8_t nor_flash_if_erase(uint32_t addr)
 {
     /* erase the specified flash sector */
     spi_flash_block_erase(addr);
@@ -104,7 +103,7 @@ static uint8_t nor_flash_if_erase (uint32_t addr)
     \param[out] none
     \retval     MEM_OK if the operation is right, MEM_FAIL else
 */
-static uint8_t nor_flash_if_write (uint8_t *buf, uint32_t addr, uint32_t len)
+static uint8_t nor_flash_if_write(uint8_t *buf, uint32_t addr, uint32_t len)
 {
     /* write block of data to the flash */
     spi_flash_buffer_write(buf, addr, len);
@@ -120,7 +119,7 @@ static uint8_t nor_flash_if_write (uint8_t *buf, uint32_t addr, uint32_t len)
     \param[out] none
     \retval     pointer to the physical address where data should be read
 */
-static uint8_t *nor_flash_if_read (uint8_t *buf, uint32_t addr, uint32_t len)
+static uint8_t *nor_flash_if_read(uint8_t *buf, uint32_t addr, uint32_t len)
 {
     spi_flash_buffer_read(buf, addr, len);
 
@@ -133,9 +132,9 @@ static uint8_t *nor_flash_if_read (uint8_t *buf, uint32_t addr, uint32_t len)
     \param[out] none
     \retval     MEM_OK if the operation is right, MEM_FAIL else
 */
-static uint8_t nor_flash_if_checkaddr (uint32_t addr)
+static uint8_t nor_flash_if_checkaddr(uint32_t addr)
 {
-    if (((addr > NOR_FLASH_START_ADDR) && (addr < NOR_FLASH_END_ADDR)) || (NOR_FLASH_START_ADDR == addr)) {
+    if(((addr > NOR_FLASH_START_ADDR) && (addr < NOR_FLASH_END_ADDR)) || (NOR_FLASH_START_ADDR == addr)) {
         return MEM_OK;
     } else {
         return MEM_FAIL;

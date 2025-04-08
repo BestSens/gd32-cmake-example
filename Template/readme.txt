@@ -1,8 +1,8 @@
 /*!
     \file    readme.txt
-    \brief   description of systick example
+    \brief   description of the master receiver
     
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -31,7 +31,21 @@ WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWIS
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
 OF SUCH DAMAGE.
 */
-    This example is based on the GD32450I-EVAL-V1.1 board, it provides a
-  description of SysTick configuration, LED1 is spark. 
-  
- 
+
+  This demo is based on the GD32450I-EVAL-V1.1 board, it shows the I2C programming 
+mode in master receiving mode. In this demo, I2C0 is operated as master receiver,
+and the SCL line and SDA line of I2C0 interface are controlled by the I/O pin 
+PB6 and PB7 respectively.
+
+  This demo shows the receiving data process of the master. And it will store 
+the received data in the i2c_receiver array.
+
+  This demo doesn't perform the data transfer actually, which is due to no 
+specific slave.In the specific application, we must send the correct slave 
+address, and the master and the slave may need to be connected by the jumper 
+if necessary. When the macro I2C_10BIT_ADDRESS is 1, I2C communicate in 10 bit
+addressing mode, otherwise, I2C communicate in 7 bit addressing mode. When the 
+data is received completely, the received data will be printed by COM0.
+
+  JP5 must be fitted to the USART0 port.
+

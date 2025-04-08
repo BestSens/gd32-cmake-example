@@ -2,7 +2,7 @@
     \file    usbd_conf.h
     \brief   the header file of USB device configuration
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,8 +32,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __USBD_CONF_H
-#define __USBD_CONF_H
+#ifndef USBD_CONF_H
+#define USBD_CONF_H
 
 #include "usb_conf.h"
 
@@ -43,16 +43,16 @@ OF SUCH DAMAGE.
 #include "nand_flash_if.h"
 #include "inter_flash_if.h"
 
-#define USBD_CFG_MAX_NUM              1
-#define USBD_ITF_MAX_NUM              1
-#define USB_STR_DESC_MAX_SIZE         64
+#define USBD_CFG_MAX_NUM              1U
+#define USBD_ITF_MAX_NUM              1U
+#define USB_STR_DESC_MAX_SIZE         64U
 
-#define DFU_MAX_ALT_ITF_NUM           3
-#define STR_IDX_ALT_ITF0              5
-#define STR_IDX_ALT_ITF1              6
-#define STR_IDX_ALT_ITF2              7
+#define DFU_MAX_ALT_ITF_NUM           3U
+#define STR_IDX_ALT_ITF0              5U
+#define STR_IDX_ALT_ITF1              6U
+#define STR_IDX_ALT_ITF2              7U
 
-#define USBD_DFU_INTERFACE            0
+#define USBD_DFU_INTERFACE            0U
 
 /* USB feature -- Self Powered */
 //#define USBD_SELF_POWERED
@@ -63,12 +63,12 @@ OF SUCH DAMAGE.
 //#define USBD_DYNAMIC_DESCRIPTOR_CHANGE_ENABLED
 
 /* Maximum number of supported media (Flash) */
-#define MAX_USED_MEMORY_MEDIA         3
+#define MAX_USED_MEMORY_MEDIA         3U
 
-#define USB_STRING_COUNT              6
+#define USB_STRING_COUNT              6U
 
 /* DFU maximum data packet size */
-#define TRANSFER_SIZE                 2048
+#define TRANSFER_SIZE                 2048U
 
 /* memory address from where user application will be loaded, which represents 
    the DFU code protected against write and erase operations.*/
@@ -82,4 +82,4 @@ OF SUCH DAMAGE.
 #define DFU_IN_EP                     EP0_IN
 #define DFU_OUT_EP                    EP0_OUT
 
-#endif /* __USBD_CONF_H */
+#endif /* USBD_CONF_H */

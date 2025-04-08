@@ -2,7 +2,7 @@
     \file    usbh_standard_hid.c
     \brief   USB host HID keyboard and mouse driver
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -33,18 +33,16 @@ OF SUCH DAMAGE.
 */
 
 #include "usbh_standard_hid.h"
-#include <stdbool.h>
 
-hid_mouse_info mouse_info;
+mouse_report_data mouse_info;
 hid_keybd_info keybd_info;
 
-__ALIGN_BEGIN uint8_t mouse_report_data[8] __ALIGN_END = {0U};
+__ALIGN_BEGIN uint8_t hid_mouse_info[8] __ALIGN_END = {0U};
 __ALIGN_BEGIN uint32_t keybd_report_data[2] __ALIGN_END;
 
 /* local constants */
-static const uint8_t kbd_codes[] = 
-{
-    0,      0,      0,      0,      31,     50,     48,     33, 
+static const uint8_t kbd_codes[] = {
+    0,      0,      0,      0,      31,     50,     48,     33,
     19,     34,     35,     36,     24,     37,     38,     39,         /* 0x00 - 0x0F */
     52,     51,     25,     26,     17,     20,     32,     21,
     23,     49,     18,     47,     22,     46,     2,      3,          /* 0x10 - 0x1F */
@@ -77,8 +75,7 @@ static const uint8_t kbd_codes[] =
 
 #ifdef QWERTY_KEYBOARD
 
-static const int8_t kbd_key[] = 
-{
+static const int8_t kbd_key[] = {
     '\0',   '`',    '1',    '2',    '3',    '4',    '5',    '6',
     '7',    '8',    '9',    '0',    '-',    '=',    '\0',   '\r',
     '\t',   'q',    'w',    'e',    'r',    't',    'y',    'u',
@@ -151,7 +148,7 @@ static const int8_t kbd_key_shift[] = {
     \param[out] none
     \retval     none
 */
-usbh_status usbh_hid_mouse_init (usb_core_driver *udev, usbh_host *uhost)
+usbh_status usbh_hid_mouse_init(usb_core_driver *udev, usbh_host *uhost)
 {
     usbh_hid_handler *hid = (usbh_hid_handler *)uhost->active_class->class_data;
 
@@ -161,11 +158,11 @@ usbh_status usbh_hid_mouse_init (usb_core_driver *udev, usbh_host *uhost)
     mouse_info.buttons[1] = 0U;
     mouse_info.buttons[2] = 0U;
 
-    if(hid->len > sizeof(mouse_report_data)) {
-        hid->len = sizeof(mouse_report_data);
+    if(hid->len > sizeof(hid_mouse_info)) {
+        hid->len = sizeof(hid_mouse_info);
     }
 
-    hid->pdata = (uint8_t *)(void *)mouse_report_data;
+    hid->pdata = (uint8_t *)(void *)hid_mouse_info;
 
     usr_mouse_init();
 
@@ -174,8 +171,7 @@ usbh_status usbh_hid_mouse_init (usb_core_driver *udev, usbh_host *uhost)
 
 /*!
     \brief      decode mouse information
-    \param[in]  udev: pointer to USB core instance
-    \param[in]  uhost: pointer to USB host
+    \param[in]  data: pointer to input data
     \param[out] none
     \retval     operation status
 */
@@ -201,7 +197,7 @@ usbh_status usbh_hid_mouse_decode(uint8_t *data)
     \param[out] none
     \retval     operation status
 */
-usbh_status usbh_hid_keybrd_init (usb_core_driver *udev, usbh_host *uhost)
+usbh_status usbh_hid_keybrd_init(usb_core_driver *udev, usbh_host *uhost)
 {
     usbh_hid_handler *hid = (usbh_hid_handler *)uhost->active_class->class_data;
 
@@ -210,15 +206,15 @@ usbh_status usbh_hid_keybrd_init (usb_core_driver *udev, usbh_host *uhost)
     keybd_info.rctrl = keybd_info.rshift = 0U;
     keybd_info.ralt  = keybd_info.rgui   = 0U;
 
-    for (uint32_t x = 0U; x < (sizeof(keybd_report_data) / sizeof(uint32_t)); x++) {
+    for(uint32_t x = 0U; x < (sizeof(keybd_report_data) / sizeof(uint32_t)); x++) {
         keybd_report_data[x] = 0U;
     }
 
-    if (hid->len > (sizeof(keybd_report_data) / sizeof(uint32_t))) {
+    if(hid->len > (sizeof(keybd_report_data) / sizeof(uint32_t))) {
         hid->len = (sizeof(keybd_report_data) / sizeof(uint32_t));
     }
 
-    hid->pdata = (uint8_t*)(void *)keybd_report_data;
+    hid->pdata = (uint8_t *)(void *)keybd_report_data;
 
     /* call user initialization*/
     usr_keybrd_init();
@@ -227,15 +223,16 @@ usbh_status usbh_hid_keybrd_init (usb_core_driver *udev, usbh_host *uhost)
 }
 
 /*!
-    \brief      get ascii code
+    \brief      get ASCII code
     \param[in]  info: keyboard information
     \param[out] none
     \retval     output
 */
-uint8_t usbh_hid_ascii_code_get (hid_keybd_info *info)
+uint8_t usbh_hid_ascii_code_get(hid_keybd_info *info)
 {
-    uint8_t output;
-    if ((1U == info->lshift) || (info->rshift)) {
+    uint8_t output = 0U;
+
+    if((1U == info->lshift) || (info->rshift)) {
         output = kbd_key_shift[kbd_codes[info->keys[0]]];
     } else {
         output = kbd_key[kbd_codes[info->keys[0]]];
@@ -251,22 +248,22 @@ uint8_t usbh_hid_ascii_code_get (hid_keybd_info *info)
     \param[out] none
     \retval     operation status
 */
-usbh_status usbh_hid_keybrd_decode (uint8_t *data)
+usbh_status usbh_hid_keybrd_decode(uint8_t *data)
 {
-    uint8_t output;
+    uint8_t output = 0U;
 
     keybd_info.lshift = data[0] & KBD_LEFT_SHIFT;
     keybd_info.rshift = data[0] & KBD_RIGHT_SHIFT;
 
     keybd_info.keys[0] = data[2];
 
-    if (keybd_info.lshift || keybd_info.rshift) {
+    if(keybd_info.lshift || keybd_info.rshift) {
         output = kbd_key_shift[kbd_codes[keybd_info.keys[0]]];
     } else {
         output = kbd_key[kbd_codes[keybd_info.keys[0]]];
     }
 
-    if (0U != output) {
+    if(0U != output) {
         usr_keybrd_process_data(output);
     }
 

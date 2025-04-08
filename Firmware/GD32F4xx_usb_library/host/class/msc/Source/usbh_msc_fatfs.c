@@ -2,7 +2,7 @@
     \file    usbh_msc_fatfs.c
     \brief   USB MSC host FATFS related functions
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,7 +32,6 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#include "usb_conf.h"
 #include "diskio.h"
 #include "usbh_msc_core.h"
 
@@ -46,11 +45,11 @@ extern usbh_host usb_host_msc;
     \param[out] none
     \retval     operation status
 */
-DSTATUS disk_initialize (BYTE drv)
+DSTATUS disk_initialize(BYTE drv)
 {
     usb_core_driver *udev = (usb_core_driver *)usb_host_msc.data;
 
-    if (udev->host.connect_status) {
+    if(udev->host.connect_status) {
         state &= ~STA_NOINIT;
     }
 
@@ -63,9 +62,9 @@ DSTATUS disk_initialize (BYTE drv)
     \param[out] none
     \retval     operation status
 */
-DSTATUS disk_status (BYTE drv)
+DSTATUS disk_status(BYTE drv)
 {
-    if (drv) {
+    if(drv) {
         return STA_NOINIT; /* supports only single drive */
     }
 
@@ -81,30 +80,30 @@ DSTATUS disk_status (BYTE drv)
     \param[out] none
     \retval     operation status
 */
-DRESULT disk_read (BYTE drv, BYTE *buff, DWORD sector, UINT count)
+DRESULT disk_read(BYTE drv, BYTE *buff, DWORD sector, UINT count)
 {
     BYTE status = USBH_OK;
     usb_core_driver *udev = (usb_core_driver *)usb_host_msc.data;
 
-    if (drv || (!count)) {
+    if(drv || (!count)) {
         return RES_PARERR;
     }
 
-    if (state & STA_NOINIT) {
+    if(state & STA_NOINIT) {
         return RES_NOTRDY;
     }
 
-    if (udev->host.connect_status) {
+    if(udev->host.connect_status) {
         do {
-            status = usbh_msc_read (&usb_host_msc, drv, sector, buff, count);
+            status = usbh_msc_read(&usb_host_msc, drv, sector, buff, count);
 
-            if (!udev->host.connect_status) {
+            if(!udev->host.connect_status) {
                 return RES_ERROR;
             }
-        } while(status == USBH_BUSY);
+        } while(USBH_BUSY == status);
     }
 
-    if (status == USBH_OK) {
+    if(USBH_OK == status) {
         return RES_OK;
     }
 
@@ -122,34 +121,34 @@ DRESULT disk_read (BYTE drv, BYTE *buff, DWORD sector, UINT count)
     \param[out] none
     \retval     operation status
 */
-DRESULT disk_write (BYTE drv, const BYTE *buff, DWORD sector, UINT count)
+DRESULT disk_write(BYTE drv, const BYTE *buff, DWORD sector, UINT count)
 {
     BYTE status = USBH_OK;
     usb_core_driver *udev = (usb_core_driver *)usb_host_msc.data;
 
-    if ((!count) || drv) {
+    if((!count) || drv) {
         return RES_PARERR;
     }
 
-    if (state & STA_NOINIT) {
+    if(state & STA_NOINIT) {
         return RES_NOTRDY;
     }
 
-    if (state & STA_PROTECT) {
+    if(state & STA_PROTECT) {
         return RES_WRPRT;
     }
 
-    if (udev->host.connect_status) {
+    if(udev->host.connect_status) {
         do {
-            status = usbh_msc_write (&usb_host_msc, drv, sector, (BYTE*)buff, count);
+            status = usbh_msc_write(&usb_host_msc, drv, sector, (BYTE *)buff, count);
 
-            if (!udev->host.connect_status) {
+            if(!udev->host.connect_status) {
                 return RES_ERROR;
             }
-        } while(status == USBH_BUSY);
+        } while(USBH_BUSY == status);
     }
 
-    if (status == USBH_OK) {
+    if(USBH_OK == status) {
         return RES_OK;
     }
 
@@ -166,22 +165,22 @@ DRESULT disk_write (BYTE drv, const BYTE *buff, DWORD sector, UINT count)
     \param[out] none
     \retval     operation status
 */
-DRESULT disk_ioctl (BYTE drv, BYTE ctrl, void *buff)
+DRESULT disk_ioctl(BYTE drv, BYTE ctrl, void *buff)
 {
     DRESULT res = RES_OK;
     msc_lun info;
 
-    if (drv) {
+    if(drv) {
         return RES_PARERR;
     }
 
     res = RES_ERROR;
 
-    if (state & STA_NOINIT) {
+    if(state & STA_NOINIT) {
         return RES_NOTRDY;
     }
 
-    switch (ctrl) {
+    switch(ctrl) {
     /* make sure that no pending write process */
     case CTRL_SYNC:
         res = RES_OK;
@@ -189,16 +188,16 @@ DRESULT disk_ioctl (BYTE drv, BYTE ctrl, void *buff)
 
     /* get number of sectors on the disk (dword) */
     case GET_SECTOR_COUNT:
-        if (USBH_OK == usbh_msc_lun_info_get(&usb_host_msc, drv, &info)) {
-            *(DWORD*)buff = (DWORD)info.capacity.block_nbr;
+        if(USBH_OK == usbh_msc_lun_info_get(&usb_host_msc, drv, &info)) {
+            *(DWORD *)buff = (DWORD)info.capacity.block_nbr;
             res = RES_OK;
         }
         break;
 
     /* get r/w sector size (word) */
     case GET_SECTOR_SIZE:
-        if (USBH_OK == usbh_msc_lun_info_get(&usb_host_msc, drv, &info)) {
-            *(WORD*)buff = (DWORD)info.capacity.block_size;
+        if(USBH_OK == usbh_msc_lun_info_get(&usb_host_msc, drv, &info)) {
+            *(WORD *)buff = (DWORD)info.capacity.block_size;
             res = RES_OK;
         }
         break;
@@ -222,12 +221,12 @@ DRESULT disk_ioctl (BYTE drv, BYTE ctrl, void *buff)
     \param[out] none
     \retval     time value
 */
-DWORD get_fattime (void)
+DWORD get_fattime(void)
 {
-    return ((DWORD)(2019U - 1980U) << 25U)     /* year 2019 */
-           | ((DWORD)1U << 21U)                /* month 1 */
-           | ((DWORD)1U << 16U)                /* day 1 */
-           | ((DWORD)0U << 11U)                /* hour 0 */
-           | ((DWORD)0U << 5U)                 /* min 0 */
-           | ((DWORD)0U >> 1U);                /* sec 0 */
+    return ((DWORD)(2019U - 1980U) << 25)      /* year 2019 */
+           | ((DWORD)1U << 21)                 /* month 1 */
+           | ((DWORD)1U << 16)                 /* day 1 */
+           | ((DWORD)0U << 11)                 /* hour 0 */
+           | ((DWORD)0U << 5)                  /* min 0 */
+           | ((DWORD)0U >> 1);                 /* sec 0 */
 }

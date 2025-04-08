@@ -2,7 +2,7 @@
     \file    drv_usb_core.h
     \brief   USB core low level driver header file
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,21 +32,19 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __DRV_USB_CORE_H
-#define __DRV_USB_CORE_H
+#ifndef DRV_USB_CORE_H
+#define DRV_USB_CORE_H
 
 #include "drv_usb_regs.h"
 #include "usb_ch9_std.h"
-
-#ifdef USE_DEVICE_MODE
-    #include "usbd_conf.h"
-#endif /* USE_DEVICE_MODE */
 
 #define USB_FS_EP0_MAX_LEN                  64U                                 /*!< maximum packet size of endpoint 0 */
 #define HC_MAX_PACKET_COUNT                 140U                                /*!< maximum packet count */
 
 #define EP_ID(x)                            ((uint8_t)((x) & 0x7FU))            /*!< endpoint number */
 #define EP_DIR(x)                           ((uint8_t)((x) >> 7))               /*!< endpoint direction */
+
+#define EP_MAX_PACKET_SIZE_MASK             0x07FFU                             /*!< endpoint maximum packet size mask */
 
 enum _usb_mode {
     DEVICE_MODE = 0U,                                                           /*!< device mode */
@@ -62,26 +60,22 @@ enum _usb_eptype {
     USB_EPTYPE_MASK = 3U                                                        /*!< endpoint type mask */
 };
 
-typedef enum
-{
-    USB_OTG_OK = 0U,                                                            /*!< USB OTG status OK*/
-    USB_OTG_FAIL                                                                /*!< USB OTG status fail*/
+typedef enum {
+    USB_OTG_OK = 0U,                                                            /*!< USB OTG status succeed */
+    USB_OTG_FAIL                                                                /*!< USB OTG status fail */
 } usb_otg_status;
 
-typedef enum
-{
-    USB_OK = 0U,                                                                /*!< USB status OK*/
-    USB_FAIL                                                                    /*!< USB status fail*/
+typedef enum {
+    USB_OK = 0U,                                                                /*!< USB status succeed */
+    USB_FAIL                                                                    /*!< USB status fail */
 } usb_status;
 
-typedef enum
-{
-    USB_USE_FIFO,                                                               /*!< USB use FIFO transfer mode */
+typedef enum {
+    USB_USE_FIFO = 0U,                                                          /*!< USB use FIFO transfer mode */
     USB_USE_DMA                                                                 /*!< USB use DMA transfer mode */
 } usb_transfer_mode;
 
-typedef struct
-{
+typedef struct {
     uint8_t        core_enum;                                                   /*!< USB core type */
     uint8_t        core_speed;                                                  /*!< USB core speed */
     uint8_t        num_pipe;                                                    /*!< USB host channel numbers */
@@ -129,19 +123,18 @@ typedef struct _usb_control {
     uint8_t    ctl_zlp;                                                         /*!< zero length package */
 } usb_control;
 
-typedef struct
-{
+typedef struct {
     struct {
-        uint8_t num: 4;                                                         /*!< the endpoint number.it can be from 0 to 6 */
-        uint8_t pad: 3;                                                         /*!< padding between number and direction */
-        uint8_t dir: 1;                                                         /*!< the endpoint direction */
+        uint8_t num: 4U;                                                        /*!< the endpoint number.it can be from 0 to 6 */
+        uint8_t pad: 3U;                                                        /*!< padding between number and direction */
+        uint8_t dir: 1U;                                                        /*!< the endpoint direction */
     } ep_addr;
 
     uint8_t        ep_type;                                                     /*!< USB endpoint type */
-    uint8_t        ep_stall;                                                    /*!< USB endpoint stall status */
+    uint8_t        ep_stall;                                                    /*!< USB endpoint STALL status */
 
     uint8_t        frame_num;                                                   /*!< number of frame */
-    uint16_t       max_len;                                                     /*!< Maximum packet length */
+    uint16_t       max_len;                                                     /*!< maximum packet length */
 
     /* transaction level variables */
     uint8_t       *xfer_buf;                                                    /*!< transmit buffer */
@@ -155,32 +148,30 @@ typedef struct
 
 typedef struct _usb_core_driver usb_dev;
 
-typedef struct _usb_class_core
-{
+typedef struct _usb_class_core {
     uint8_t  command;                                                           /*!< device class request command */
     uint8_t  alter_set;                                                         /*!< alternative set */
 
-    uint8_t  (*init)                  (usb_dev *udev, uint8_t config_index);    /*!< initialize handler */
-    uint8_t  (*deinit)                (usb_dev *udev, uint8_t config_index);    /*!< de-initialize handler */
+    uint8_t  (*init)(usb_dev *udev, uint8_t config_index);                      /*!< initialize handler */
+    uint8_t  (*deinit)(usb_dev *udev, uint8_t config_index);                    /*!< de-initialize handler */
 
-    uint8_t  (*req_proc)              (usb_dev *udev, usb_req *req);            /*!< device request handler */
+    uint8_t  (*req_proc)(usb_dev *udev, usb_req *req);                          /*!< device request handler */
 
-    uint8_t  (*set_intf)              (usb_dev *udev, usb_req *req);            /*!< device set interface callback */
+    uint8_t  (*set_intf)(usb_dev *udev, usb_req *req);                          /*!< device set interface callback */
 
-    uint8_t  (*ctlx_in)               (usb_dev *udev);                          /*!< device contrl in callback */
-    uint8_t  (*ctlx_out)              (usb_dev *udev); 
+    uint8_t  (*ctlx_in)(usb_dev *udev);                                         /*!< device control IN callback */
+    uint8_t  (*ctlx_out)(usb_dev *udev);                                        /*!< device control OUT callback */
 
-    uint8_t  (*data_in)               (usb_dev *udev, uint8_t ep_num);          /*!< device data in handler */
-    uint8_t  (*data_out)              (usb_dev *udev, uint8_t ep_num);          /*!< device data out handler */
+    uint8_t  (*data_in)(usb_dev *udev, uint8_t ep_num);                         /*!< device data IN handler */
+    uint8_t  (*data_out)(usb_dev *udev, uint8_t ep_num);                        /*!< device data OUT handler */
 
-    uint8_t  (*SOF)                   (usb_dev *udev);                          /*!< Start of frame handler */
+    uint8_t  (*SOF)(usb_dev *udev);                                             /*!< start of frame handler */
 
-    uint8_t  (*incomplete_isoc_in)    (usb_dev *udev);                          /*!< Incomplete synchronization IN transfer handler */
-    uint8_t  (*incomplete_isoc_out)   (usb_dev *udev);                          /*!< Incomplete synchronization OUT transfer handler */
+    uint8_t  (*incomplete_isoc_in)(usb_dev *udev);                              /*!< incomplete synchronization IN transfer handler */
+    uint8_t  (*incomplete_isoc_out)(usb_dev *udev);                             /*!< incomplete synchronization OUT transfer handler */
 } usb_class_core;
 
-typedef struct _usb_perp_dev
-{
+typedef struct _usb_perp_dev {
     uint8_t            config;                                                  /*!< configuration */
     uint8_t            dev_addr;                                                /*!< device address */
 
@@ -194,7 +185,7 @@ typedef struct _usb_perp_dev
     usb_control        control;                                                 /*!< USB control information */
     usb_desc          *desc;                                                    /*!< USB descriptors pointer */
     usb_class_core    *class_core;                                              /*!< class driver */
-    void              *class_data[USBD_ITF_MAX_NUM];                            /*!< class data pointer */
+    void              *class_data[6];                                           /*!< class data pointer */
     void              *user_data;                                               /*!< user data pointer */
     void              *pdata;                                                   /*!< reserved data pointer */
 } usb_perp_dev;
@@ -203,82 +194,82 @@ typedef struct _usb_perp_dev
 
 #ifdef USE_HOST_MODE
 
-typedef enum _usb_pipe_status
-{
-    PIPE_IDLE = 0U,
-    PIPE_XF,
-    PIPE_HALTED,
-    PIPE_NAK,
-    PIPE_NYET,
-    PIPE_STALL,
-    PIPE_TRACERR,
-    PIPE_BBERR,
-    PIPE_REQOVR,
-    PIPE_DTGERR,
-} usb_pipe_staus;
+typedef enum _usb_pipe_status {
+    PIPE_IDLE = 0U,                                                             /*!< host pipe IDLE status */
+    PIPE_XF,                                                                    /*!< host pipe transfer completed status */
+    PIPE_HALTED,                                                                /*!< host pipe halted status */
+    PIPE_NAK,                                                                   /*!< host pipe NAK status */
+    PIPE_NYET,                                                                  /*!< host pipe NYET status */
+    PIPE_STALL,                                                                 /*!< host pipe STALL status */
+    PIPE_TRACERR,                                                               /*!< host pipe transaction error status */
+    PIPE_BBERR,                                                                 /*!< host pipe babble error status */
+    PIPE_REQOVR,                                                                /*!< host pipe frame overrun status */
+    PIPE_DTGERR                                                                 /*!< host pipe data toggle error status */
+} usb_pipe_status;
 
-typedef enum _usb_urb_state
-{
-    URB_IDLE = 0U,
-    URB_DONE,
-    URB_NOTREADY,
-    URB_ERROR,
-    URB_STALL,
-    URB_PING
+typedef enum _usb_pipe_mode {
+    PIPE_PERIOD     = 0U,                                                       /*!< USB host pipe PERIOD mode */
+    PIPE_NON_PERIOD = 1U                                                        /*!< USB host pipe NOT PERIOD mode */
+} usb_pipe_mode;
+
+typedef enum _usb_urb_state {
+    URB_IDLE = 0U,                                                              /*!< USB URB IDLE state */
+    URB_DONE,                                                                   /*!< USB URB DONE state */
+    URB_NOTREADY,                                                               /*!< USB URB NOT READY state */
+    URB_ERROR,                                                                  /*!< USB URB ERROR state */
+    URB_STALL,                                                                  /*!< USB URB STALL state */
+    URB_PING                                                                    /*!< USB URB PING state */
 } usb_urb_state;
 
-typedef struct _usb_pipe
-{
-    uint8_t              in_used;
-    uint8_t              dev_addr;
-    uint32_t             dev_speed;
+typedef struct _usb_pipe {
+    uint8_t              in_used;                                               /*!< pipe used */
+    uint8_t              dev_addr;                                              /*!< USB device address */
+    uint32_t             dev_speed;                                             /*!< USB device speed */
 
     struct {
-        uint8_t          num;
-        uint8_t          dir;
-        uint8_t          type;
-        uint16_t         mps;
+        uint8_t          num;                                                   /*!< endpoint numbers */
+        uint8_t          dir;                                                   /*!< endpoint direction */
+        uint8_t          type;                                                  /*!< endpoint transfer type */
+        uint16_t         mps;                                                   /*!< endpoint max packet size */
     } ep;
 
-    __IO uint8_t         supp_ping;
-    __IO uint8_t         do_ping;
-    __IO uint32_t        DPID;
+    __IO uint8_t         supp_ping;                                             /*!< host pipe support PING */
+    __IO uint8_t         do_ping;                                               /*!< host pipe do PING  */
+    __IO uint32_t        DPID;                                                  /*!< data PID */
 
-    uint8_t             *xfer_buf;
-    uint32_t             xfer_len;
-    uint32_t             xfer_count;
+    uint8_t              *xfer_buf;                                             /*!< USB transfer buffer */
+    uint32_t             xfer_len;                                              /*!< USB transfer length */
+    uint32_t             xfer_count;                                            /*!< USB transfer count */
 
-    uint8_t              data_toggle_in;
-    uint8_t              data_toggle_out;
+    uint8_t              data_toggle_in;                                        /*!< toggle DATA IN */
+    uint8_t              data_toggle_out;                                       /*!< toggle DATA OUT */
 
-    __IO uint32_t        err_count;
-    __IO usb_pipe_staus  pp_status;
-    __IO usb_urb_state   urb_state;
+    __IO uint32_t        err_count;                                             /*!< error count */
+    __IO usb_pipe_status pp_status;                                             /*!< USB pipe status */
+    __IO usb_urb_state   urb_state;                                             /*!< USB urb state */
 } usb_pipe;
 
-typedef struct _usb_host_drv
-{
-    __IO uint32_t            connect_status;
-    __IO uint32_t            port_enabled;
-    uint32_t                 backup_xfercount[USBFS_MAX_TX_FIFOS];
+typedef struct _usb_host_drv {
+    __IO uint32_t            connect_status;                                    /*!< connect status */
+    __IO uint32_t            port_enabled;                                      /*!< USB port enable */
+    __IO uint32_t            backup_xfercount[USBFS_MAX_TX_FIFOS];              /*!< USB backup transfer data count */
 
-    usb_pipe                 pipe[USBFS_MAX_TX_FIFOS];
-    void                    *data;
+    usb_pipe                 pipe[USBFS_MAX_TX_FIFOS];                          /*!< USB host pipe handles */
+    void                     *data;                                             /*!< user data pointer */
 } usb_host_drv;
 
 #endif /* USE_HOST_MODE */
 
-typedef struct _usb_core_driver
-{
-    usb_core_basic     bp;                                              /*!< USB basic parameters */
-    usb_core_regs      regs;                                            /*!< USB registers */
+typedef struct _usb_core_driver {
+    usb_core_basic     bp;                                                      /*!< USB basic parameters */
+    usb_core_regs      regs;                                                    /*!< USB registers */
 
 #ifdef USE_DEVICE_MODE
-    usb_perp_dev       dev;                                             /*!< USB peripheral device */
+    usb_perp_dev       dev;                                                     /*!< USB peripheral device */
 #endif /* USE_DEVICE_MODE */
 
 #ifdef USE_HOST_MODE
-    usb_host_drv         host;
+    usb_host_drv       host;                                                    /*!< USB peripheral host */
 #endif /* USE_HOST_MODE */
 } usb_core_driver;
 
@@ -293,9 +284,9 @@ typedef struct _usb_core_driver
 __STATIC_INLINE uint32_t usb_coreintr_get(usb_core_regs *usb_regs)
 {
     uint32_t reg_data = usb_regs->gr->GINTEN;
-    
+
     reg_data &= usb_regs->gr->GINTF;
-    
+
     return reg_data;
 }
 
@@ -337,20 +328,20 @@ __STATIC_INLINE void usb_globalint_disable(usb_core_regs *usb_regs)
 
 /* function declarations */
 /* configure core capabilities */
-usb_status usb_basic_init (usb_core_basic *usb_basic, usb_core_regs *usb_regs, usb_core_enum usb_core);
+usb_status usb_basic_init(usb_core_basic *usb_basic, usb_core_regs *usb_regs, usb_core_enum usb_core);
 /* initializes the USB controller registers and prepares the core device mode or host mode operation */
-usb_status usb_core_init (usb_core_basic usb_basic, usb_core_regs *usb_regs);
-/* write a packet into the Tx FIFO associated with the endpoint */
-usb_status usb_txfifo_write (usb_core_regs *usb_regs, uint8_t *src_buf, uint8_t  fifo_num, uint16_t byte_count);
-/* read a packet from the Rx FIFO associated with the endpoint */
-void *usb_rxfifo_read (usb_core_regs *usb_regs, uint8_t *dest_buf, uint16_t byte_count);
-/* flush a Tx FIFO or all Tx FIFOs */
-usb_status usb_txfifo_flush (usb_core_regs *usb_regs, uint8_t fifo_num);
-/* flush the entire Rx FIFO */
-usb_status usb_rxfifo_flush (usb_core_regs *usb_regs);
+usb_status usb_core_init(usb_core_basic usb_basic, usb_core_regs *usb_regs);
+/* write a packet into the TX FIFO associated with the endpoint */
+usb_status usb_txfifo_write(usb_core_regs *usb_regs, uint8_t *src_buf, uint8_t  fifo_num, uint16_t byte_count);
+/* read a packet from the RX FIFO associated with the endpoint */
+void *usb_rxfifo_read(usb_core_regs *usb_regs, uint8_t *dest_buf, uint16_t byte_count);
+/* flush a TX FIFO or all TX FIFOs */
+usb_status usb_txfifo_flush(usb_core_regs *usb_regs, uint8_t fifo_num);
+/* flush the entire RX FIFO */
+usb_status usb_rxfifo_flush(usb_core_regs *usb_regs);
 /* set endpoint or channel TX FIFO size */
 void usb_set_txfifo(usb_core_regs *usb_regs, uint8_t fifo, uint16_t size);
 /* set USB current mode */
 void usb_curmode_set(usb_core_regs *usb_regs, uint8_t mode);
 
-#endif /* __DRV_USB_CORE_H */
+#endif /* DRV_USB_CORE_H */

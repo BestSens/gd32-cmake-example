@@ -1,8 +1,8 @@
 /*!
     \file    usb_conf.h
-    \brief   general low level driver configuration
+    \brief   USB core driver basic configuration
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,18 +32,14 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __USB_CONF_H
-#define __USB_CONF_H
+#ifndef USB_CONF_H
+#define USB_CONF_H
 
+#include <string.h>
 #include "gd32f4xx.h"
 #include "gd32f450i_eval.h" 
 
-/****************** USB OTG FS PHY CONFIGURATION *******************************
- *  The USB OTG FS Core supports one on-chip Full Speed PHY.
- *  The USE_EMBEDDED_PHY symbol is defined in the project compiler preprocessor 
- *  when FS core is used.
-*******************************************************************************/
-
+/* USB FS/HS PHY CONFIGURATION */
 #ifdef USE_USB_FS
     #define USB_FS_CORE
 #endif /* USE_USB_FS */
@@ -52,39 +48,20 @@ OF SUCH DAMAGE.
     #define USB_HS_CORE
 #endif /* USE_USB_HS */
 
-/*******************************************************************************
- *                     FIFO Size Configuration in Host mode
- *
- *  (i) Receive data FIFO size = (Largest Packet Size / 4) + 1 or 
- *                                2x (Largest Packet Size / 4) + 1, If a 
- *                                high-bandwidth channel or multiple isochronous 
- *                                channels are enabled
- *
- *  (ii) For the host non-periodic Transmit FIFO is the largest maximum packet size 
- *       for all supported non-periodic OUT channels. Typically, a space 
- *       corresponding to two Largest Packet Size is recommended.
- *
- *  (iii) The minimum amount of RAM required for Host periodic Transmit FIFO is 
- *        the largest maximum packet size for all supported periodic OUT channels.
- *        If there is at least one High Bandwidth Isochronous OUT endpoint, 
- *        then the space must be at least two times the maximum packet size for 
- *        that channel.
-*******************************************************************************/
-
-/****************** USB OTG FS CONFIGURATION **********************************/
+/* USB FIFO size config */
 #ifdef USB_FS_CORE
-    #define USB_RX_FIFO_FS_SIZE                            128
-    #define USB_HTX_NPFIFO_FS_SIZE                         96
-    #define USB_HTX_PFIFO_FS_SIZE                          96
+    #define USB_RX_FIFO_FS_SIZE                            128U
+    #define USB_HTX_NPFIFO_FS_SIZE                         96U
+    #define USB_HTX_PFIFO_FS_SIZE                          96U
 
-    #define USBFS_SOF_OUTPUT                               0
-    #define USBFS_LOW_POWER                                0
+    #define USBFS_SOF_OUTPUT                               0U
+    #define USBFS_LOW_POWER                                0U
 #endif
 
 #ifdef USB_HS_CORE
-    #define USB_RX_FIFO_HS_SIZE                            512
-    #define USB_HTX_NPFIFO_HS_SIZE                         256
-    #define USB_HTX_PFIFO_HS_SIZE                          256
+    #define USB_RX_FIFO_HS_SIZE                            512U
+    #define USB_HTX_NPFIFO_HS_SIZE                         256U
+    #define USB_HTX_PFIFO_HS_SIZE                          256U
 
     #ifdef USE_ULPI_PHY
         #define USB_ULPI_PHY_ENABLED
@@ -96,11 +73,11 @@ OF SUCH DAMAGE.
 
 //    #define USB_HS_INTERNAL_DMA_ENABLED
 
-    #define USBHS_SOF_OUTPUT                               0
-    #define USBHS_LOW_POWER                                0
-#endif
+    #define USBHS_SOF_OUTPUT                               0U
+    #define USBHS_LOW_POWER                                0U
+#endif /* USB_HS_CORE */
 
-/****************** USB OTG MODE CONFIGURATION ********************************/
+/* USB mode configuration */
 #define USE_HOST_MODE
 //#define USE_DEVICE_MODE
 //#define USE_OTG_MODE
@@ -123,35 +100,33 @@ OF SUCH DAMAGE.
     #endif
 #endif
 
-/****************** C Compilers dependent keywords ****************************/
-/* In HS mode and when the DMA is used, all variables and data structures dealing
-   with the DMA during the transaction process should be 4-bytes aligned */
+/* all variables and data structures during the transaction process should be 4-bytes aligned */
 #ifdef USB_HS_INTERNAL_DMA_ENABLED
     #if defined   (__GNUC__)            /* GNU Compiler */
-        #define __ALIGN_END __attribute__ ((aligned(4)))
+        #define __ALIGN_END __attribute__ ((aligned(4U)))
         #define __ALIGN_BEGIN
     #else
         #define __ALIGN_END
         #if defined   (__CC_ARM)        /* ARM Compiler */
-            #define __ALIGN_BEGIN __align(4)
+            #define __ALIGN_BEGIN __align(4U)
         #elif defined (__ICCARM__)      /* IAR Compiler */
             #define __ALIGN_BEGIN
         #elif defined  (__TASKING__)    /* TASKING Compiler */
-            #define __ALIGN_BEGIN __align(4)
+            #define __ALIGN_BEGIN __align(4U)
         #endif                          /* __CC_ARM */
     #endif                              /* __GNUC__ */
 #else
     #define __ALIGN_BEGIN
-    #define __ALIGN_END   
+    #define __ALIGN_END
 #endif /* USB_HS_INTERNAL_DMA_ENABLED */
 
 /* __packed keyword used to decrease the data type alignment to 1-byte */
-#if defined   ( __GNUC__ )   /* GNU Compiler */
+#if defined (__GNUC__)       /* GNU Compiler */
     #ifndef __packed
-        #define __packed    __attribute__ ((__packed__))
+        #define __packed __unaligned
     #endif
-#elif defined   (__TASKING__)  /* TASKING Compiler */
-    #define __packed    __unaligned
-#endif /* __CC_ARM */
+#elif defined (__TASKING__)    /* TASKING Compiler */
+    #define __packed __unaligned
+#endif /* __GNUC__ */
 
-#endif /* __USB_CONF_H */
+#endif /* USB_CONF_H */

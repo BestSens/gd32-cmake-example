@@ -2,7 +2,7 @@
     \file    nor_flash_if.h
     \brief   USB DFU device nor flash interface header file
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,8 +32,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __NOR_FLASH_IF
-#define __NOR_FLASH_IF
+#ifndef NOR_FLASH_IF_H
+#define NOR_FLASH_IF_H
 
 #include "dfu_mem.h"
 
@@ -44,4 +44,4 @@ OF SUCH DAMAGE.
 
 extern dfu_mem_prop dfu_nor_flash_cb;
 
-#endif /* __NOR_FLASH_IF */
+#endif /* NOR_FLASH_IF_H */

@@ -2,7 +2,7 @@
     \file    main.c
     \brief   this file realizes the HID class (mouse and keyboard) host
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -33,7 +33,6 @@ OF SUCH DAMAGE.
 */
 
 #include "drv_usb_hw.h"
-#include "drv_usb_core.h"
 #include "usbh_usr.h"
 #include "usbh_hid_core.h"
 
@@ -70,7 +69,7 @@ int main(void)
     /* enable interrupts */
     usb_intr_config();
 
-    while (1) {
+    while(1) {
         /* Host state handler */
         usbh_core_task(&usb_host);
     }

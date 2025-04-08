@@ -2,7 +2,7 @@
     \file    gd32f4xx_enet_eval.c
     \brief   ethernet hardware configuration
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -109,10 +109,6 @@ static void enet_mac_dma_config(void)
         while(1) {}
     }
 
-    /* configure the parameters which are usually less cared for enet initialization */
-//  enet_initpara_config(HALFDUPLEX_OPTION, ENET_CARRIERSENSE_ENABLE|ENET_RECEIVEOWN_ENABLE|ENET_RETRYTRANSMISSION_DISABLE|ENET_BACKOFFLIMIT_10|ENET_DEFERRALCHECK_DISABLE);
-//  enet_initpara_config(DMA_OPTION, ENET_FLUSH_RXFRAME_ENABLE|ENET_SECONDFRAME_OPT_ENABLE|ENET_NORMAL_DESCRIPTOR);
-
 #ifdef CHECKSUM_BY_HARDWARE
     enet_init_status = enet_init(ENET_AUTO_NEGOTIATION, ENET_AUTOCHECKSUM_DROP_FAILFRAMES, ENET_BROADCAST_FRAMES_PASS);
 #else
@@ -130,8 +126,6 @@ static void enet_mac_dma_config(void)
 */
 static void nvic_configuration(void)
 {
-    nvic_vector_table_set(NVIC_VECTTAB_FLASH, 0x0);
-    nvic_priority_group_set(NVIC_PRIGROUP_PRE2_SUB2);
     nvic_irq_enable(ENET_IRQn, 0, 0);
 }
 #endif /* USE_ENET_INTERRUPT */

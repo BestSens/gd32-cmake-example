@@ -1,8 +1,8 @@
 /*!
     \file    main.c
-    \brief   USB main routine for MSC device(Udisk)
+    \brief   USB main routine for MSC device(CD-ROM)
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -37,8 +37,8 @@ OF SUCH DAMAGE.
 
 usb_core_driver msc_cdrom;
 
-extern const uint8_t Flash_Data[];
-  
+extern const uint8_t flash_data[];
+
 /*!
     \brief      main routine will construct a USB mass storage CDROM device
     \param[in]  none
@@ -64,10 +64,10 @@ int main(void)
 
     usb_intr_config();
 
-    flag = Flash_Data[0];
+    flag = flash_data[0];
 
     (void)flag;
 
-    while (1) {
+    while(1) {
     }
 }

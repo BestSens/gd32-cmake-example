@@ -2,7 +2,7 @@
     \file    drv_usb_regs.h
     \brief   USB cell registers definition and handle macros
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,8 +32,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __DRV_USB_REGS_H
-#define __DRV_USB_REGS_H
+#ifndef DRV_USB_REGS_H
+#define DRV_USB_REGS_H
 
 #include "usb_conf.h"
 
@@ -45,27 +45,26 @@ OF SUCH DAMAGE.
 #define USBFS_MAX_PACKET_SIZE         64U           /*!< USBFS max packet size */
 #define USBFS_MAX_CHANNEL_COUNT       8U            /*!< USBFS host channel count */
 #define USBFS_MAX_EP_COUNT            4U            /*!< USBFS device endpoint count */
-#define USBFS_MAX_FIFO_WORDLEN        320U          /*!< USBFS max fifo size in words */
+#define USBFS_MAX_FIFO_WORDLEN        320U          /*!< USBFS max FIFO size in words */
 
 #define USBHS_MAX_PACKET_SIZE         512U          /*!< USBHS max packet size */
 #define USBHS_MAX_CHANNEL_COUNT       12U           /*!< USBHS host channel count */
 #define USBHS_MAX_EP_COUNT            6U            /*!< USBHS device endpoint count */
-#define USBHS_MAX_FIFO_WORDLEN        1280U         /*!< USBHS max fifo size in words */
+#define USBHS_MAX_FIFO_WORDLEN        1280U         /*!< USBHS max FIFO size in words */
 
-#define USB_DATA_FIFO_OFFSET          0x1000U       /*!< USB data fifo offset */
-#define USB_DATA_FIFO_SIZE            0x1000U       /*!< USB data fifo size */
+#define USB_DATA_FIFO_OFFSET          0x1000U       /*!< USB data FIFO offset */
+#define USB_DATA_FIFO_SIZE            0x1000U       /*!< USB data FIFO size */
 
-typedef enum
-{
-    USB_CORE_ENUM_HS = 0,                           /*!< USB core type is HS */
-    USB_CORE_ENUM_FS = 1                            /*!< USB core type is FS */
+typedef enum {
+    USB_CORE_ENUM_HS = 0U,                          /*!< USB core type is HS */
+    USB_CORE_ENUM_FS = 1U                           /*!< USB core type is FS */
 } usb_core_enum;
 
 enum USB_SPEED {
-    USB_SPEED_UNKNOWN = 0,                          /*!< USB speed unknown */
+    USB_SPEED_UNKNOWN = 0U,                         /*!< USB speed unknown */
     USB_SPEED_LOW,                                  /*!< USB speed low */
     USB_SPEED_FULL,                                 /*!< USB speed full */
-    USB_SPEED_HIGH,                                 /*!< USB speed high */
+    USB_SPEED_HIGH                                  /*!< USB speed high */
 };
 
 enum usb_reg_offset {
@@ -78,11 +77,10 @@ enum usb_reg_offset {
     USB_REG_OFFSET_CH        = 0x0020U,
     USB_REG_OFFSET_PORT      = 0x0440U,             /*!< host port control and status register */
     USB_REG_OFFSET_CH_INOUT  = 0x0500U,             /*!< Host channel-x control registers */
-    USB_REG_OFFSET_PWRCLKCTL = 0x0E00U,             /*!< power and clock register */
+    USB_REG_OFFSET_PWRCLKCTL = 0x0E00U              /*!< power and clock register */
 };
 
-typedef struct
-{
+typedef struct {
     __IO uint32_t GOTGCS;                           /*!< USB global OTG control and status register       000h */
     __IO uint32_t GOTGINTF;                         /*!< USB global OTG interrupt flag register           004h */
     __IO uint32_t GAHBCS;                           /*!< USB global AHB control and status register       008h */
@@ -103,9 +101,7 @@ typedef struct
     __IO uint32_t DIEPTFLEN[15];                    /*!< USB device IN endpoint transmit FIFO length register 104h */
 } usb_gr;
 
-
-typedef struct
-{
+typedef struct {
     __IO uint32_t HCTL;                             /*!< USB host control register                             400h */
     __IO uint32_t HFT;                              /*!< USB host frame interval register                      404h */
     __IO uint32_t HFINFR;                           /*!< USB host frame information remaining register         408h */
@@ -115,8 +111,7 @@ typedef struct
     __IO uint32_t HACHINTEN;                        /*!< USB host all channels interrupt enable register       418h */
 } usb_hr;
 
-typedef struct
-{
+typedef struct {
     __IO uint32_t HCHCTL;                           /*!< USB host channel control register          500h */
     __IO uint32_t HCHSTCTL;                         /*!< Reserved                                   504h */
     __IO uint32_t HCHINTF;                          /*!< USB host channel interrupt flag register   508h */
@@ -126,8 +121,7 @@ typedef struct
     uint32_t Reserved[2];
 } usb_pr;
 
-typedef struct
-{
+typedef struct {
     __IO uint32_t DCFG;                             /*!< USB device configuration register                           800h */
     __IO uint32_t DCTL;                             /*!< USB device control register                                 804h */
     __IO uint32_t DSTAT;                            /*!< USB device status register                                  808h */
@@ -150,8 +144,7 @@ typedef struct
     __IO uint32_t DOEP1INTEN;                       /*!< USB device OUT endpoint-1 interrupt enable register         884h */
 } usb_dr;
 
-typedef struct
-{
+typedef struct {
     __IO uint32_t DIEPCTL;                          /*!< USB device IN endpoint control register         900h + (EpNum * 20h) + 00h */
     uint32_t Reserved04;                            /*!< Reserved                                        900h + (EpNum * 20h) + 04h */
     __IO uint32_t DIEPINTF;                         /*!< USB device IN endpoint interrupt flag register  900h + (EpNum * 20h) + 08h */
@@ -161,8 +154,7 @@ typedef struct
     __IO uint32_t DIEPTFSTAT;                       /*!< USB device IN endpoint transmit FIFO status register 900h + (EpNum * 20h) + 18h */
 } usb_erin;
 
-typedef struct
-{
+typedef struct {
     __IO uint32_t DOEPCTL;                          /*!< USB device IN endpoint control register         B00h + (EpNum * 20h) + 00h */
     uint32_t Reserved04;                            /*!< Reserved                                        B00h + (EpNum * 20h) + 04h */
     __IO uint32_t DOEPINTF;                         /*!< USB device IN endpoint interrupt flag register  B00h + (EpNum * 20h) + 08h */
@@ -171,8 +163,7 @@ typedef struct
     __IO uint32_t DOEPDMAADDR;                      /*!< Device OUT endpoint-x DMA address register      B00h + (EpNum * 20h) + 0Ch */
 } usb_erout;
 
-typedef struct _usb_regs
-{
+typedef struct _usb_regs {
     usb_gr       *gr;                               /*!< USBFS global registers */
     usb_dr       *dr;                               /*!< Device control and status registers */
     usb_hr       *hr;                               /*!< Host control and status registers */
@@ -206,8 +197,8 @@ typedef struct _usb_regs
 #define GOTGINTF_SESEND           BIT(2)              /*!< session end */
 
 /* global AHB control and status register bits definitions */
-#define GAHBCS_PTXFTH             BIT(8)              /*!< periodic Tx FIFO threshold */
-#define GAHBCS_TXFTH              BIT(7)              /*!< tx FIFO threshold */
+#define GAHBCS_PTXFTH             BIT(8)              /*!< periodic TX FIFO threshold */
+#define GAHBCS_TXFTH              BIT(7)              /*!< TX FIFO threshold */
 #define GAHBCS_DMAEN              BIT(5)              /*!< DMA function Enable */
 #define GAHBCS_BURST              BITS(1, 4)          /*!< the AHB burst type used by DMA */
 #define GAHBCS_GINTEN             BIT(0)              /*!< global interrupt enable */
@@ -282,7 +273,7 @@ typedef struct _usb_regs
 #define GINTEN_ESPIE              BIT(10)             /*!< early suspend interrupt enable */
 #define GINTEN_GONAKIE            BIT(7)              /*!< global OUT NAK effective interrupt enable */
 #define GINTEN_GNPINAKIE          BIT(6)              /*!< global non-periodic IN NAK effective interrupt enable */
-#define GINTEN_NPTXFEIE           BIT(5)              /*!< non-periodic Tx FIFO empty interrupt enable */
+#define GINTEN_NPTXFEIE           BIT(5)              /*!< non-periodic TX FIFO empty interrupt enable */
 #define GINTEN_RXFNEIE            BIT(4)              /*!< receive FIFO non-empty interrupt enable */
 #define GINTEN_SOFIE              BIT(3)              /*!< start of frame interrupt enable */
 #define GINTEN_OTGIE              BIT(2)              /*!< OTG interrupt enable */
@@ -299,17 +290,17 @@ typedef struct _usb_regs
 #define GRFLEN_RXFD               BITS(0, 15)         /*!< rx FIFO depth */
 
 /* host non-periodic transmit FIFO length register bits definitions */
-#define HNPTFLEN_HNPTXFD          BITS(16, 31)        /*!< non-periodic Tx FIFO depth */
-#define HNPTFLEN_HNPTXRSAR        BITS(0, 15)         /*!< non-periodic Tx RAM start address */
+#define HNPTFLEN_HNPTXFD          BITS(16, 31)        /*!< non-periodic TX FIFO depth */
+#define HNPTFLEN_HNPTXRSAR        BITS(0, 15)         /*!< non-periodic TX RAM start address */
 
 /* USB IN endpoint 0 transmit FIFO length register bits definitions */
-#define DIEP0TFLEN_IEP0TXFD       BITS(16, 31)        /*!< IN Endpoint 0 Tx FIFO depth */
+#define DIEP0TFLEN_IEP0TXFD       BITS(16, 31)        /*!< IN Endpoint 0 TX FIFO depth */
 #define DIEP0TFLEN_IEP0TXRSAR     BITS(0, 15)         /*!< IN Endpoint 0 TX RAM start address */
 
 /* host non-periodic transmit FIFO/queue status register bits definitions */
-#define HNPTFQSTAT_NPTXRQTOP      BITS(24, 30)        /*!< top entry of the non-periodic Tx request queue */
-#define HNPTFQSTAT_NPTXRQS        BITS(16, 23)        /*!< non-periodic Tx request queue space */
-#define HNPTFQSTAT_NPTXFS         BITS(0, 15)         /*!< non-periodic Tx FIFO space */
+#define HNPTFQSTAT_NPTXRQTOP      BITS(24, 30)        /*!< top entry of the non-periodic TX request queue */
+#define HNPTFQSTAT_NPTXRQS        BITS(16, 23)        /*!< non-periodic TX request queue space */
+#define HNPTFQSTAT_NPTXFS         BITS(0, 15)         /*!< non-periodic TX FIFO space */
 #define HNPTFQSTAT_CNUM           BITS(27, 30)        /*!< channel number*/
 #define HNPTFQSTAT_EPNUM          BITS(27, 30)        /*!< endpoint number */
 #define HNPTFQSTAT_TYPE           BITS(25, 26)        /*!< token type */
@@ -326,12 +317,12 @@ typedef struct _usb_regs
 #define CID_CID                   BITS(0, 31)         /*!< core ID */
 
 /* host periodic transmit FIFO length register bits definitions */
-#define HPTFLEN_HPTXFD            BITS(16, 31)        /*!< host periodic Tx FIFO depth */
-#define HPTFLEN_HPTXFSAR          BITS(0, 15)         /*!< host periodic Tx RAM start address */
+#define HPTFLEN_HPTXFD            BITS(16, 31)        /*!< host periodic TX FIFO depth */
+#define HPTFLEN_HPTXFSAR          BITS(0, 15)         /*!< host periodic TX RAM start address */
 
 /* device IN endpoint transmit FIFO length register bits definitions */
-#define DIEPTFLEN_IEPTXFD         BITS(16, 31)        /*!< IN endpoint Tx FIFO x depth */
-#define DIEPTFLEN_IEPTXRSAR       BITS(0, 15)         /*!< IN endpoint FIFOx Tx x RAM start address */
+#define DIEPTFLEN_IEPTXFD         BITS(16, 31)        /*!< IN endpoint TX FIFO x depth */
+#define DIEPTFLEN_IEPTXRSAR       BITS(0, 15)         /*!< IN endpoint FIFOx TX x RAM start address */
 
 /* host control register bits definitions */
 #define HCTL_SPDFSLS              BIT(2)              /*!< speed limited to FS and LS */
@@ -345,9 +336,9 @@ typedef struct _usb_regs
 #define HFINFR_FRNUM              BITS(0, 15)         /*!< frame number */
 
 /* host periodic transmit FIFO/queue status register bits definitions */
-#define HPTFQSTAT_PTXREQT         BITS(24, 31)        /*!< top entry of the periodic Tx request queue */
-#define HPTFQSTAT_PTXREQS         BITS(16, 23)        /*!< periodic Tx request queue space */
-#define HPTFQSTAT_PTXFS           BITS(0, 15)         /*!< periodic Tx FIFO space */
+#define HPTFQSTAT_PTXREQT         BITS(24, 31)        /*!< top entry of the periodic TX request queue */
+#define HPTFQSTAT_PTXREQS         BITS(16, 23)        /*!< periodic TX request queue space */
+#define HPTFQSTAT_PTXFS           BITS(0, 15)         /*!< periodic TX FIFO space */
 #define HPTFQSTAT_OEFRM           BIT(31)             /*!< odd/eveb frame */
 #define HPTFQSTAT_CNUM            BITS(27, 30)        /*!< channel number */
 #define HPTFQSTAT_EPNUM           BITS(27, 30)        /*!< endpoint number */
@@ -445,10 +436,10 @@ typedef struct _usb_regs
 #define PIPE_XFER_PCNT(x)         (((uint32_t)(x) << 19) & HCHLEN_PCNT)     /*!< packet count */
 #define PIPE_XFER_DPID(x)         (((uint32_t)(x) << 29) & HCHLEN_DPID)     /*!< data PID */
 
-#define PIPE_DPID_DATA0           PIPE_XFER_DPID(0)                         /*!< DATA0 */
-#define PIPE_DPID_DATA1           PIPE_XFER_DPID(2)                         /*!< DATA1 */
-#define PIPE_DPID_DATA2           PIPE_XFER_DPID(1)                         /*!< DATA2 */
-#define PIPE_DPID_SETUP           PIPE_XFER_DPID(3)                         /*!< MDATA (non-control)/SETUP (control) */
+#define PIPE_DPID_DATA0           PIPE_XFER_DPID(0U)                        /*!< DATA0 */
+#define PIPE_DPID_DATA1           PIPE_XFER_DPID(2U)                        /*!< DATA1 */
+#define PIPE_DPID_DATA2           PIPE_XFER_DPID(1U)                        /*!< DATA2 */
+#define PIPE_DPID_SETUP           PIPE_XFER_DPID(3U)                        /*!< MDATA (non-control)/SETUP (control) */
 
 extern const uint32_t PIPE_DPID[2];
 
@@ -475,10 +466,10 @@ extern const uint32_t PIPE_DPID[2];
 #define DSTAT_SPST                BIT(0)              /*!< suspend status */
 
 /* device IN endpoint common interrupt enable registers bits definitions */
-#define DIEPINTEN_NAKEN           BIT(13)             /*!< NAK handshake sent by USBHS interrupt enable bit */
+#define DIEPINTEN_NAKEN           BIT(13)             /*!< NAK handshake sent by USB interrupt enable bit */
 #define DIEPINTEN_TXFEEN          BIT(7)              /*!< transmit FIFO empty interrupt enable bit */
 #define DIEPINTEN_IEPNEEN         BIT(6)              /*!< IN endpoint NAK effective interrupt enable bit */
-#define DIEPINTEN_EPTXFUDEN       BIT(4)              /*!< endpoint Tx FIFO underrun interrupt enable bit */
+#define DIEPINTEN_EPTXFUDEN       BIT(4)              /*!< endpoint TX FIFO underrun interrupt enable bit */
 #define DIEPINTEN_CITOEN          BIT(3)              /*!< control In Timeout interrupt enable bit */
 #define DIEPINTEN_EPDISEN         BIT(1)              /*!< endpoint disabled interrupt enable bit */
 #define DIEPINTEN_TFEN            BIT(0)              /*!< transfer finished interrupt enable bit */
@@ -486,7 +477,7 @@ extern const uint32_t PIPE_DPID[2];
 /* device OUT endpoint common interrupt enable registers bits definitions */
 #define DOEPINTEN_NYETEN          BIT(14)             /*!< NYET handshake is sent interrupt enable bit */
 #define DOEPINTEN_BTBSTPEN        BIT(6)              /*!< back-to-back SETUP packets interrupt enable bit */
-#define DOEPINTEN_EPRXFOVREN      BIT(4)              /*!< endpoint Rx FIFO overrun interrupt enable bit */
+#define DOEPINTEN_EPRXFOVREN      BIT(4)              /*!< endpoint RX FIFO overrun interrupt enable bit */
 #define DOEPINTEN_STPFEN          BIT(3)              /*!< SETUP phase finished interrupt enable bit */
 #define DOEPINTEN_EPDISEN         BIT(1)              /*!< endpoint disabled interrupt enable bit */
 #define DOEPINTEN_TFEN            BIT(0)              /*!< transfer finished interrupt enable bit */
@@ -506,7 +497,7 @@ extern const uint32_t PIPE_DPID[2];
 #define DVBUSPT_DVBUSPT           BITS(0, 11)         /*!< device VBUS pulsing time */
 
 /* device IN endpoint FIFO empty interrupt enable register bits definitions */
-#define DIEPFEINTEN_IEPTXFEIE     BITS(0, 5)          /*!< IN endpoint Tx FIFO empty interrupt enable bits */
+#define DIEPFEINTEN_IEPTXFEIE     BITS(0, 5)          /*!< IN endpoint TX FIFO empty interrupt enable bits */
 
 /* device endpoint 0 control register bits definitions */
 #define DEP0CTL_EPEN              BIT(31)             /*!< endpoint enable */
@@ -541,10 +532,10 @@ extern const uint32_t PIPE_DPID[2];
 #define DEPCTL_MPL                BITS(0, 10)         /*!< maximum packet length */
 
 /* device IN endpoint-x interrupt flag register bits definitions */
-#define DIEPINTF_NAK              BIT(13)             /*!< NAK handshake sent by USBHS */
+#define DIEPINTF_NAK              BIT(13)             /*!< NAK handshake sent by USB */
 #define DIEPINTF_TXFE             BIT(7)              /*!< transmit FIFO empty */
 #define DIEPINTF_IEPNE            BIT(6)              /*!< IN endpoint NAK effective */
-#define DIEPINTF_EPTXFUD          BIT(4)              /*!< endpoint Tx FIFO underrun */
+#define DIEPINTF_EPTXFUD          BIT(4)              /*!< endpoint TX FIFO underrun */
 #define DIEPINTF_CITO             BIT(3)              /*!< control In Timeout interrupt */
 #define DIEPINTF_EPDIS            BIT(1)              /*!< endpoint disabled */
 #define DIEPINTF_TF               BIT(0)              /*!< transfer finished */
@@ -552,7 +543,7 @@ extern const uint32_t PIPE_DPID[2];
 /* device OUT endpoint-x interrupt flag register bits definitions */
 #define DOEPINTF_NYET             BIT(14)             /*!< NYET handshake is sent */
 #define DOEPINTF_BTBSTP           BIT(6)              /*!< back-to-back SETUP packets */
-#define DOEPINTF_EPRXFOVR         BIT(4)              /*!< endpoint Rx FIFO overrun */
+#define DOEPINTF_EPRXFOVR         BIT(4)              /*!< endpoint RX FIFO overrun */
 #define DOEPINTF_STPF             BIT(3)              /*!< SETUP phase finished */
 #define DOEPINTF_EPDIS            BIT(1)              /*!< endpoint disabled */
 #define DOEPINTF_TF               BIT(0)              /*!< transfer finished */
@@ -580,27 +571,27 @@ extern const uint32_t PIPE_DPID[2];
 #define DOEPDMAADDR_DMAADDR       BITS(0, 31)         /*!< DMA address */
 
 /* device IN endpoint-x transmit FIFO status register bits definitions */
-#define DIEPTFSTAT_IEPTFS         BITS(0, 15)         /*!< IN endpoint Tx FIFO space remaining */
+#define DIEPTFSTAT_IEPTFS         BITS(0, 15)         /*!< IN endpoint TX FIFO space remaining */
 
 /* USB power and clock registers bits definition */
 #define PWRCLKCTL_SHCLK           BIT(1)              /*!< stop HCLK */
 #define PWRCLKCTL_SUCLK           BIT(0)              /*!< stop the USB clock */
 
-#define RSTAT_GOUT_NAK                  1U    /* global OUT NAK (triggers an interrupt) */
-#define RSTAT_DATA_UPDT                 2U    /* OUT data packet received */
-#define RSTAT_XFER_COMP                 3U    /* OUT transfer completed (triggers an interrupt) */
-#define RSTAT_SETUP_COMP                4U    /* SETUP transaction completed (triggers an interrupt) */
-#define RSTAT_SETUP_UPDT                6U    /* SETUP data packet received */
+#define RSTAT_GOUT_NAK                  1U            /*!< global OUT NAK (triggers an interrupt) */
+#define RSTAT_DATA_UPDT                 2U            /*!< OUT data packet received */
+#define RSTAT_XFER_COMP                 3U            /*!< OUT transfer completed (triggers an interrupt) */
+#define RSTAT_SETUP_COMP                4U            /*!< SETUP transaction completed (triggers an interrupt) */
+#define RSTAT_SETUP_UPDT                6U            /*!< SETUP data packet received */
 
-#define DSTAT_EM_HS_PHY_30MHZ_60MHZ     0U    /* USB enumerate speed use high-speed PHY clock in 30MHz or 60MHz */
-#define DSTAT_EM_FS_PHY_30MHZ_60MHZ     1U    /* USB enumerate speed use full-speed PHY clock in 30MHz or 60MHz */
-#define DSTAT_EM_LS_PHY_6MHZ            2U    /* USB enumerate speed use low-speed PHY clock in 6MHz */
-#define DSTAT_EM_FS_PHY_48MHZ           3U    /* USB enumerate speed use full-speed PHY clock in 48MHz */
+#define DSTAT_EM_HS_PHY_30MHZ_60MHZ     0U            /*!< USB enumerate speed use high-speed PHY clock in 30MHz or 60MHz */
+#define DSTAT_EM_FS_PHY_30MHZ_60MHZ     1U            /*!< USB enumerate speed use full-speed PHY clock in 30MHz or 60MHz */
+#define DSTAT_EM_LS_PHY_6MHZ            2U            /*!< USB enumerate speed use low-speed PHY clock in 6MHz */
+#define DSTAT_EM_FS_PHY_48MHZ           3U            /*!< USB enumerate speed use full-speed PHY clock in 48MHz */
 
-#define DPID_DATA0                      0U    /* device endpoint data PID is DATA0 */
-#define DPID_DATA1                      2U    /* device endpoint data PID is DATA1 */
-#define DPID_DATA2                      1U    /* device endpoint data PID is DATA2 */
-#define DPID_MDATA                      3U    /* device endpoint data PID is MDATA */
+#define DPID_DATA0                      0U            /*!< device endpoint data PID is DATA0 */
+#define DPID_DATA1                      2U            /*!< device endpoint data PID is DATA1 */
+#define DPID_DATA2                      1U            /*!< device endpoint data PID is DATA2 */
+#define DPID_MDATA                      3U            /*!< device endpoint data PID is MDATA */
 
 #define GAHBCS_DMAINCR(regval)    (GAHBCS_BURST & ((regval) << 1)) /*!< AHB burst type used by DMA*/
 
@@ -630,33 +621,33 @@ extern const uint32_t PIPE_DPID[2];
 #define EP0MPL_16                 DEP0_MPL(2U)                      /*!< maximum packet length 16 bytes */
 #define EP0MPL_8                  DEP0_MPL(3U)                      /*!< maximum packet length 8 bytes */
 
-#define DOEP0_TLEN(regval)        (DOEP0LEN_TLEN & ((regval) << 0))     /*!< transfer length */
-#define DOEP0_PCNT(regval)        (DOEP0LEN_PCNT & ((regval) << 19))    /*!< packet count */
-#define DOEP0_STPCNT(regval)      (DOEP0LEN_STPCNT & ((regval) << 29))  /*!< SETUP packet count */
+#define DOEP0_TLEN(regval)        (DOEP0LEN_TLEN & ((regval) << 0))      /*!< transfer length */
+#define DOEP0_PCNT(regval)        (DOEP0LEN_PCNT & ((regval) << 19))     /*!< packet count */
+#define DOEP0_STPCNT(regval)      (DOEP0LEN_STPCNT & ((regval) << 29))   /*!< SETUP packet count */
 
-#define USB_ULPI_PHY                            1U                      /*!< ULPI interface external PHY */
-#define USB_EMBEDDED_PHY                        2U                      /*!< embedded PHY */
+#define USB_ULPI_PHY                            1U                       /*!< ULPI interface external PHY */
+#define USB_EMBEDDED_PHY                        2U                       /*!< embedded PHY */
 
 #define GRXSTS_PKTSTS_IN                        2U
 #define GRXSTS_PKTSTS_IN_XFER_COMP              3U
 #define GRXSTS_PKTSTS_DATA_TOGGLE_ERR           5U
 #define GRXSTS_PKTSTS_CH_HALTED                 7U
 
-#define HCTL_30_60MHZ                           0U                      /*!< USB clock 30-60MHZ */
-#define HCTL_48MHZ                              1U                      /*!< USB clock 48MHZ */
-#define HCTL_6MHZ                               2U                      /*!< USB clock 6MHZ */
+#define HCTL_30_60MHZ                           0U                       /*!< USB clock 30-60MHZ */
+#define HCTL_48MHZ                              1U                       /*!< USB clock 48MHZ */
+#define HCTL_6MHZ                               2U                       /*!< USB clock 6MHZ */
 
-#define EP0_OUT                   ((uint8_t)0x00)                       /*!< endpoint out 0 */
-#define EP0_IN                    ((uint8_t)0x80)                       /*!< endpoint in 0 */
-#define EP1_OUT                   ((uint8_t)0x01)                       /*!< endpoint out 1 */
-#define EP1_IN                    ((uint8_t)0x81)                       /*!< endpoint in 1 */
-#define EP2_OUT                   ((uint8_t)0x02)                       /*!< endpoint out 2 */
-#define EP2_IN                    ((uint8_t)0x82)                       /*!< endpoint in 2 */
-#define EP3_OUT                   ((uint8_t)0x03)                       /*!< endpoint out 3 */
-#define EP3_IN                    ((uint8_t)0x83)                       /*!< endpoint in 3 */
-#define EP4_OUT                   ((uint8_t)0x04)                       /*!< endpoint out 4 */
-#define EP4_IN                    ((uint8_t)0x84)                       /*!< endpoint in 4 */
-#define EP5_OUT                   ((uint8_t)0x05)                       /*!< endpoint out 5 */
-#define EP5_IN                    ((uint8_t)0x85)                       /*!< endpoint in 5 */
+#define EP0_OUT                   ((uint8_t)0x00U)                       /*!< endpoint OUT 0 */
+#define EP0_IN                    ((uint8_t)0x80U)                       /*!< endpoint IN 0 */
+#define EP1_OUT                   ((uint8_t)0x01U)                       /*!< endpoint OUT 1 */
+#define EP1_IN                    ((uint8_t)0x81U)                       /*!< endpoint IN 1 */
+#define EP2_OUT                   ((uint8_t)0x02U)                       /*!< endpoint OUT 2 */
+#define EP2_IN                    ((uint8_t)0x82U)                       /*!< endpoint IN 2 */
+#define EP3_OUT                   ((uint8_t)0x03U)                       /*!< endpoint OUT 3 */
+#define EP3_IN                    ((uint8_t)0x83U)                       /*!< endpoint IN 3 */
+#define EP4_OUT                   ((uint8_t)0x04U)                       /*!< endpoint OUT 4 */
+#define EP4_IN                    ((uint8_t)0x84U)                       /*!< endpoint IN 4 */
+#define EP5_OUT                   ((uint8_t)0x05U)                       /*!< endpoint OUT 5 */
+#define EP5_IN                    ((uint8_t)0x85U)                       /*!< endpoint IN 5 */
 
-#endif /* __DRV_USB_REGS_H */
+#endif /* DRV_USB_REGS_H */

@@ -2,7 +2,7 @@
     \file    flash_msd.h
     \brief   the header file of flash_msd.c
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,13 +32,13 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __FLASH_MSD_H
-#define __FLASH_MSD_H
+#ifndef FLASH_MSD_H
+#define FLASH_MSD_H
 
 #include "usbd_conf.h"
 
-#define FLASH_BASE_ADDR          ((uint32_t)(0x08000000 + 0x04000))
-#define FLASH_END_ADDR           ((uint32_t)(0x08000000 + 0x40000))
+#define FLASH_BASE_ADDR          ((uint32_t)(0x08000000U + 0x04000U))
+#define FLASH_END_ADDR           ((uint32_t)(0x08000000U + 0x40000U))
 
 #define BLOCK_SIZE               (uint32_t)512U
 #define BLOCK_NUM                (uint32_t)((FLASH_END_ADDR - FLASH_BASE_ADDR) / BLOCK_SIZE)
@@ -47,14 +47,14 @@ OF SUCH DAMAGE.
 /* initialize flash */
 uint32_t flash_init (void);
 /* read data from multiple blocks of flash */
-uint32_t flash_read_multi_blocks  (uint8_t* buf,
-                                   uint32_t read_addr,
-                                   uint16_t blk_size,
-                                   uint32_t blk_num);
+uint32_t flash_read_multi_blocks(uint8_t* buf, \
+                                 uint32_t read_addr, \
+                                 uint16_t blk_size, \
+                                 uint32_t blk_num);
 /* write data to multiple blocks of flash */
-uint32_t flash_write_multi_blocks (uint8_t* buf,
-                                   uint32_t write_addr,
-                                   uint16_t blk_size,
-                                   uint32_t blk_num);
+uint32_t flash_write_multi_blocks(uint8_t* buf, \
+                                  uint32_t write_addr, \
+                                  uint16_t blk_size, \
+                                  uint32_t blk_num);
 
-#endif /* __FLASH_MSD_H */
+#endif /* FLASH_MSD_H */

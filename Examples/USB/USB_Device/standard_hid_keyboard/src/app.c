@@ -2,7 +2,7 @@
     \file    main.c
     \brief   USB main routine for HID device(USB keyboard)
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -51,9 +51,9 @@ int main(void)
     usb_rcu_config();
     usb_timer_init();
 
-    hid_itfop_register (&hid_keyboard, &fop_handler);
+    hid_itfop_register(&hid_keyboard, &fop_handler);
 
-    usbd_init (&hid_keyboard,
+    usbd_init(&hid_keyboard,
 #ifdef USE_USB_FS
               USB_CORE_ENUM_FS,
 #elif defined(USE_USB_HS)
@@ -65,10 +65,10 @@ int main(void)
     usb_intr_config();
 
     /* check if USB device is enumerated successfully */
-    while (USBD_CONFIGURED != hid_keyboard.dev.cur_status) {
+    while(USBD_CONFIGURED != hid_keyboard.dev.cur_status) {
     }
 
-    while (1) {
+    while(1) {
         fop_handler.hid_itf_data_process(&hid_keyboard);
     }
 }

@@ -2,7 +2,7 @@
     \file    hid_keyboard_itf.c
     \brief   standard HID keyboard interface driver
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -35,8 +35,7 @@ OF SUCH DAMAGE.
 #include "standard_hid_core.h"
 #include "drv_usb_hw.h"
 
-typedef enum
-{
+typedef enum {
     CHAR_A = 1,
     CHAR_B,
     CHAR_C
@@ -58,7 +57,7 @@ hid_fop_handler fop_handler = {
     \param[out] none
     \retval     none
 */
-static void key_config (void)
+static void key_config(void)
 {
     /* configure the wakeup key in EXTI mode to remote wakeup */
     gd_eval_key_init(KEY_WAKEUP, KEY_MODE_EXTI);
@@ -74,31 +73,31 @@ static void key_config (void)
     \param[out] none
     \retval     the char
 */
-static uint8_t key_state (void)
+static uint8_t key_state(void)
 {
     /* have pressed tamper key */
-    if (!gd_eval_key_state_get(KEY_TAMPER)) {
+    if(!gd_eval_key_state_get(KEY_TAMPER)) {
         usb_mdelay(50U);
 
-        if (!gd_eval_key_state_get(KEY_TAMPER)) {
+        if(!gd_eval_key_state_get(KEY_TAMPER)) {
             return CHAR_A;
         }
     }
 
     /* have pressed wakeup key */
-    if (!gd_eval_key_state_get(KEY_WAKEUP)) {
+    if(!gd_eval_key_state_get(KEY_WAKEUP)) {
         usb_mdelay(50U);
-        
-        if (!gd_eval_key_state_get(KEY_WAKEUP)) {
+
+        if(!gd_eval_key_state_get(KEY_WAKEUP)) {
             return CHAR_B;
         }
     }
 
     /* have pressed user key */
-    if (!gd_eval_key_state_get(KEY_USER)) {
+    if(!gd_eval_key_state_get(KEY_USER)) {
         usb_mdelay(50U);
 
-        if (!gd_eval_key_state_get(KEY_USER)) {
+        if(!gd_eval_key_state_get(KEY_USER)) {
             return CHAR_C;
         }
     }
@@ -117,8 +116,8 @@ static void hid_key_data_send(usb_dev *udev)
 {
     standard_hid_handler *hid = (standard_hid_handler *)udev->dev.class_data[USBD_HID_INTERFACE];
 
-    if (hid->prev_transfer_complete) {
-        switch (key_state()) {
+    if(hid->prev_transfer_complete) {
+        switch(key_state()) {
         case CHAR_A:
             hid->data[2] = 0x04U;
             break;
@@ -132,7 +131,7 @@ static void hid_key_data_send(usb_dev *udev)
             break;
         }
 
-        if (0U != hid->data[2]) {
+        if(0U != hid->data[2]) {
             hid_report_send(udev, hid->data, HID_IN_PACKET);
         }
     }

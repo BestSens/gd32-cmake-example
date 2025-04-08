@@ -2,7 +2,7 @@
     \file    usbd_conf.h
     \brief   the header file of USB device configuration
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,41 +32,42 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __USBD_CONF_H
-#define __USBD_CONF_H
+#ifndef USBD_CONF_H
+#define USBD_CONF_H
 
 #include "usb_conf.h"
 
-#define USBD_CFG_MAX_NUM                    1
-#define USBD_ITF_MAX_NUM                    1
+/* USB configure exported defines */
+#define USBD_CFG_MAX_NUM                    1U
+#define USBD_ITF_MAX_NUM                    1U
 
-#define CDC_COM_INTERFACE                   0
+#define CDC_COM_INTERFACE                   0U
 
-#define USB_STR_DESC_MAX_SIZE               255
+#define USB_STR_DESC_MAX_SIZE               255U
 
 #define CDC_DATA_IN_EP                      EP1_IN  /* EP1 for data IN */
 #define CDC_DATA_OUT_EP                     EP3_OUT /* EP3 for data OUT */
 #define CDC_CMD_EP                          EP2_IN  /* EP2 for CDC commands */
 
-#define USB_STRING_COUNT                    4
+#define USB_STRING_COUNT                    4U
 
-#define USB_CDC_CMD_PACKET_SIZE             8    /* Control Endpoint Packet size */
+#define USB_CDC_CMD_PACKET_SIZE             8U    /* Control Endpoint Packet size */
 
-#define APP_RX_DATA_SIZE                    2048 /* Total size of IN buffer: 
+#define APP_RX_DATA_SIZE                    2048U /* Total size of IN buffer: 
                                                     APP_RX_DATA_SIZE*8 / MAX_BAUDARATE * 1000 should be > CDC_IN_FRAME_INTERVAL*8 */
 
 /* CDC endpoints parameters: you can fine tune these values depending on the needed baud rate and performance */
 #ifdef USE_USB_HS
     #ifdef USE_ULPI_PHY
-        #define USB_CDC_DATA_PACKET_SIZE        512  /* Endpoint IN & OUT Packet size */
-        #define CDC_IN_FRAME_INTERVAL           40   /* Number of micro-frames between IN transfers */
+        #define USB_CDC_DATA_PACKET_SIZE        512U  /* Endpoint IN & OUT Packet size */
+        #define CDC_IN_FRAME_INTERVAL           40U   /* Number of micro-frames between IN transfers */
     #else
-        #define USB_CDC_DATA_PACKET_SIZE        64   /* Endpoint IN & OUT Packet size */
-        #define CDC_IN_FRAME_INTERVAL           5    /* Number of frames between IN transfers */
+        #define USB_CDC_DATA_PACKET_SIZE        64U   /* Endpoint IN & OUT Packet size */
+        #define CDC_IN_FRAME_INTERVAL           5U    /* Number of frames between IN transfers */
     #endif
 #else
-    #define USB_CDC_DATA_PACKET_SIZE            64   /* Endpoint IN & OUT Packet size */
-    #define CDC_IN_FRAME_INTERVAL               5    /* Number of frames between IN transfers */
+    #define USB_CDC_DATA_PACKET_SIZE            64U   /* Endpoint IN & OUT Packet size */
+    #define CDC_IN_FRAME_INTERVAL               5U    /* Number of frames between IN transfers */
 #endif /* USE_USB_HS */
 
-#endif /* __USBD_CONF_H */
+#endif /* USBD_CONF_H */

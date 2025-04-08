@@ -2,7 +2,7 @@
     \file    gd32f4xx_it.c
     \brief   main interrupt service routines
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -33,13 +33,12 @@ OF SUCH DAMAGE.
 */
 
 #include "drv_usbh_int.h"
-#include "usbh_core.h"
 #include "gd32f4xx_it.h"
 
 extern usbh_host usb_host_msc;
 extern usb_core_driver usbh_core;
 
-void usb_timer_irq (void);
+extern void usb_timer_irq(void);
 
 /* local function prototypes ('static') */
 static void resume_mcu_clk(void);
@@ -149,7 +148,7 @@ void PendSV_Handler(void)
 }
 
 /*!
-    \brief      this function handles Timer2 interrupt Handler
+    \brief      this function handles Timer2 interrupt request
     \param[in]  none
     \param[out] none
     \retval     none
@@ -162,15 +161,15 @@ void TIMER2_IRQHandler(void)
 #ifdef USE_USB_FS
 
 /*!
-    \brief      this function handles USBFS wakeup interrupt Handler
+    \brief      this function handles USBFS wakeup interrupt request
     \param[in]  none
     \param[out] none
     \retval     none
 */
 void USBFS_WKUP_IRQHandler(void)
 {
-    if (usb_host_msc.suspend_flag == 1) {
-        usb_host_msc.suspend_flag = 0;
+    if(1U == usb_host_msc.suspend_flag) {
+        usb_host_msc.suspend_flag = 0U;
 
         /* configure system clock */
         resume_mcu_clk();
@@ -185,15 +184,15 @@ void USBFS_WKUP_IRQHandler(void)
 #elif defined(USE_USB_HS)
 
 /*!
-    \brief      this function handles USBHS wakeup interrupt Handler
+    \brief      this function handles USBHS wakeup interrupt request
     \param[in]  none
     \param[out] none
     \retval     none
 */
 void USBHS_WKUP_IRQHandler(void)
 {
-    if (usb_host_msc.suspend_flag == 1) {
-        usb_host_msc.suspend_flag = 0;
+    if(1U == usb_host_msc.suspend_flag) {
+        usb_host_msc.suspend_flag = 0U;
 
         /* configure system clock */
         resume_mcu_clk();
@@ -210,7 +209,7 @@ void USBHS_WKUP_IRQHandler(void)
 #ifdef USE_USB_FS
 
 /*!
-    \brief      this function handles USBFS interrupt Handler
+    \brief      this function handles USBFS global interrupt request
     \param[in]  none
     \param[out] none
     \retval     none
@@ -223,7 +222,7 @@ void USBFS_IRQHandler(void)
 #elif defined(USE_USB_HS)
 
 /*!
-    \brief      this function handles USBHS IRQ Handler
+    \brief      this function handles USBHS global interrupt request
     \param[in]  none
     \param[out] none
     \retval     none
@@ -247,20 +246,20 @@ static void resume_mcu_clk(void)
     rcu_osci_on(RCU_HXTAL);
 
     /* wait till HXTAL is ready */
-    while(RESET == rcu_flag_get(RCU_FLAG_HXTALSTB)){
+    while(RESET == rcu_flag_get(RCU_FLAG_HXTALSTB)) {
     }
 
     /* enable PLL */
     rcu_osci_on(RCU_PLL_CK);
 
     /* wait till PLL is ready */
-    while(RESET == rcu_flag_get(RCU_FLAG_PLLSTB)){
+    while(RESET == rcu_flag_get(RCU_FLAG_PLLSTB)) {
     }
 
     /* select PLL as system clock source */
     rcu_system_clock_source_config(RCU_CKSYSSRC_PLLP);
 
     /* wait till PLL is used as system clock source */
-    while(RCU_SCSS_PLLP != rcu_system_clock_source_get()){
+    while(RCU_SCSS_PLLP != rcu_system_clock_source_get()) {
     }
 }

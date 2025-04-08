@@ -2,7 +2,7 @@
     \file    usbd_transc.c
     \brief   USB transaction core functions
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -41,13 +41,13 @@ OF SUCH DAMAGE.
     \param[out] none
     \retval     USB device operation cur_status
 */
-usbd_status usbd_ctl_send (usb_core_driver *udev)
+usbd_status usbd_ctl_send(usb_core_driver *udev)
 {
     usb_transc *transc = &udev->dev.transc_in[0];
 
     (void)usbd_ep_send(udev, 0U, transc->xfer_buf, transc->remain_len);
 
-    if (transc->remain_len > transc->max_len) {
+    if(transc->remain_len > transc->max_len) {
         udev->dev.control.ctl_state = (uint8_t)USB_CTL_DATA_IN;
     } else {
         udev->dev.control.ctl_state = (uint8_t)USB_CTL_LAST_DATA_IN;
@@ -57,18 +57,18 @@ usbd_status usbd_ctl_send (usb_core_driver *udev)
 }
 
 /*!
-    \brief      USB receive data in control transaction
+    \brief      USB receive data in the control transaction
     \param[in]  udev: pointer to USB device instance
     \param[out] none
     \retval     USB device operation cur_status
 */
-usbd_status usbd_ctl_recev (usb_core_driver *udev)
+usbd_status usbd_ctl_recev(usb_core_driver *udev)
 {
     usb_transc *transc = &udev->dev.transc_out[0];
 
-    (void)usbd_ep_recev (udev, 0U, transc->xfer_buf, transc->remain_len);
+    (void)usbd_ep_recev(udev, 0U, transc->xfer_buf, transc->remain_len);
 
-    if (transc->remain_len > transc->max_len) {
+    if(transc->remain_len > transc->max_len) {
         udev->dev.control.ctl_state = (uint8_t)USB_CTL_DATA_OUT;
     } else {
         udev->dev.control.ctl_state = (uint8_t)USB_CTL_LAST_DATA_OUT;
@@ -83,11 +83,11 @@ usbd_status usbd_ctl_recev (usb_core_driver *udev)
     \param[out] none
     \retval     USB device operation cur_status
 */
-usbd_status  usbd_ctl_status_send (usb_core_driver *udev)
+usbd_status usbd_ctl_status_send(usb_core_driver *udev)
 {
     udev->dev.control.ctl_state = (uint8_t)USB_CTL_STATUS_IN;
 
-    (void)usbd_ep_send (udev, 0U, NULL, 0U);
+    (void)usbd_ep_send(udev, 0U, NULL, 0U);
 
     usb_ctlep_startout(udev);
 
@@ -100,11 +100,11 @@ usbd_status  usbd_ctl_status_send (usb_core_driver *udev)
     \param[out] none
     \retval     USB device operation cur_status
 */
-usbd_status usbd_ctl_status_recev (usb_core_driver *udev)
+usbd_status usbd_ctl_status_recev(usb_core_driver *udev)
 {
     udev->dev.control.ctl_state = (uint8_t)USB_CTL_STATUS_OUT;
 
-    (void)usbd_ep_recev (udev, 0U, NULL, 0U);
+    (void)usbd_ep_recev(udev, 0U, NULL, 0U);
 
     usb_ctlep_startout(udev);
 
@@ -112,95 +112,95 @@ usbd_status usbd_ctl_status_recev (usb_core_driver *udev)
 }
 
 /*!
-    \brief      USB setup stage processing
+    \brief      USB SETUP stage processing
     \param[in]  udev: pointer to USB device instance
     \param[out] none
     \retval     USB device operation cur_status
 */
-uint8_t usbd_setup_transc (usb_core_driver *udev)
+uint8_t usbd_setup_transc(usb_core_driver *udev)
 {
     usb_reqsta reqstat = REQ_NOTSUPP;
 
     usb_req req = udev->dev.control.req;
 
-    switch (req.bmRequestType & USB_REQTYPE_MASK) {
+    switch(req.bmRequestType & USB_REQTYPE_MASK) {
     /* standard device request */
     case USB_REQTYPE_STRD:
-        reqstat = usbd_standard_request (udev, &req);
+        reqstat = usbd_standard_request(udev, &req);
         break;
 
     /* device class request */
     case USB_REQTYPE_CLASS:
-        reqstat = usbd_class_request (udev, &req);
+        reqstat = usbd_class_request(udev, &req);
         break;
 
     /* vendor defined request */
     case USB_REQTYPE_VENDOR:
-        reqstat = usbd_vendor_request (udev, &req);
+        reqstat = usbd_vendor_request(udev, &req);
         break;
 
     default:
         break;
     }
 
-    if (REQ_SUPP == reqstat) {
-        if (0U == req.wLength) {
-            (void)usbd_ctl_status_send (udev);
+    if(REQ_SUPP == reqstat) {
+        if(0U == req.wLength) {
+            (void)usbd_ctl_status_send(udev);
         } else {
-            if (req.bmRequestType & 0x80U) {
-                (void)usbd_ctl_send (udev);
+            if(req.bmRequestType & 0x80U) {
+                (void)usbd_ctl_send(udev);
             } else {
-                (void)usbd_ctl_recev (udev);
+                (void)usbd_ctl_recev(udev);
             }
         }
     } else {
-        usbd_enum_error (udev, &req);
+        usbd_enum_error(udev, &req);
     }
 
     return (uint8_t)USBD_OK;
 }
 
 /*!
-    \brief      data out stage processing
+    \brief      data OUT stage processing
     \param[in]  udev: pointer to USB device instance
     \param[in]  ep_num: endpoint identifier(0..7)
     \param[out] none
     \retval     USB device operation cur_status
 */
-uint8_t usbd_out_transc (usb_core_driver *udev, uint8_t ep_num)
+uint8_t usbd_out_transc(usb_core_driver *udev, uint8_t ep_num)
 {
-    if (0U == ep_num) {
+    if(0U == ep_num) {
         usb_transc *transc = &udev->dev.transc_out[0];
 
-        switch (udev->dev.control.ctl_state) {
+        switch(udev->dev.control.ctl_state) {
         case USB_CTL_DATA_OUT:
             /* update transfer length */
             transc->remain_len -= transc->max_len;
 
-            if ((uint8_t)USB_USE_DMA == udev->bp.transfer_mode) {
+            if((uint8_t)USB_USE_DMA == udev->bp.transfer_mode) {
                 transc->xfer_buf += transc->max_len;
             }
 
-            (void)usbd_ctl_recev (udev);
+            (void)usbd_ctl_recev(udev);
             break;
 
         case USB_CTL_LAST_DATA_OUT:
-            if (udev->dev.cur_status == (uint8_t)USBD_CONFIGURED) {
-                if (udev->dev.class_core->ctlx_out != NULL) {
-                    (void)udev->dev.class_core->ctlx_out (udev);
+            if((uint8_t)USBD_CONFIGURED == udev->dev.cur_status) {
+                if(NULL != udev->dev.class_core->ctlx_out) {
+                    (void)udev->dev.class_core->ctlx_out(udev);
                 }
             }
 
             transc->remain_len = 0U;
 
-            (void)usbd_ctl_status_send (udev);
+            (void)usbd_ctl_status_send(udev);
             break;
 
         default:
             break;
         }
-    } else if ((udev->dev.class_core->data_out != NULL) && (udev->dev.cur_status == (uint8_t)USBD_CONFIGURED)) {
-        (void)udev->dev.class_core->data_out (udev, ep_num);
+    } else if((NULL != udev->dev.class_core->data_out) && ((uint8_t)USBD_CONFIGURED == udev->dev.cur_status)) {
+        (void)udev->dev.class_core->data_out(udev, ep_num);
     } else {
         /* no operation */
     }
@@ -209,45 +209,45 @@ uint8_t usbd_out_transc (usb_core_driver *udev, uint8_t ep_num)
 }
 
 /*!
-    \brief      data in stage processing
+    \brief      data IN stage processing
     \param[in]  udev: pointer to USB device instance
     \param[in]  ep_num: endpoint identifier(0..7)
     \param[out] none
     \retval     USB device operation cur_status
 */
-uint8_t usbd_in_transc (usb_core_driver *udev, uint8_t ep_num)
+uint8_t usbd_in_transc(usb_core_driver *udev, uint8_t ep_num)
 {
-    if (0U == ep_num) {
+    if(0U == ep_num) {
         usb_transc *transc = &udev->dev.transc_in[0];
 
-        switch (udev->dev.control.ctl_state) {
+        switch(udev->dev.control.ctl_state) {
         case USB_CTL_DATA_IN:
             /* update transfer length */
             transc->remain_len -= transc->max_len;
 
-            if ((uint8_t)USB_USE_DMA == udev->bp.transfer_mode) {
+            if((uint8_t)USB_USE_DMA == udev->bp.transfer_mode) {
                 transc->xfer_buf += transc->max_len;
             }
 
-            (void)usbd_ctl_send (udev);
+            (void)usbd_ctl_send(udev);
             break;
 
         case USB_CTL_LAST_DATA_IN:
             /* last packet is MPS multiple, so send ZLP packet */
-            if (udev->dev.control.ctl_zlp) {
-                (void)usbd_ep_send (udev, 0U, NULL, 0U);
+            if(udev->dev.control.ctl_zlp) {
+                (void)usbd_ep_send(udev, 0U, NULL, 0U);
 
                 udev->dev.control.ctl_zlp = 0U;
             } else {
-                if (udev->dev.cur_status == (uint8_t)USBD_CONFIGURED) {
-                    if (udev->dev.class_core->ctlx_in != NULL) {
-                        (void)udev->dev.class_core->ctlx_in (udev);
+                if((uint8_t)USBD_CONFIGURED == udev->dev.cur_status) {
+                    if(NULL != udev->dev.class_core->ctlx_in) {
+                        (void)udev->dev.class_core->ctlx_in(udev);
                     }
                 }
 
                 transc->remain_len = 0U;
 
-                (void)usbd_ctl_status_recev (udev);
+                (void)usbd_ctl_status_recev(udev);
             }
             break;
 
@@ -255,8 +255,8 @@ uint8_t usbd_in_transc (usb_core_driver *udev, uint8_t ep_num)
             break;
         }
     } else {
-        if ((udev->dev.cur_status == (uint8_t)USBD_CONFIGURED) && (udev->dev.class_core->data_in != NULL)) {
-            (void)udev->dev.class_core->data_in (udev, ep_num);
+        if(((uint8_t)USBD_CONFIGURED == udev->dev.cur_status) && (NULL != udev->dev.class_core->data_in)) {
+            (void)udev->dev.class_core->data_in(udev, ep_num);
         }
     }
 

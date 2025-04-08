@@ -2,7 +2,7 @@
     \file    gd25qxx.c
     \brief   SPI flash gd25qxx driver
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -33,26 +33,24 @@ OF SUCH DAMAGE.
 */
 
 #include "gd25qxx.h"
-#include "gd32f4xx.h"
-#include <string.h>
 
-#define WRITE            0x02     /* write to memory instruction */
-#define QUADWRITE        0x32     /* quad write to memory instruction */
-#define WRSR             0x01     /* write status register instruction */
-#define WREN             0x06     /* write enable instruction */
+#define WRITE            0x02U     /* write to memory instruction */
+#define QUADWRITE        0x32U     /* quad write to memory instruction */
+#define WRSR             0x01U     /* write status register instruction */
+#define WREN             0x06U     /* write enable instruction */
 
-#define READ             0x03     /* read from memory instruction */
-#define QUADREAD         0x6B     /* read from memory instruction */
-#define RDSR             0x05     /* read status register instruction */
-#define RDID             0x9F     /* read identification */
-#define SE               0x20     /* sector erase instruction */
-#define BE               0x52     /* block erase instruction */
-#define CE               0xC7     /* chip erase instruction */
+#define READ             0x03U     /* read from memory instruction */
+#define QUADREAD         0x6BU     /* read from memory instruction */
+#define RDSR             0x05U     /* read status register instruction */
+#define RDID             0x9FU     /* read identification */
+#define SE               0x20U     /* sector erase instruction */
+#define BE               0x52U     /* block erase instruction */
+#define CE               0xC7U     /* chip erase instruction */
 
-#define WTSR             0x05     /* write status register instruction */
+#define WTSR             0x05U     /* write status register instruction */
 
-#define WIP_FLAG         0x01     /* write in progress(wip) flag */
-#define DUMMY_BYTE       0xA5
+#define WIP_FLAG         0x01U     /* write in progress(wip) flag */
+#define DUMMY_BYTE       0xA5U
 
 /*!
     \brief      initialize SPI5 GPIO and parameter
@@ -69,9 +67,9 @@ void spi_flash_init(void)
     rcu_periph_clock_enable(RCU_SPI5);
 
     /* SPI5_CLK(PG13), SPI5_MISO(PG12), SPI5_MOSI(PG14),SPI5_IO2(PG10) and SPI5_IO3(PG11) GPIO pin configuration */
-    gpio_af_set(GPIOG, GPIO_AF_5, GPIO_PIN_10|GPIO_PIN_11| GPIO_PIN_12|GPIO_PIN_13| GPIO_PIN_14);
-    gpio_mode_set(GPIOG, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO_PIN_10|GPIO_PIN_11| GPIO_PIN_12|GPIO_PIN_13| GPIO_PIN_14);
-    gpio_output_options_set(GPIOG, GPIO_OTYPE_PP, GPIO_OSPEED_25MHZ, GPIO_PIN_10|GPIO_PIN_11| GPIO_PIN_12|GPIO_PIN_13| GPIO_PIN_14);
+    gpio_af_set(GPIOG, GPIO_AF_5, GPIO_PIN_10 | GPIO_PIN_11 | GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14);
+    gpio_mode_set(GPIOG, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO_PIN_10 | GPIO_PIN_11 | GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14);
+    gpio_output_options_set(GPIOG, GPIO_OTYPE_PP, GPIO_OSPEED_25MHZ, GPIO_PIN_10 | GPIO_PIN_11 | GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14);
 
     /* SPI5_CS(PI8) GPIO pin configuration */
     gpio_mode_set(GPIOI, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO_PIN_8);
@@ -186,7 +184,7 @@ void spi_flash_bulk_erase(void)
     \param[out] none
     \retval     none
 */
-void spi_flash_page_write(uint8_t* pbuffer, uint32_t write_addr, uint16_t num_byte_to_write)
+void spi_flash_page_write(uint8_t *pbuffer, uint32_t write_addr, uint16_t num_byte_to_write)
 {
     /* enable the write access to the flash */
     spi_flash_write_enable();
@@ -204,7 +202,7 @@ void spi_flash_page_write(uint8_t* pbuffer, uint32_t write_addr, uint16_t num_by
     spi_flash_send_byte(write_addr & 0xFFU);
 
     /* while there is data to be written on the flash */
-    while(num_byte_to_write--){
+    while(num_byte_to_write--) {
         /* send the current byte */
         spi_flash_send_byte(*pbuffer);
         /* point on the next byte to be written */
@@ -226,9 +224,9 @@ void spi_flash_page_write(uint8_t* pbuffer, uint32_t write_addr, uint16_t num_by
     \param[out] none
     \retval     none
 */
-void spi_flash_buffer_write(uint8_t* pbuffer, uint32_t write_addr, uint16_t num_byte_to_write)
+void spi_flash_buffer_write(uint8_t *pbuffer, uint32_t write_addr, uint16_t num_byte_to_write)
 {
-    uint8_t num_of_page = 0, num_of_single = 0, addr = 0, count = 0, temp = 0;
+    uint8_t num_of_page = 0U, num_of_single = 0U, addr = 0U, count = 0U, temp = 0U;
 
     addr          = write_addr % SPI_FLASH_PAGE_SIZE;
     count         = SPI_FLASH_PAGE_SIZE - addr;
@@ -236,50 +234,50 @@ void spi_flash_buffer_write(uint8_t* pbuffer, uint32_t write_addr, uint16_t num_
     num_of_single = num_byte_to_write % SPI_FLASH_PAGE_SIZE;
 
     /* write_addr is SPI_FLASH_PAGE_SIZE aligned */
-    if(0U == addr){
+    if(0U == addr) {
         /* num_byte_to_write < SPI_FLASH_PAGE_SIZE */
-        if(0U == num_of_page){
-            spi_flash_page_write(pbuffer,write_addr,num_byte_to_write);
-        }else{
+        if(0U == num_of_page) {
+            spi_flash_page_write(pbuffer, write_addr, num_byte_to_write);
+        } else {
             /* num_byte_to_write >= SPI_FLASH_PAGE_SIZE */
-            while(num_of_page--){
-                spi_flash_page_write(pbuffer,write_addr,SPI_FLASH_PAGE_SIZE);
+            while(num_of_page--) {
+                spi_flash_page_write(pbuffer, write_addr, SPI_FLASH_PAGE_SIZE);
                 write_addr += SPI_FLASH_PAGE_SIZE;
                 pbuffer += SPI_FLASH_PAGE_SIZE;
             }
-            spi_flash_page_write(pbuffer,write_addr,num_of_single);
+            spi_flash_page_write(pbuffer, write_addr, num_of_single);
         }
-    }else{
+    } else {
         /* write_addr is not SPI_FLASH_PAGE_SIZE aligned */
-        if(0U == num_of_page){
+        if(0U == num_of_page) {
             /* (num_byte_to_write + write_addr) > SPI_FLASH_PAGE_SIZE */
-            if(num_of_single > count){
+            if(num_of_single > count) {
                 temp = num_of_single - count;
-                spi_flash_page_write(pbuffer,write_addr,count);
+                spi_flash_page_write(pbuffer, write_addr, count);
                 write_addr += count;
                 pbuffer += count;
-                spi_flash_page_write(pbuffer,write_addr,temp);
-            }else{
-                spi_flash_page_write(pbuffer,write_addr,num_byte_to_write);
+                spi_flash_page_write(pbuffer, write_addr, temp);
+            } else {
+                spi_flash_page_write(pbuffer, write_addr, num_byte_to_write);
             }
-        }else{
+        } else {
             /* num_byte_to_write >= SPI_FLASH_PAGE_SIZE */
             num_byte_to_write -= count;
             num_of_page = num_byte_to_write / SPI_FLASH_PAGE_SIZE;
             num_of_single = num_byte_to_write % SPI_FLASH_PAGE_SIZE;
 
-            spi_flash_page_write(pbuffer,write_addr, count);
+            spi_flash_page_write(pbuffer, write_addr, count);
             write_addr += count;
             pbuffer += count;
 
-            while(num_of_page--){
-                spi_flash_page_write(pbuffer,write_addr,SPI_FLASH_PAGE_SIZE);
+            while(num_of_page--) {
+                spi_flash_page_write(pbuffer, write_addr, SPI_FLASH_PAGE_SIZE);
                 write_addr += SPI_FLASH_PAGE_SIZE;
                 pbuffer += SPI_FLASH_PAGE_SIZE;
             }
 
-            if(0U != num_of_single){
-                spi_flash_page_write(pbuffer,write_addr,num_of_single);
+            if(0U != num_of_single) {
+                spi_flash_page_write(pbuffer, write_addr, num_of_single);
             }
         }
     }
@@ -293,7 +291,7 @@ void spi_flash_buffer_write(uint8_t* pbuffer, uint32_t write_addr, uint16_t num_
     \param[out] none
     \retval     none
 */
-void spi_flash_buffer_read(uint8_t* pbuffer, uint32_t read_addr, uint16_t num_byte_to_read)
+void spi_flash_buffer_read(uint8_t *pbuffer, uint32_t read_addr, uint16_t num_byte_to_read)
 {
     /* select the flash: chip slect low */
     SPI_FLASH_CS_LOW();
@@ -304,12 +302,12 @@ void spi_flash_buffer_read(uint8_t* pbuffer, uint32_t read_addr, uint16_t num_by
     /* send read_addr high nibble address byte to read from */
     spi_flash_send_byte((read_addr & 0xFF0000U) >> 16U);
     /* send read_addr medium nibble address byte to read from */
-    spi_flash_send_byte((read_addr& 0xFF00U) >> 8U);
+    spi_flash_send_byte((read_addr & 0xFF00U) >> 8U);
     /* send read_addr low nibble address byte to read from */
     spi_flash_send_byte(read_addr & 0xFFU);
 
     /* while there is data to be read */
-    while(num_byte_to_read--){
+    while(num_byte_to_read--) {
         /* read a byte from the flash */
         *pbuffer = spi_flash_send_byte(DUMMY_BYTE);
         /* point to the next location where the byte read will be saved */
@@ -328,7 +326,7 @@ void spi_flash_buffer_read(uint8_t* pbuffer, uint32_t read_addr, uint16_t num_by
 */
 uint32_t spi_flash_read_id(void)
 {
-    uint32_t temp = 0, temp0 = 0, temp1 = 0, temp2 = 0;
+    uint32_t temp = 0U, temp0 = 0U, temp1 = 0U, temp2 = 0U;
 
     /* select the flash: chip select low */
     SPI_FLASH_CS_LOW();
@@ -371,7 +369,7 @@ void spi_flash_start_read_sequence(uint32_t read_addr)
     /* send read_addr high nibble address byte */
     spi_flash_send_byte((read_addr & 0xFF0000U) >> 16U);
     /* send read_addr medium nibble address byte */
-    spi_flash_send_byte((read_addr& 0xFF00U) >> 8U);
+    spi_flash_send_byte((read_addr & 0xFF00U) >> 8U);
     /* send read_addr low nibble address byte */
     spi_flash_send_byte(read_addr & 0xFFU);
 }
@@ -395,14 +393,14 @@ uint8_t spi_flash_read_byte(void)
 */
 uint8_t spi_flash_send_byte(uint8_t byte)
 {
-    /* loop while data register in not emplty */
-    while(RESET == spi_i2s_flag_get(SPI5,SPI_FLAG_TBE));
+    /* loop while data register in not empty */
+    while(RESET == spi_i2s_flag_get(SPI5, SPI_FLAG_TBE));
 
     /* send byte through the SPI5 peripheral */
-    spi_i2s_data_transmit(SPI5,byte);
+    spi_i2s_data_transmit(SPI5, byte);
 
     /* wait to receive a byte */
-    while(RESET == spi_i2s_flag_get(SPI5,SPI_FLAG_RBNE));
+    while(RESET == spi_i2s_flag_get(SPI5, SPI_FLAG_RBNE));
 
     /* return the byte read from the SPI bus */
     return(spi_i2s_data_receive(SPI5));
@@ -416,14 +414,14 @@ uint8_t spi_flash_send_byte(uint8_t byte)
 */
 uint16_t spi_flash_send_halfword(uint16_t half_word)
 {
-    /* loop while data register in not emplty */
-    while(RESET == spi_i2s_flag_get(SPI5,SPI_FLAG_TBE));
+    /* loop while data register in not empty */
+    while(RESET == spi_i2s_flag_get(SPI5, SPI_FLAG_TBE));
 
     /* send half word through the SPI5 peripheral */
-    spi_i2s_data_transmit(SPI5,half_word);
+    spi_i2s_data_transmit(SPI5, half_word);
 
     /* wait to receive a half word */
-    while(RESET == spi_i2s_flag_get(SPI5,SPI_FLAG_RBNE));
+    while(RESET == spi_i2s_flag_get(SPI5, SPI_FLAG_RBNE));
 
     /* return the half word read from the SPI bus */
     return spi_i2s_data_receive(SPI5);
@@ -455,7 +453,7 @@ void spi_flash_write_enable(void)
 */
 void spi_flash_wait_for_write_end(void)
 {
-    uint8_t flash_status = 0;
+    uint8_t flash_status = 0U;
 
     /* select the flash: chip select low */
     SPI_FLASH_CS_LOW();
@@ -464,11 +462,11 @@ void spi_flash_wait_for_write_end(void)
     spi_flash_send_byte(RDSR);
 
     /* loop as long as the memory is busy with a write cycle */
-    do{
+    do {
         /* send a dummy byte to generate the clock needed by the flash
         and put the value of the status register in flash_status variable */
         flash_status = spi_flash_send_byte(DUMMY_BYTE);
-    }while(SET == (flash_status & WIP_FLAG));
+    } while(SET == (flash_status & WIP_FLAG));
 
     /* deselect the flash: chip select high */
     SPI_FLASH_CS_HIGH();
@@ -488,11 +486,11 @@ void spi_quad_flash_quad_enable(void)
     SPI_FLASH_CS_LOW();
     /* send "write status register" instruction */
     spi_flash_send_byte(WRSR);
-    
-    spi_flash_send_byte(0x00);
-    spi_flash_send_byte(0x02); 
+
+    spi_flash_send_byte(0x00U);
+    spi_flash_send_byte(0x02U);
     /* deselect the flash: chip select high */
-    SPI_FLASH_CS_HIGH(); 
+    SPI_FLASH_CS_HIGH();
     /* wait the end of flash writing */
     spi_flash_wait_for_write_end();
 }
@@ -505,42 +503,42 @@ void spi_quad_flash_quad_enable(void)
     \param[out] none
     \retval     none
 */
-void spi_quad_flash_buffer_write(uint8_t* pbuffer, uint32_t write_addr, uint16_t num_byte_to_write)
+void spi_quad_flash_buffer_write(uint8_t *pbuffer, uint32_t write_addr, uint16_t num_byte_to_write)
 {
-    uint8_t num_of_page = 0, num_of_single = 0, addr = 0, count = 0, temp = 0;
+    uint8_t num_of_page = 0U, num_of_single = 0U, addr = 0U, count = 0U, temp = 0U;
 
     addr = write_addr % SPI_FLASH_PAGE_SIZE;
     count = SPI_FLASH_PAGE_SIZE - addr;
     num_of_page =  num_byte_to_write / SPI_FLASH_PAGE_SIZE;
     num_of_single = num_byte_to_write % SPI_FLASH_PAGE_SIZE;
     /* write_addr is SPI_FLASH_PAGE_SIZE aligned */
-    if(0U == addr){
+    if(0U == addr) {
         /* num_byte_to_write < SPI_FLASH_PAGE_SIZE */
-        if(0U == num_of_page){
+        if(0U == num_of_page) {
             spi_quad_flash_page_write(pbuffer, write_addr, num_byte_to_write);
-        }else{
+        } else {
             /* num_byte_to_write >= SPI_FLASH_PAGE_SIZE */
-            while(num_of_page--){
+            while(num_of_page--) {
                 spi_quad_flash_page_write(pbuffer, write_addr, SPI_FLASH_PAGE_SIZE);
                 write_addr +=  SPI_FLASH_PAGE_SIZE;
                 pbuffer += SPI_FLASH_PAGE_SIZE;
             }
             spi_quad_flash_page_write(pbuffer, write_addr, num_of_single);
         }
-    }else{
+    } else {
         /* write_addr is not SPI_FLASH_PAGE_SIZE aligned */
-        if(0U == num_of_page){
+        if(0U == num_of_page) {
             /* (num_byte_to_write + write_addr) > SPI_FLASH_PAGE_SIZE */
-            if(num_of_single > count){
+            if(num_of_single > count) {
                 temp = num_of_single - count;
                 spi_quad_flash_page_write(pbuffer, write_addr, count);
                 write_addr +=  count;
                 pbuffer += count;
                 spi_quad_flash_page_write(pbuffer, write_addr, temp);
-            }else{
+            } else {
                 spi_quad_flash_page_write(pbuffer, write_addr, num_byte_to_write);
             }
-        }else{
+        } else {
             /* num_byte_to_write >= SPI_FLASH_PAGE_SIZE */
             num_byte_to_write -= count;
             num_of_page =  num_byte_to_write / SPI_FLASH_PAGE_SIZE;
@@ -550,13 +548,13 @@ void spi_quad_flash_buffer_write(uint8_t* pbuffer, uint32_t write_addr, uint16_t
             write_addr +=  count;
             pbuffer += count;
 
-            while(num_of_page--){
+            while(num_of_page--) {
                 spi_quad_flash_page_write(pbuffer, write_addr, SPI_FLASH_PAGE_SIZE);
                 write_addr +=  SPI_FLASH_PAGE_SIZE;
                 pbuffer += SPI_FLASH_PAGE_SIZE;
             }
 
-            if(0U != num_of_single){
+            if(0U != num_of_single) {
                 spi_quad_flash_page_write(pbuffer, write_addr, num_of_single);
             }
         }
@@ -571,7 +569,7 @@ void spi_quad_flash_buffer_write(uint8_t* pbuffer, uint32_t write_addr, uint16_t
     \param[out] none
     \retval     none
 */
-void spi_quad_flash_buffer_read(uint8_t* pbuffer, uint32_t read_addr, uint16_t num_byte_to_read)
+void spi_quad_flash_buffer_read(uint8_t *pbuffer, uint32_t read_addr, uint16_t num_byte_to_read)
 {
     /* select the flash: chip select low */
     SPI_FLASH_CS_LOW();
@@ -584,19 +582,19 @@ void spi_quad_flash_buffer_read(uint8_t* pbuffer, uint32_t read_addr, uint16_t n
     spi_flash_send_byte((read_addr & 0xFF00U) >> 8U);
     /* send read_addr low nibble address byte to read from */
     spi_flash_send_byte(read_addr & 0xFFU);
-    
+
     /* enable the spi quad */
-    spi_quad_enable(SPI5); 
+    spi_quad_enable(SPI5);
     /* enable the spi quad read operation */
     spi_quad_read_enable(SPI5);
-    
-    spi_flash_send_byte(0xA5);
-    spi_flash_send_byte(0xA5);
-    spi_flash_send_byte(0xA5);
-    spi_flash_send_byte(0xA5);
+
+    spi_flash_send_byte(0xA5U);
+    spi_flash_send_byte(0xA5U);
+    spi_flash_send_byte(0xA5U);
+    spi_flash_send_byte(0xA5U);
 
     /* while there is data to be read */
-    while(num_byte_to_read--){
+    while(num_byte_to_read--) {
         /* read a byte from the flash */
         *pbuffer = spi_flash_send_byte(DUMMY_BYTE);
         /* point to the next location where the byte read will be saved */
@@ -618,7 +616,7 @@ void spi_quad_flash_buffer_read(uint8_t* pbuffer, uint32_t read_addr, uint16_t n
     \param[out] none
     \retval     none
 */
-void spi_quad_flash_page_write(uint8_t* pbuffer, uint32_t write_addr, uint16_t num_byte_to_write)
+void spi_quad_flash_page_write(uint8_t *pbuffer, uint32_t write_addr, uint16_t num_byte_to_write)
 {
     /* enable the flash quad mode */
     spi_quad_flash_quad_enable();
@@ -635,13 +633,13 @@ void spi_quad_flash_page_write(uint8_t* pbuffer, uint32_t write_addr, uint16_t n
     spi_flash_send_byte((write_addr & 0xFF00U) >> 8U);
     /* send writeaddr low nibble address byte to write to */
     spi_flash_send_byte(write_addr & 0xFFU);
-    /* enable the spi quad */ 
-    spi_quad_enable(SPI5); 
+    /* enable the spi quad */
+    spi_quad_enable(SPI5);
     /* enable the spi quad write operation */
     spi_quad_write_enable(SPI5);
 
     /* while there is data to be written on the flash */
-    while(num_byte_to_write--){
+    while(num_byte_to_write--) {
         /* send the current byte */
         spi_flash_send_byte(*pbuffer);
         /* point on the next byte to be written */
@@ -650,8 +648,8 @@ void spi_quad_flash_page_write(uint8_t* pbuffer, uint32_t write_addr, uint16_t n
 
     /* deselect the flash: chip select high */
     SPI_FLASH_CS_HIGH();
-    /* disable the spi quad function */ 
-    spi_quad_disable(SPI5); 
+    /* disable the spi quad function */
+    spi_quad_disable(SPI5);
     /* wait the end of flash writing */
     spi_flash_wait_for_write_end();
 }

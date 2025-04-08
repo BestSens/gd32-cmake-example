@@ -2,7 +2,7 @@
     \file    usbd_msc_core.h
     \brief   the header file of USB MSC device class core functions
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,28 +32,26 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __USBD_MSC_CORE_H
-#define __USBD_MSC_CORE_H
+#ifndef USBD_MSC_CORE_H
+#define USBD_MSC_CORE_H
 
 #include "usbd_core.h"
 #include "usb_msc.h"
 
-#define USB_MSC_CONFIG_DESC_SIZE          32U
+#define USB_MSC_CONFIG_DESC_SIZE          32U                                   /*!< MSC configuration descriptor size */
 
-#define MSC_EPIN_SIZE                     MSC_DATA_PACKET_SIZE
-#define MSC_EPOUT_SIZE                    MSC_DATA_PACKET_SIZE
+#define MSC_EPIN_SIZE                     MSC_DATA_PACKET_SIZE                  /*!< MSC endpoint IN size */
+#define MSC_EPOUT_SIZE                    MSC_DATA_PACKET_SIZE                  /*!< MSC endpoint OUT size */
 
 /* USB configuration descriptor structure */
-typedef struct
-{
-    usb_desc_config         config;
-
-    usb_desc_itf            msc_itf;
-    usb_desc_ep             msc_epin;
-    usb_desc_ep             msc_epout;
+typedef struct {
+    usb_desc_config         config;                                             /*!< configuration descriptor */
+    usb_desc_itf            msc_itf;                                            /*!< interface descriptor */
+    usb_desc_ep             msc_epin;                                           /*!< endpoint IN descriptor */
+    usb_desc_ep             msc_epout;                                          /*!< endpoint OUT descriptor */
 } usb_desc_config_set;
 
 extern usb_desc msc_desc;
 extern usb_class_core msc_class;
 
-#endif /* __USBD_MSC_CORE_H */
+#endif /* USBD_MSC_CORE_H */

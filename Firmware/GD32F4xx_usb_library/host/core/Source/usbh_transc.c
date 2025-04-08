@@ -2,7 +2,7 @@
     \file    usbh_transc.c
     \brief   USB host mode transactions driver
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,28 +32,27 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#include "drv_usb_hw.h"
 #include "usbh_pipe.h"
 #include "usbh_transc.h"
 
 /* local function prototypes ('static') */
-static usb_urb_state usbh_urb_wait  (usbh_host *uhost, uint8_t pp_num, uint32_t wait_time);
-static void usbh_setup_transc       (usbh_host *uhost);
-static void usbh_data_in_transc     (usbh_host *uhost);
-static void usbh_data_out_transc    (usbh_host *uhost);
-static void usbh_status_in_transc   (usbh_host *uhost);
-static void usbh_status_out_transc  (usbh_host *uhost);
-static uint32_t usbh_request_submit (usb_core_driver *udev, uint8_t pp_num);
+static usb_urb_state usbh_urb_wait(usbh_host *uhost, uint8_t pp_num, uint32_t wait_time);
+static void usbh_setup_transc(usbh_host *uhost);
+static void usbh_data_in_transc(usbh_host *uhost);
+static void usbh_data_out_transc(usbh_host *uhost);
+static void usbh_status_in_transc(usbh_host *uhost);
+static void usbh_status_out_transc(usbh_host *uhost);
+static uint32_t usbh_request_submit(usb_core_driver *udev, uint8_t pp_num);
 
 /*!
-    \brief      send the setup packet to the USB device
+    \brief      send the SETUP packet to the USB device
     \param[in]  udev: pointer to USB core instance
     \param[in]  buf: data buffer which will be sent to USB device
     \param[in]  pp_num: pipe number
     \param[out] none
     \retval     operation status
 */
-usbh_status usbh_ctlsetup_send (usb_core_driver *udev, uint8_t *buf, uint8_t pp_num)
+usbh_status usbh_ctlsetup_send(usb_core_driver *udev, uint8_t *buf, uint8_t pp_num)
 {
     usb_pipe *pp = &udev->host.pipe[pp_num];
 
@@ -61,7 +60,7 @@ usbh_status usbh_ctlsetup_send (usb_core_driver *udev, uint8_t *buf, uint8_t pp_
     pp->xfer_buf = buf;
     pp->xfer_len = USB_SETUP_PACKET_LEN;
 
-    return (usbh_status)usbh_request_submit (udev, pp_num);
+    return (usbh_status)usbh_request_submit(udev, pp_num);
 }
 
 /*!
@@ -73,16 +72,16 @@ usbh_status usbh_ctlsetup_send (usb_core_driver *udev, uint8_t *buf, uint8_t pp_
     \param[out] none
     \retval     operation status
 */
-usbh_status usbh_data_send (usb_core_driver *udev, uint8_t *buf, uint8_t pp_num, uint16_t len)
+usbh_status usbh_data_send(usb_core_driver *udev, uint8_t *buf, uint8_t pp_num, uint16_t len)
 {
     usb_pipe *pp = &udev->host.pipe[pp_num];
 
     pp->xfer_buf = buf;
     pp->xfer_len = len;
 
-    switch (pp->ep.type) {
+    switch(pp->ep.type) {
     case USB_EPTYPE_CTRL:
-        if (0U == len) {
+        if(0U == len) {
             pp->data_toggle_out = 1U;
         }
 
@@ -107,7 +106,7 @@ usbh_status usbh_data_send (usb_core_driver *udev, uint8_t *buf, uint8_t pp_num,
         break;
     }
 
-    usbh_request_submit (udev, pp_num);
+    usbh_request_submit(udev, pp_num);
 
     return USBH_OK;
 }
@@ -121,14 +120,14 @@ usbh_status usbh_data_send (usb_core_driver *udev, uint8_t *buf, uint8_t pp_num,
     \param[out] none
     \retval     operation status
 */
-usbh_status usbh_data_recev (usb_core_driver *udev, uint8_t *buf, uint8_t pp_num, uint16_t len)
+usbh_status usbh_data_recev(usb_core_driver *udev, uint8_t *buf, uint8_t pp_num, uint16_t len)
 {
     usb_pipe *pp = &udev->host.pipe[pp_num];
 
     pp->xfer_buf = buf;
     pp->xfer_len = len;
 
-    switch (pp->ep.type) {
+    switch(pp->ep.type) {
     case USB_EPTYPE_CTRL:
         pp->DPID = PIPE_DPID[1];
         break;
@@ -152,7 +151,7 @@ usbh_status usbh_data_recev (usb_core_driver *udev, uint8_t *buf, uint8_t pp_num
         break;
     }
 
-    usbh_request_submit (udev, pp_num);
+    usbh_request_submit(udev, pp_num);
 
     return USBH_OK;
 }
@@ -163,29 +162,29 @@ usbh_status usbh_data_recev (usb_core_driver *udev, uint8_t *buf, uint8_t pp_num
     \param[out] none
     \retval     operation status
 */
-usbh_status usbh_ctl_handler (usbh_host *uhost)
+usbh_status usbh_ctl_handler(usbh_host *uhost)
 {
     usbh_status status = USBH_BUSY;
 
-    switch (uhost->control.ctl_state) {
+    switch(uhost->control.ctl_state) {
     case CTL_SETUP:
-        usbh_setup_transc (uhost);
+        usbh_setup_transc(uhost);
         break;
 
     case CTL_DATA_IN:
-        usbh_data_in_transc (uhost);
+        usbh_data_in_transc(uhost);
         break;
 
     case CTL_DATA_OUT:
-        usbh_data_out_transc (uhost);
+        usbh_data_out_transc(uhost);
         break;
 
     case CTL_STATUS_IN:
-        usbh_status_in_transc (uhost);
+        usbh_status_in_transc(uhost);
         break;
 
     case CTL_STATUS_OUT:
-        usbh_status_out_transc (uhost);
+        usbh_status_out_transc(uhost);
         break;
 
     case CTL_FINISH:
@@ -195,7 +194,7 @@ usbh_status usbh_ctl_handler (usbh_host *uhost)
         break;
 
     case CTL_ERROR:
-        if (++uhost->control.error_count <= USBH_MAX_ERROR_COUNT) {
+        if(++uhost->control.error_count <= USBH_MAX_ERROR_COUNT) {
             /* do the transmission again, starting from SETUP packet */
             uhost->control.ctl_state = CTL_SETUP;
         } else {
@@ -218,23 +217,23 @@ usbh_status usbh_ctl_handler (usbh_host *uhost)
     \param[out] none
     \retval     USB URB state
 */
-static usb_urb_state usbh_urb_wait (usbh_host *uhost, uint8_t pp_num, uint32_t wait_time)
+static usb_urb_state usbh_urb_wait(usbh_host *uhost, uint8_t pp_num, uint32_t wait_time)
 {
     uint32_t timeout = 0U;
     usb_urb_state urb_status = URB_IDLE;
     timeout = uhost->control.timer;
 
-    while (URB_DONE != (urb_status = usbh_urbstate_get(uhost->data, pp_num))) {
-        if (URB_NOTREADY == urb_status) {
+    while(URB_DONE != (urb_status = usbh_urbstate_get(uhost->data, pp_num))) {
+        if(URB_NOTREADY == urb_status) {
             break;
-        } else if (URB_STALL == urb_status) {
+        } else if(URB_STALL == urb_status) {
             uhost->control.ctl_state = CTL_SETUP;
             break;
-        } else if (URB_ERROR == urb_status) {
+        } else if(URB_ERROR == urb_status) {
             uhost->control.ctl_state = CTL_ERROR;
             break;
-        } else if ((wait_time > 0U) && ((uhost->control.timer - timeout) > wait_time)) {
-            /* timeout for in transfer */
+        } else if((wait_time > 0U) && ((uhost->control.timer - timeout) > wait_time)) {
+            /* timeout for IN transfer */
             uhost->control.ctl_state = CTL_ERROR;
             break;
         } else {
@@ -246,29 +245,29 @@ static usb_urb_state usbh_urb_wait (usbh_host *uhost, uint8_t pp_num, uint32_t w
 }
 
 /*!
-    \brief      USB setup transaction
+    \brief      USB SETUP transaction
     \param[in]  uhost: pointer to USB host
     \param[out] none
     \retval     none
 */
-static void usbh_setup_transc (usbh_host *uhost)
+static void usbh_setup_transc(usbh_host *uhost)
 {
     /* send a SETUP packet */
-    usbh_ctlsetup_send (uhost->data, 
-                        uhost->control.setup.data, 
-                        uhost->control.pipe_out_num);
+    usbh_ctlsetup_send(uhost->data, \
+                       uhost->control.setup.data, \
+                       uhost->control.pipe_out_num);
 
-    if (URB_DONE == usbh_urb_wait (uhost, uhost->control.pipe_out_num, 0U)) {
+    if(URB_DONE == usbh_urb_wait(uhost, uhost->control.pipe_out_num, 0U)) {
         uint8_t dir = (uhost->control.setup.req.bmRequestType & USB_TRX_MASK);
 
-        if (uhost->control.setup.req.wLength) {
-            if (USB_TRX_IN == dir) {
+        if(uhost->control.setup.req.wLength) {
+            if(USB_TRX_IN == dir) {
                 uhost->control.ctl_state = CTL_DATA_IN;
             } else {
                 uhost->control.ctl_state = CTL_DATA_OUT;
             }
         } else {
-            if (USB_TRX_IN == dir) {
+            if(USB_TRX_IN == dir) {
                 uhost->control.ctl_state = CTL_STATUS_OUT;
             } else {
                 uhost->control.ctl_state = CTL_STATUS_IN;
@@ -283,16 +282,15 @@ static void usbh_setup_transc (usbh_host *uhost)
     \param[out] none
     \retval     none
 */
-static void usbh_data_in_transc (usbh_host *uhost)
+static void usbh_data_in_transc(usbh_host *uhost)
 {
-    usbh_data_recev (uhost->data,
-                     uhost->control.buf,
-                     uhost->control.pipe_in_num,
-                     uhost->control.ctl_len);
+    usbh_data_recev(uhost->data, \
+                    uhost->control.buf, \
+                    uhost->control.pipe_in_num, \
+                    uhost->control.ctl_len);
 
-    if (URB_DONE == usbh_urb_wait (uhost, uhost->control.pipe_in_num, DATA_STAGE_TIMEOUT)) {
+    if(URB_DONE == usbh_urb_wait(uhost, uhost->control.pipe_in_num, DATA_STAGE_TIMEOUT)) {
         uhost->control.ctl_state = CTL_STATUS_OUT;
-
     }
 }
 
@@ -302,16 +300,16 @@ static void usbh_data_in_transc (usbh_host *uhost)
     \param[out] none
     \retval     none
 */
-static void usbh_data_out_transc (usbh_host *uhost)
+static void usbh_data_out_transc(usbh_host *uhost)
 {
     usbh_pipe_toggle_set(uhost->data, uhost->control.pipe_out_num, 1U);
 
-    usbh_data_send (uhost->data,
-                    uhost->control.buf,
-                    uhost->control.pipe_out_num,
-                    uhost->control.ctl_len);
+    usbh_data_send(uhost->data, \
+                   uhost->control.buf, \
+                   uhost->control.pipe_out_num, \
+                   uhost->control.ctl_len);
 
-    if (URB_DONE == usbh_urb_wait (uhost, uhost->control.pipe_out_num, DATA_STAGE_TIMEOUT)) {
+    if(URB_DONE == usbh_urb_wait(uhost, uhost->control.pipe_out_num, DATA_STAGE_TIMEOUT)) {
         uhost->control.ctl_state = CTL_STATUS_IN;
     }
 }
@@ -322,13 +320,13 @@ static void usbh_data_out_transc (usbh_host *uhost)
     \param[out] none
     \retval     none
 */
-static void usbh_status_in_transc (usbh_host *uhost)
+static void usbh_status_in_transc(usbh_host *uhost)
 {
     uint8_t pp_num = uhost->control.pipe_in_num;
 
-    usbh_data_recev (uhost->data, NULL, pp_num, 0U);
+    usbh_data_recev(uhost->data, NULL, pp_num, 0U);
 
-    if (URB_DONE == usbh_urb_wait (uhost, pp_num, NODATA_STAGE_TIMEOUT)) {
+    if(URB_DONE == usbh_urb_wait(uhost, pp_num, NODATA_STAGE_TIMEOUT)) {
         uhost->control.ctl_state = CTL_FINISH;
     }
 }
@@ -339,13 +337,13 @@ static void usbh_status_in_transc (usbh_host *uhost)
     \param[out] none
     \retval     none
 */
-static void usbh_status_out_transc (usbh_host *uhost)
+static void usbh_status_out_transc(usbh_host *uhost)
 {
     uint8_t pp_num = uhost->control.pipe_out_num;
 
-    usbh_data_send (uhost->data, NULL, pp_num, 0U);
+    usbh_data_send(uhost->data, NULL, pp_num, 0U);
 
-    if (URB_DONE == usbh_urb_wait (uhost, pp_num, NODATA_STAGE_TIMEOUT)) {
+    if(URB_DONE == usbh_urb_wait(uhost, pp_num, NODATA_STAGE_TIMEOUT)) {
         uhost->control.ctl_state = CTL_FINISH;
     }
 }
@@ -357,15 +355,15 @@ static void usbh_status_out_transc (usbh_host *uhost)
     \param[out] none
     \retval     operation status
 */
-static uint32_t usbh_request_submit (usb_core_driver *udev, uint8_t pp_num) 
+static uint32_t usbh_request_submit(usb_core_driver *udev, uint8_t pp_num)
 {
     udev->host.pipe[pp_num].urb_state = URB_IDLE;
     udev->host.pipe[pp_num].xfer_count = 0U;
 
-    if (1U == udev->host.pipe[pp_num].do_ping) {
-        (void)usb_pipe_ping (udev, (uint8_t)pp_num);
+    if(1U == udev->host.pipe[pp_num].do_ping) {
+        (void)usb_pipe_ping(udev, (uint8_t)pp_num);
         return USB_OK;
     }
 
-    return (uint32_t)usb_pipe_xfer (udev, pp_num);
+    return (uint32_t)usb_pipe_xfer(udev, pp_num);
 }

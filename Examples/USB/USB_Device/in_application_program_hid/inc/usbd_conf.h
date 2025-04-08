@@ -2,7 +2,7 @@
     \file    usbd_conf.h
     \brief   the header file of USB device configuration
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,8 +32,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __USBD_CONF_H
-#define __USBD_CONF_H
+#ifndef USBD_CONF_H
+#define USBD_CONF_H
 
 #include "usb_conf.h"
 
@@ -48,41 +48,40 @@ OF SUCH DAMAGE.
 #define IAP_IN_EP                              EP1_IN
 #define IAP_OUT_EP                             EP1_OUT
 
-#define IAP_IN_PACKET                          24U
-
 #ifdef USB_HS_CORE
     #ifdef USE_ULPI_PHY
-        #define IAP_OUT_PACKET                 1024U
-        #define TRANSFER_SIZE                  1022U /* IAP maximum data packet size */
+        #define IAP_IN_PACKET                  1018U
+        #define IAP_OUT_PACKET                 1018U
+        #define TRANSFER_SIZE                  1012U  /* IAP maximum data packet size */
     #elif defined(USE_EMBEDDED_PHY)
-        #define IAP_OUT_PACKET                 64U
-        #define TRANSFER_SIZE                  62U /* IAP maximum data packet size */
+        #define IAP_IN_PACKET                  62U
+        #define IAP_OUT_PACKET                 62U
+        #define TRANSFER_SIZE                  56U    /* IAP maximum data packet size */
     #endif
 #elif defined(USB_FS_CORE)
-    #define IAP_OUT_PACKET                     64U
-    #define TRANSFER_SIZE                      62U
+    #define IAP_IN_PACKET                      62U
+    #define IAP_OUT_PACKET                     62U
+    #define TRANSFER_SIZE                      56U    /* IAP maximum data packet size */
 #else
     #error "Please select USB_HS_CORE or USB_FS_CORE"
 #endif
 
-/* maximum number of supported memory media (Flash, RAM or EEPROM and so on) */
-#define MAX_USED_MEMORY_MEDIA              1U
+/* option byte size and address */
+#define OPT_BYTE_SIZE1                         0x10U
+#define OPT_BYTE_SIZE2                         0x10U
+#define OPT_BYTE_ADDR1                         0x1FFFC000U
+#define OPT_BYTE_ADDR2                         0x1FFEC000U
 
-/* MCU page size */
-#define PAGE_SIZE                          1024U
-#define OPT_BYTE_ADDR1                     0x1FFFC000U
-#define OPT_BYTE_ADDR2                     0x1FFEC000U
-
-#define REPORT_IN_COUNT                    0x17U
-#define REPORT_OUT_COUNT                   (TRANSFER_SIZE + 1U)
+#define REPORT_IN_COUNT                        ((TRANSFER_SIZE) + 5U)
+#define REPORT_OUT_COUNT                       ((TRANSFER_SIZE) + 5U)
 
 /* memory address from where user application will be loaded, which represents 
    the DFU code protected against write and erase operations.*/
-#define APP_LOADED_ADDR                    0x08008000U
+#define APP_LOADED_ADDR                        0x08008000U
 
 /* make sure the corresponding memory where the DFU code should not be loaded
    cannot be erased or overwritten by DFU application. */
-#define IS_PROTECTED_AREA(addr)            (uint8_t)(((addr >= 0x08000000U) && \
-                                           (addr < (APP_LOADED_ADDR)))? 1U : 0U)
+#define IS_PROTECTED_AREA(addr)                (uint8_t)(((addr >= 0x08000000U) && \
+                                               (addr < (APP_LOADED_ADDR)))? 1U : 0U)
 
-#endif /* __USBD_CONF_H */
+#endif /* USBD_CONF_H */

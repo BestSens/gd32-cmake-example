@@ -2,7 +2,7 @@
     \file    usbd_conf.h
     \brief   the header file of USB device configuration
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,8 +32,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __USBD_CONF_H
-#define __USBD_CONF_H
+#ifndef USBD_CONF_H
+#define USBD_CONF_H
 
 #include "usb_conf.h"
 
@@ -72,4 +72,4 @@ OF SUCH DAMAGE.
     #define PRINTER_OUT_PACKET              64U
 #endif
 
-#endif /* __USBD_CONF_H */
+#endif /* USBD_CONF_H */

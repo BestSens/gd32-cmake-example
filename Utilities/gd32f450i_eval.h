@@ -2,7 +2,7 @@
     \file    gd32f450i_eval.h
     \brief   definitions for GD32F450_EVAL's leds, keys and COM ports hardware resources
     
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*

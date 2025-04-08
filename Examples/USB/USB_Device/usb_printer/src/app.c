@@ -2,7 +2,7 @@
     \file    app.c
     \brief   main routine
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -49,7 +49,7 @@ int main(void)
     usb_rcu_config();
     usb_timer_init();
 
-    usbd_init (&usbd_printer,
+    usbd_init(&usbd_printer,
 #ifdef USE_USB_FS
               USB_CORE_ENUM_FS,
 #elif defined(USE_USB_HS)
@@ -61,6 +61,6 @@ int main(void)
     usb_intr_config();
 
     /* Main loop */
-    while (1) {
+    while(1) {
     }
 }

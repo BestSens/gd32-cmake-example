@@ -2,7 +2,7 @@
     \file    app.c
     \brief   main routine
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -56,22 +56,22 @@ int main(void)
     custom_hid_itfop_register(&usbfs_custom_hid, &fop_handler);
 
     /* USB initialize */
-    usbd_init (&usbfs_custom_hid,
-               USB_CORE_ENUM_FS,
-               &custom_hid_desc,
-               &usbd_custom_hid_cb);
+    usbd_init(&usbfs_custom_hid, \
+              USB_CORE_ENUM_FS, \
+              &custom_hid_desc, \
+              &usbd_custom_hid_cb);
 
-    usbd_init (&usbhs_cdc_acm,
-               USB_CORE_ENUM_HS,
-               &cdc_desc,
-               &cdc_class);
+    usbd_init(&usbhs_cdc_acm, \
+              USB_CORE_ENUM_HS, \
+              &cdc_desc, \
+              &cdc_class);
 
     usb_intr_config();
 
     /* main loop */
-    while (1) {
-        if (USBD_CONFIGURED == usbhs_cdc_acm.dev.cur_status) {
-            if (0U == cdc_acm_check_ready(&usbhs_cdc_acm)) {
+    while(1) {
+        if(USBD_CONFIGURED == usbhs_cdc_acm.dev.cur_status) {
+            if(0U == cdc_acm_check_ready(&usbhs_cdc_acm)) {
                 cdc_acm_data_receive(&usbhs_cdc_acm);
             } else {
                 cdc_acm_data_send(&usbhs_cdc_acm);

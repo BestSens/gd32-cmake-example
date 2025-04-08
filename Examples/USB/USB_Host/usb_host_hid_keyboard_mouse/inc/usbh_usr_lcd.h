@@ -2,7 +2,7 @@
     \file    usbh_usr_lcd.h
     \brief   the declarations for user routines for LCD 
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,8 +32,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __USBH_USR_LCD_H
-#define __USBH_USR_LCD_H
+#ifndef USBH_USR_LCD_H
+#define USBH_USR_LCD_H
 
 #include "usbh_hid_core.h"
 
@@ -69,8 +69,8 @@ OF SUCH DAMAGE.
 #define MOUSE_SPL_X                         50U
 #define MOUSE_SPL_Y                         0U
 
-#define COMPUTE_XLOC(xloc, x)               (xloc) -= ((x) / 2)
-#define COMPUTE_YLOC(yloc, y)               (yloc) += ((y) / 2)
+#define COMPUTE_XLOC(xloc, x)               (xloc) -= ((x) / 2U)
+#define COMPUTE_YLOC(yloc, y)               (yloc) += ((y) / 2U)
 
 #define Y_MIN                               MOUSE_WINDOW_X
 #define X_MIN                               2U
@@ -78,15 +78,15 @@ OF SUCH DAMAGE.
 #define MPL_X(x)                            (x)
 #define MPL_Y(y)                            (y)
 
-#define KYBRD_WINDOW_X                      70
-#define KYBRD_WINDOW_Y                      0
-#define KYBRD_WINDOW_WIDTH                  210
-#define KYBRD_WINDOW_HEIGHT                 272
+#define KYBRD_WINDOW_X                      70U
+#define KYBRD_WINDOW_Y                      0U
+#define KYBRD_WINDOW_WIDTH                  210U
+#define KYBRD_WINDOW_HEIGHT                 272U
 
-#define KYBRD_FIRST_COLUMN                  (uint16_t)256
-#define KYBRD_LAST_COLUMN                   (uint16_t)0
-#define KYBRD_FIRST_LINE                    (uint16_t)80
-#define KYBRD_LAST_LINE                     (uint16_t)270
+#define KYBRD_FIRST_COLUMN                  (uint16_t)256U
+#define KYBRD_LAST_COLUMN                   (uint16_t)0U
+#define KYBRD_FIRST_LINE                    (uint16_t)80U
+#define KYBRD_LAST_LINE                     (uint16_t)270U
 
 #define UPDATE_XP(xpos)                     (xpos) += SMALL_FONT_LINE_WIDTH
 #define UPDATE_YP(ypos)                     (ypos) -= SMALL_FONT_COLUMN_WIDTH
@@ -110,10 +110,10 @@ OF SUCH DAMAGE.
 
 /* function declarations */
 /* the function is to handle mouse scroll to update the mouse position on display window */
-void hid_mouse_update_position (int8_t X, int8_t Y);
+void hid_mouse_update_position(int8_t X, int8_t Y);
 /* the function is to handle mouse button press */
-void hid_mouse_button_pressed (uint8_t ButtonIdx);
+void hid_mouse_button_pressed(uint8_t ButtonIdx);
 /* the function is to handle mouse button release */
-void hid_mouse_button_released (uint8_t ButtonIdx);
+void hid_mouse_button_released(uint8_t ButtonIdx);
 
-#endif /* __USBH_USR_LCD_H */
+#endif /* USBH_USR_LCD_H */

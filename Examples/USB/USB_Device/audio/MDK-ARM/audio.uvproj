@@ -421,9 +421,9 @@
               <FilePath>..\src\gd32f4xx_it.c</FilePath>
             </File>
             <File>
-              <FileName>gd32f450i_audio_codec.c</FileName>
+              <FileName>audio_codec.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\src\gd32f450i_audio_codec.c</FilePath>
+              <FilePath>..\src\audio_codec.c</FilePath>
             </File>
           </Files>
         </Group>

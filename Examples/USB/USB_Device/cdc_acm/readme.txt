@@ -2,7 +2,7 @@
     \file    readme.txt
     \brief   description of the CDC ACM demo
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -51,7 +51,7 @@ from the device.
   - OUT transfers (receive the data from the PC to GD32):
   When a packet is received from the PC on the OUT pipe (EP3),by calling cdc_acm_data_receive()
   it will be stored in the usb_data_buffer[]. 
- 
+
   - IN transfers (to send the data received from the GD32 to the PC):
   When a packet is sent from the GD32 on the IN pipe (EP1), by calling cdc_acm_data_send(),
   put the data into the usb_data_buffer[] buffer for sending data to the host.

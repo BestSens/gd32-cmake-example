@@ -2,7 +2,7 @@
     \file    sccb.c
     \brief   sccb driver
     
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -153,7 +153,7 @@ uint8_t dci_byte_read(uint8_t reg, uint8_t *data)
         if ((timeout--) == 0) 
             return 0xFF;
     } 
-    /* send DCI selcted device slave address for read */
+    /* send DCI selected device slave address for read */
     i2c_master_addressing(DCI_SCCB, OV2640_DEVICE_READ_ADDRESS,I2C_TRANSMITTER);
 
     /* test on I2C I2C_ADDSEND and clear it */

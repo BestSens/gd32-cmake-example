@@ -2,7 +2,7 @@
     \file    printer_core.h
     \brief   the header file of USB printer device class core functions
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,11 +32,10 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __PRINTER_CORE_H
-#define __PRINTER_CORE_H
+#ifndef PRINTER_CORE_H
+#define PRINTER_CORE_H
 
 #include "usbd_enum.h"
-#include "usb_ch9_std.h"
 
 /* USB printing device class code */
 #define USB_CLASS_PRINTER               0x07U
@@ -45,29 +44,30 @@ OF SUCH DAMAGE.
 #define USB_SUBCLASS_PRINTER            0x01U
 
 /* printing device protocol code */
-#define PROTOCOL_UNIDIRECTIONAL_ITF     0x01U
-#define PROTOCOL_BI_DIRECTIONAL_ITF     0x02U
-#define PROTOCOL_1284_4_ITF             0x03U
-#define PROTOCOL_VENDOR                 0xFFU
+#define PROTOCOL_UNIDIRECTIONAL_ITF     0x01U            /*!< unidirectional interface */
+#define PROTOCOL_BI_DIRECTIONAL_ITF     0x02U            /*!< BI directional interface */
+#define PROTOCOL_1284_4_ITF             0x03U            /*!< 1284.4 interface */
+#define PROTOCOL_VENDOR                 0xFFU            /*!< vendor */
 
+/* device id length */
 #define DEVICE_ID_LEN                   103U
 
+/* printer configuration descriptor length */
 #define USB_PRINTER_CONFIG_DESC_LEN     32U
 
 /* printing device specific-class request */
-#define GET_DEVICE_ID                   0x00U
-#define GET_PORT_STATUS                 0x01U
-#define SOFT_RESET                      0x02U
+#define GET_DEVICE_ID                   0x00U            /*!< get device id request */
+#define GET_PORT_STATUS                 0x01U            /*!< get port status request */
+#define SOFT_RESET                      0x02U            /*!< soft reset request */
 
 #pragma pack(1)
 
 /* USB configuration descriptor structure */
-typedef struct
-{
-    usb_desc_config         config;
-    usb_desc_itf            printer_itf;
-    usb_desc_ep             printer_epin;
-    usb_desc_ep             printer_epout;
+typedef struct {
+    usb_desc_config         config;                      /*!< printer configuration descriptor */
+    usb_desc_itf            printer_itf;                 /*!< printer interface descriptor */
+    usb_desc_ep             printer_epin;                /*!< endpoint IN descriptor */
+    usb_desc_ep             printer_epout;               /*!< endpoint OUT descriptor */
 } usb_printer_desc_config_set;
 
 #pragma pack()
@@ -75,4 +75,4 @@ typedef struct
 extern usb_desc printer_desc;
 extern usb_class_core usbd_printer_cb;
 
-#endif /* __PRINTER_CORE_H */
+#endif /* PRINTER_CORE_H */

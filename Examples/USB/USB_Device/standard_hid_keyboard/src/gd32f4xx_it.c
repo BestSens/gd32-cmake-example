@@ -2,7 +2,7 @@
     \file    gd32f4xx_it.c
     \brief   main interrupt service routines
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -34,11 +34,10 @@ OF SUCH DAMAGE.
 
 #include "gd32f4xx_it.h"
 #include "drv_usbd_int.h"
-#include "drv_usb_hw.h"
 
-extern usb_core_driver  hid_keyboard;
+extern usb_core_driver hid_keyboard;
 
-void usb_timer_irq(void);
+extern void usb_timer_irq(void);
 
 /* local function prototypes ('static') */
 static void resume_mcu_clk(void);
@@ -148,7 +147,7 @@ void PendSV_Handler(void)
 }
 
 /*!
-    \brief      this function handles timer2 Handler
+    \brief      this function handles timer2 interrupt request
     \param[in]  none
     \param[out] none
     \retval     none
@@ -159,41 +158,41 @@ void TIMER2_IRQHandler(void)
 }
 
 /*!
-    \brief      this function handles EXTI0_IRQ Handler
+    \brief      this function handles EXTI0_IRQ interrupt request
     \param[in]  none
     \param[out] none
     \retval     none
 */
 void EXTI0_IRQHandler(void)
 {
-    if (exti_interrupt_flag_get(WAKEUP_KEY_EXTI_LINE) != RESET) {
-        if (hid_keyboard.dev.pm.dev_remote_wakeup) {
+    if(RESET != exti_interrupt_flag_get(WAKEUP_KEY_EXTI_LINE)) {
+        if(hid_keyboard.dev.pm.dev_remote_wakeup) {
             /* configure system clock */
             resume_mcu_clk();
 
-            #ifdef USE_USB_FS
-                rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLQ);
-                rcu_ck48m_clock_config(RCU_CK48MSRC_PLL48M);
+#ifdef USE_USB_FS
+            rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLQ);
+            rcu_ck48m_clock_config(RCU_CK48MSRC_PLL48M);
 
-                rcu_periph_clock_enable(RCU_USBFS);
-            #elif defined(USE_USB_HS)
+            rcu_periph_clock_enable(RCU_USBFS);
+#elif defined(USE_USB_HS)
 
-                #ifdef USE_EMBEDDED_PHY
-                    rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLQ);
-                    rcu_ck48m_clock_config(RCU_CK48MSRC_PLL48M);
-                #elif defined(USE_ULPI_PHY)
-                    rcu_periph_clock_enable(RCU_USBHSULPI);
-                #endif /* USE_EMBEDDED_PHY */
+#ifdef USE_EMBEDDED_PHY
+            rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLQ);
+            rcu_ck48m_clock_config(RCU_CK48MSRC_PLL48M);
+#elif defined(USE_ULPI_PHY)
+            rcu_periph_clock_enable(RCU_USBHSULPI);
+#endif /* USE_EMBEDDED_PHY */
 
-                rcu_periph_clock_enable(RCU_USBHS);
-            #endif /* USB_USBFS */
+            rcu_periph_clock_enable(RCU_USBHS);
+#endif /* USB_USBFS */
 
             usb_clock_active(&hid_keyboard);
 
             usb_rwkup_set(&hid_keyboard);
 
             /* add delay time */
-            for(__IO uint16_t i = 0U; i < 1000U; i++){
+            for(__IO uint16_t i = 0U; i < 1000U; i++) {
                 for(__IO uint16_t i = 0U; i < 200U; i++);
             }
 
@@ -212,14 +211,14 @@ void EXTI0_IRQHandler(void)
 #ifdef USE_USB_FS
 
 /*!
-    \brief      this function handles USBFS wakeup interrupt handler
+    \brief      this function handles USBFS wakeup interrupt request
     \param[in]  none
     \param[out] none
     \retval     none
 */
 void USBFS_WKUP_IRQHandler(void)
 {
-    if (hid_keyboard.bp.low_power) {
+    if(hid_keyboard.bp.low_power) {
         resume_mcu_clk();
 
         rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLQ);
@@ -236,22 +235,22 @@ void USBFS_WKUP_IRQHandler(void)
 #elif defined(USE_USB_HS)
 
 /*!
-    \brief      this function handles USBHS wakeup interrupt handler
+    \brief      this function handles USBHS wakeup interrupt request
     \param[in]  none
     \param[out] none
     \retval     none
 */
 void USBHS_WKUP_IRQHandler(void)
 {
-    if (hid_keyboard.bp.low_power) {
+    if(hid_keyboard.bp.low_power) {
         resume_mcu_clk();
 
-        #ifdef USE_EMBEDDED_PHY
-            rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLQ);
-            rcu_ck48m_clock_config(RCU_CK48MSRC_PLL48M);
-        #elif defined(USE_ULPI_PHY)
-            rcu_periph_clock_enable(RCU_USBHSULPI);
-        #endif
+#ifdef USE_EMBEDDED_PHY
+        rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLQ);
+        rcu_ck48m_clock_config(RCU_CK48MSRC_PLL48M);
+#elif defined(USE_ULPI_PHY)
+        rcu_periph_clock_enable(RCU_USBHSULPI);
+#endif
 
         rcu_periph_clock_enable(RCU_USBHS);
 
@@ -266,20 +265,20 @@ void USBHS_WKUP_IRQHandler(void)
 #ifdef USE_USB_FS
 
 /*!
-    \brief      this function handles USBFS IRQ Handler
+    \brief      this function handles USBFS global interrupt request
     \param[in]  none
     \param[out] none
     \retval     none
 */
 void USBFS_IRQHandler(void)
 {
-    usbd_isr (&hid_keyboard);
+    usbd_isr(&hid_keyboard);
 }
 
 #elif defined(USE_USB_HS)
 
 /*!
-    \brief      this function handles USBHS IRQ Handler
+    \brief      this function handles USBHS global interrupt request
     \param[in]  none
     \param[out] none
     \retval     none
@@ -294,25 +293,25 @@ void USBHS_IRQHandler(void)
 #ifdef USB_HS_DEDICATED_EP1_ENABLED
 
 /*!
-    \brief      this function handles EP1_IN Handler
+    \brief      this function handles EP1_IN interrupt request
     \param[in]  none
     \param[out] none
     \retval     none
 */
 void USBHS_EP1_In_IRQHandler(void)
 {
-    usbd_int_dedicated_ep1in (&hid_keyboard);
+    usbd_int_dedicated_ep1in(&hid_keyboard);
 }
 
 /*!
-    \brief      this function handles EP1_OUT Handler
+    \brief      this function handles EP1_OUT interrupt request
     \param[in]  none
     \param[out] none
     \retval     none
 */
 void USBHS_EP1_Out_IRQHandler(void)
 {
-    usbd_int_dedicated_ep1out (&hid_keyboard);
+    usbd_int_dedicated_ep1out(&hid_keyboard);
 }
 
 #endif /* USBHS_DEDICATED_EP1_ENABLED */
@@ -329,20 +328,20 @@ static void resume_mcu_clk(void)
     rcu_osci_on(RCU_HXTAL);
 
     /* wait till HXTAL is ready */
-    while(RESET == rcu_flag_get(RCU_FLAG_HXTALSTB)){
+    while(RESET == rcu_flag_get(RCU_FLAG_HXTALSTB)) {
     }
 
     /* enable PLL */
     rcu_osci_on(RCU_PLL_CK);
 
     /* wait till PLL is ready */
-    while(RESET == rcu_flag_get(RCU_FLAG_PLLSTB)){
+    while(RESET == rcu_flag_get(RCU_FLAG_PLLSTB)) {
     }
 
     /* select PLL as system clock source */
     rcu_system_clock_source_config(RCU_CKSYSSRC_PLLP);
 
     /* wait till PLL is used as system clock source */
-    while(RCU_SCSS_PLLP != rcu_system_clock_source_get()){
+    while(RCU_SCSS_PLLP != rcu_system_clock_source_get()) {
     }
 }

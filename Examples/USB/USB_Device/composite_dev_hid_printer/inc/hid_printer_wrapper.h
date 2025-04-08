@@ -2,7 +2,7 @@
     \file    hid_printer_wrapper.h
     \brief   header file for the hid_printer_wrapper.c file
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -38,11 +38,10 @@ OF SUCH DAMAGE.
 #include "custom_hid_core.h"
 #include "printer_core.h"
 
-#define HID_INTERFACE              0x00
-#define PRINTER_INTERFACE          0x01
+#define HID_INTERFACE              0x00U
+#define PRINTER_INTERFACE          0x01U
 
-typedef struct
-{
+typedef struct {
     usb_desc_config                config;
     usb_desc_itf                   hid_interface;
     usb_desc_hid                   hid_vendorhid;

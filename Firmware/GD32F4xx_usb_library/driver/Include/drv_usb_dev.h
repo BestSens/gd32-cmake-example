@@ -2,7 +2,7 @@
     \file    drv_usb_dev.h
     \brief   USB device low level driver header file
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,8 +32,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __DRV_USB_DEV_H
-#define __DRV_USB_DEV_H
+#ifndef DRV_USB_DEV_H
+#define DRV_USB_DEV_H
 
 #include "usbd_conf.h"
 #include "drv_usb_core.h"
@@ -43,12 +43,12 @@ OF SUCH DAMAGE.
 
 enum usb_ctl_status {
     USB_CTL_IDLE = 0U,                                                  /*!< USB control transfer idle state */
-    USB_CTL_DATA_IN,                                                    /*!< USB control transfer data in state */
-    USB_CTL_LAST_DATA_IN,                                               /*!< USB control transfer last data in state */
-    USB_CTL_DATA_OUT,                                                   /*!< USB control transfer data out state */
-    USB_CTL_LAST_DATA_OUT,                                              /*!< USB control transfer last data out state */
-    USB_CTL_STATUS_IN,                                                  /*!< USB control transfer status in state*/
-    USB_CTL_STATUS_OUT                                                  /*!< USB control transfer status out state */
+    USB_CTL_DATA_IN,                                                    /*!< USB control transfer data IN state */
+    USB_CTL_LAST_DATA_IN,                                               /*!< USB control transfer last data IN state */
+    USB_CTL_DATA_OUT,                                                   /*!< USB control transfer data OUT state */
+    USB_CTL_LAST_DATA_OUT,                                              /*!< USB control transfer last data OUT state */
+    USB_CTL_STATUS_IN,                                                  /*!< USB control transfer status IN state*/
+    USB_CTL_STATUS_OUT                                                  /*!< USB control transfer status OUT state */
 };
 
 /* static inline function definitions */
@@ -57,9 +57,9 @@ enum usb_ctl_status {
     \brief      configure the USB device to be disconnected
     \param[in]  udev: pointer to USB device
     \param[out] none
-    \retval     operation status
+    \retval     none
 */
-__STATIC_INLINE void usb_dev_disconnect (usb_core_driver *udev)
+__STATIC_INLINE void usb_dev_disconnect(usb_core_driver *udev)
 {
     udev->regs.dr->DCTL |= DCTL_SD;
 }
@@ -68,9 +68,9 @@ __STATIC_INLINE void usb_dev_disconnect (usb_core_driver *udev)
     \brief      configure the USB device to be connected
     \param[in]  udev: pointer to USB device
     \param[out] none
-    \retval     operation status
+    \retval     none
 */
-__STATIC_INLINE void usb_dev_connect (usb_core_driver *udev)
+__STATIC_INLINE void usb_dev_connect(usb_core_driver *udev)
 {
     udev->regs.dr->DCTL &= ~DCTL_SD;
 }
@@ -80,12 +80,12 @@ __STATIC_INLINE void usb_dev_connect (usb_core_driver *udev)
     \param[in]  udev: pointer to USB device
     \param[in]  dev_addr: device address for setting
     \param[out] none
-    \retval     operation status
+    \retval     none
 */
-__STATIC_INLINE void usb_devaddr_set (usb_core_driver *udev, uint8_t dev_addr)
+__STATIC_INLINE void usb_devaddr_set(usb_core_driver *udev, uint8_t dev_addr)
 {
     udev->regs.dr->DCFG &= ~DCFG_DAR;
-    udev->regs.dr->DCFG |= (uint32_t)dev_addr << 4U;
+    udev->regs.dr->DCFG |= (uint32_t)dev_addr << 4;
 }
 
 /*!
@@ -94,13 +94,13 @@ __STATIC_INLINE void usb_devaddr_set (usb_core_driver *udev, uint8_t dev_addr)
     \param[out] none
     \retval     interrupt status
 */
-__STATIC_INLINE uint32_t usb_oepintnum_read (usb_core_driver *udev)
+__STATIC_INLINE uint32_t usb_oepintnum_read(usb_core_driver *udev)
 {
     uint32_t value = udev->regs.dr->DAEPINT;
 
     value &= udev->regs.dr->DAEPINTEN;
 
-    return (value & DAEPINT_OEPITB) >> 16U;
+    return (value & DAEPINT_OEPITB) >> 16;
 }
 
 /*!
@@ -110,7 +110,7 @@ __STATIC_INLINE uint32_t usb_oepintnum_read (usb_core_driver *udev)
     \param[out] none
     \retval     interrupt status
 */
-__STATIC_INLINE uint32_t usb_oepintr_read (usb_core_driver *udev, uint8_t ep_num)
+__STATIC_INLINE uint32_t usb_oepintr_read(usb_core_driver *udev, uint8_t ep_num)
 {
     uint32_t value = udev->regs.er_out[ep_num]->DOEPINTF;
 
@@ -125,12 +125,12 @@ __STATIC_INLINE uint32_t usb_oepintr_read (usb_core_driver *udev, uint8_t ep_num
     \param[out] none
     \retval     interrupt status
 */
-__STATIC_INLINE uint32_t usb_iepintnum_read (usb_core_driver *udev)
+__STATIC_INLINE uint32_t usb_iepintnum_read(usb_core_driver *udev)
 {
     uint32_t value = udev->regs.dr->DAEPINT;
 
     value &= udev->regs.dr->DAEPINTEN;
-    
+
     return value & DAEPINT_IEPITB;
 }
 
@@ -140,9 +140,9 @@ __STATIC_INLINE uint32_t usb_iepintnum_read (usb_core_driver *udev)
     \param[out] none
     \retval     none
 */
-__STATIC_INLINE void usb_rwkup_set (usb_core_driver *udev)
+__STATIC_INLINE void usb_rwkup_set(usb_core_driver *udev)
 {
-    if (udev->dev.pm.dev_remote_wakeup) {
+    if(udev->dev.pm.dev_remote_wakeup) {
         /* enable remote wakeup signaling */
         udev->regs.dr->DCTL |= DCTL_RWKUP;
     }
@@ -154,9 +154,9 @@ __STATIC_INLINE void usb_rwkup_set (usb_core_driver *udev)
     \param[out] none
     \retval     none
 */
-__STATIC_INLINE void usb_rwkup_reset (usb_core_driver *udev)
+__STATIC_INLINE void usb_rwkup_reset(usb_core_driver *udev)
 {
-    if (udev->dev.pm.dev_remote_wakeup) {
+    if(udev->dev.pm.dev_remote_wakeup) {
         /* disable remote wakeup signaling */
         udev->regs.dr->DCTL &= ~DCTL_RWKUP;
     }
@@ -164,34 +164,34 @@ __STATIC_INLINE void usb_rwkup_reset (usb_core_driver *udev)
 
 /* function declarations */
 /* initialize USB core registers for device mode */
-usb_status usb_devcore_init (usb_core_driver *udev);
+usb_status usb_devcore_init(usb_core_driver *udev);
 /* enable the USB device mode interrupts */
-usb_status usb_devint_enable (usb_core_driver *udev);
+usb_status usb_devint_enable(usb_core_driver *udev);
 /* active the USB endpoint 0 transaction */
-usb_status usb_transc0_active (usb_core_driver *udev, usb_transc *transc);
+usb_status usb_transc0_active(usb_core_driver *udev, usb_transc *transc);
 /* active the USB transaction */
-usb_status usb_transc_active (usb_core_driver *udev, usb_transc *transc);
+usb_status usb_transc_active(usb_core_driver *udev, usb_transc *transc);
 /* deactivate the USB transaction */
-usb_status usb_transc_deactivate (usb_core_driver *udev, usb_transc *transc);
+usb_status usb_transc_deactivate(usb_core_driver *udev, usb_transc *transc);
 /* configure USB transaction to start IN transfer */
-usb_status usb_transc_inxfer (usb_core_driver *udev, usb_transc *transc);
+usb_status usb_transc_inxfer(usb_core_driver *udev, usb_transc *transc);
 /* configure USB transaction to start OUT transfer */
-usb_status usb_transc_outxfer (usb_core_driver *udev, usb_transc *transc);
+usb_status usb_transc_outxfer(usb_core_driver *udev, usb_transc *transc);
 /* set the USB transaction STALL status */
-usb_status usb_transc_stall (usb_core_driver *udev, usb_transc *transc);
+usb_status usb_transc_stall(usb_core_driver *udev, usb_transc *transc);
 /* clear the USB transaction STALL status */
-usb_status usb_transc_clrstall (usb_core_driver *udev, usb_transc *transc);
+usb_status usb_transc_clrstall(usb_core_driver *udev, usb_transc *transc);
 /* read device IN endpoint interrupt flag register */
-uint32_t usb_iepintr_read (usb_core_driver *udev, uint8_t ep_num);
+uint32_t usb_iepintr_read(usb_core_driver *udev, uint8_t ep_num);
 /* configures OUT endpoint 0 to receive SETUP packets */
-void usb_ctlep_startout (usb_core_driver *udev);
+void usb_ctlep_startout(usb_core_driver *udev);
 /* active remote wakeup signaling */
-void usb_rwkup_active (usb_core_driver *udev);
+void usb_rwkup_active(usb_core_driver *udev);
 /* active USB core clock */
-void usb_clock_active (usb_core_driver *udev);
+void usb_clock_active(usb_core_driver *udev);
 /* USB device suspend */
-void usb_dev_suspend (usb_core_driver *udev);
+void usb_dev_suspend(usb_core_driver *udev);
 /* stop the device and clean up FIFOs */
-void usb_dev_stop (usb_core_driver *udev);
+void usb_dev_stop(usb_core_driver *udev);
 
-#endif /* __DRV_USB_DEV_H */
+#endif /* DRV_USB_DEV_H */

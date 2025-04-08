@@ -2,7 +2,7 @@
     \file    gd32f4xx_it.h
     \brief   the header file of the ISR
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -54,20 +54,20 @@ void SVC_Handler(void);
 void DebugMon_Handler(void);
 /* this function handles PendSV exception */
 void PendSV_Handler(void);
-/* this function handles Timer2 Handler */
+/* this function handles Timer2 handler */
 void TIMER2_IRQHandler(void);
-/* this function handles external line 0 interrupt handler */
+/* this function handles external line 0 interrupt request */
 void EXTI0_IRQHandler(void);
 #ifdef USE_USB_FS
-/* this function handles USBFS wakeup interrupt handler */
+/* this function handles USBFS wakeup interrupt request */
 void USBFS_WKUP_IRQHandler(void);
-/* this function handles USBFS IRQ Handler */
+/* this function handles USBFS global interrupt request */
 void USBFS_IRQHandler(void);
 #endif /* USE_USB_FS */
 #ifdef USE_USB_HS
-/* this function handles USBHS wakeup interrupt handler */
+/* this function handles USBHS wakeup interrupt request */
 void USBHS_WKUP_IRQHandler(void);
-/* this function handles USBHS IRQ Handler */
+/* this function handles USBHS global interrupt request */
 void USBHS_IRQHandler(void);
 #endif /* USE_USB_HS */
 

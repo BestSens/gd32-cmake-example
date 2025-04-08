@@ -2,7 +2,7 @@
     \file    sram_msd.c
     \brief   internal flash functions
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,56 +32,55 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#include "usb_conf.h"
 #include "sram_msd.h"
 
-extern unsigned char SRAM[];
+extern unsigned char sram_data[];
 
 /*!
-    \brief      read data from multiple blocks of SRAM
-    \param[in]  pBuf: pointer to user buffer
-    \param[in]  ReadAddr: address to be read
-    \param[in]  BlkSize: size of block
-    \param[in]  BlkNum: number of block
+    \brief      read data from multiple blocks of sram_data
+    \param[in]  pbuf: pointer to user buffer
+    \param[in]  read_addr: address to be read
+    \param[in]  blk_size: size of block
+    \param[in]  blk_num: number of block
     \param[out] none
     \retval     status
 */
-uint32_t SRAM_ReadMultiBlocks (uint8_t *pBuf, uint32_t ReadAddr, uint16_t BlkSize, uint32_t BlkNum)
+uint32_t sram_read_multi_blocks(uint8_t *pbuf, uint32_t read_addr, uint16_t blk_size, uint32_t blk_num)
 {
     uint32_t i = 0U, Offset = 0U;
 
-    while (BlkNum--) {
-        for (i = 0U; i < BlkSize; i++) {
-            *pBuf = SRAM[ReadAddr + Offset + i];
-            pBuf++;
+    while(blk_num--) {
+        for(i = 0U; i < blk_size; i++) {
+            *pbuf = sram_data[read_addr + Offset + i];
+            pbuf++;
         }
 
-        Offset += BlkSize;
+        Offset += blk_size;
     }
 
     return 0U;
 }
 
 /*!
-    \brief      write data to multiple blocks of SRAM
-    \param[in]  pBuf: pointer to user buffer
-    \param[in]  WriteAddr: address to be write
-    \param[in]  BlkSize: size of block
-    \param[in]  BlkNum: number of block
+    \brief      write data to multiple blocks of sram_data
+    \param[in]  pbuf: pointer to user buffer
+    \param[in]  write_addr: address to be write
+    \param[in]  blk_size: size of block
+    \param[in]  blk_num: number of block
     \param[out] none
     \retval     status
 */
-uint32_t SRAM_WriteMultiBlocks(uint8_t *pBuf, uint32_t WriteAddr, uint16_t BlkSize, uint32_t BlkNum)
+uint32_t sram_write_multi_blocks(uint8_t *pbuf, uint32_t write_addr, uint16_t blk_size, uint32_t blk_num)
 {
     uint32_t i = 0U, Offset = 0U;
 
-    while (BlkNum--) {
-        for (i = 0U; i < BlkSize; i++) {
-            SRAM[WriteAddr + Offset + i] = *pBuf;
-            pBuf++;
+    while(blk_num--) {
+        for(i = 0U; i < blk_size; i++) {
+            sram_data[write_addr + Offset + i] = *pbuf;
+            pbuf++;
         }
 
-        Offset += BlkSize;
+        Offset += blk_size;
     }
 
     return 0U;

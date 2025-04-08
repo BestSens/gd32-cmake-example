@@ -2,7 +2,7 @@
     \file    netconf.c
     \brief   network connection configuration
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -46,28 +46,28 @@ OF SUCH DAMAGE.
 #include "lwip/priv/tcp_priv.h"
 #include "lwip/timeouts.h"
 
-#define MAX_DHCP_TRIES        4
+#define DHCP_TRIES_MAX_TIMES        4
 
 typedef enum {
-    DHCP_START = 0,
-    DHCP_WAIT_ADDRESS,
-    DHCP_ADDRESS_ASSIGNED,
-    DHCP_TIMEOUT
-} dhcp_state_enum;
+    DHCP_ADDR_NONE = 0,
+    DHCP_ADDR_BEGIN,
+    DHCP_ADDR_GOT,
+    DHCP_ADDR_FAIL
+} dhcp_addr_status_enum;
 
 #ifdef USE_DHCP
-uint32_t dhcp_fine_timer = 0;
-uint32_t dhcp_coarse_timer = 0;
-dhcp_state_enum dhcp_state = DHCP_START;
+uint32_t finecurtime = 0;
+uint32_t coarsecurtime = 0;
+dhcp_addr_status_enum dhcp_addr_status = DHCP_ADDR_NONE;
 #endif /* USE_DHCP */
 
 struct netif g_mynetif;
-uint32_t tcp_timer = 0;
-uint32_t arp_timer = 0;
+uint32_t tcpcurtime = 0;
+uint32_t arpcurtime = 0;
+uint32_t acdcurtime = 0;
 ip_addr_t ip_address = {0};
 
-void lwip_dhcp_process_handle(void);
-void lwip_netif_status_callback(struct netif *netif);
+void lwip_dhcp_address_get(void);
 
 /*!
     \brief      initializes the LwIP stack
@@ -77,150 +77,150 @@ void lwip_netif_status_callback(struct netif *netif);
 */
 void lwip_stack_init(void)
 {
-    ip_addr_t ipaddr;
-    ip_addr_t netmask;
-    ip_addr_t gw;
+    ip_addr_t gd_ipaddr;
+    ip_addr_t gd_netmask;
+    ip_addr_t gd_gw;
 
-    /* initializes the dynamic memory heap defined by MEM_SIZE */
+    /* initialize the lwIP dynamic memory heap and memory pools */
     mem_init();
-
-    /* initializes the memory pools defined by MEMP_NUM_x */
     memp_init();
+
 #ifdef TIMEOUT_CHECK_USE_LWIP
     sys_timeouts_init();
 #endif /* TIMEOUT_CHECK_USE_LWIP */
 
 #ifdef USE_DHCP
-    ipaddr.addr = 0;
-    netmask.addr = 0;
-    gw.addr = 0;
+    gd_ipaddr.addr = 0;
+    gd_netmask.addr = 0;
+    gd_gw.addr = 0;
 #else
-    IP4_ADDR(&ipaddr, IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3);
-    IP4_ADDR(&netmask, NETMASK_ADDR0, NETMASK_ADDR1, NETMASK_ADDR2, NETMASK_ADDR3);
-    IP4_ADDR(&gw, GW_ADDR0, GW_ADDR1, GW_ADDR2, GW_ADDR3);
+    IP4_ADDR(&gd_ipaddr, BOARD_IP_ADDR0, BOARD_IP_ADDR1, BOARD_IP_ADDR2, BOARD_IP_ADDR3);
+    IP4_ADDR(&gd_netmask, BOARD_NETMASK_ADDR0, BOARD_NETMASK_ADDR1, BOARD_NETMASK_ADDR2, BOARD_NETMASK_ADDR3);
+    IP4_ADDR(&gd_gw, BOARD_GW_ADDR0, BOARD_GW_ADDR1, BOARD_GW_ADDR2, BOARD_GW_ADDR3);
 
 #endif /* USE_DHCP */
 
-    /* - netif_add(struct netif *netif, ip_addr_t *ipaddr,
-              ip_addr_t *netmask, ip_addr_t *gw,
-              void *state, err_t (* init)(struct netif *netif),
-              err_t (* input)(struct pbuf *p, struct netif *netif))
+    /* add a new network interface */
+    netif_add(&g_mynetif, &gd_ipaddr, &gd_netmask, &gd_gw, NULL, &ethernetif_init, &ethernet_input);
 
-     Adds your network interface to the netif_list. Allocate a struct
-    netif and pass a pointer to this structure as the first argument.
-    Give pointers to cleared ip_addr structures when using DHCP,
-    or fill them with sane numbers otherwise. The state pointer may be NULL.
-
-    The init function pointer must point to a initialization function for
-    your ethernet netif interface. The following code illustrates it's use.*/
-
-    netif_add(&g_mynetif, &ipaddr, &netmask, &gw, NULL, &ethernetif_init, &ethernet_input);
-    /* registers the default network interface */
+    /* set a default network interface */
     netif_set_default(&g_mynetif);
+
+    /* set a callback when interface is up/down */
     netif_set_status_callback(&g_mynetif, lwip_netif_status_callback);
 
-    /* when the netif is fully configured this function must be called */
+    /* set the flag of netif as NETIF_FLAG_LINK_UP */
+    netif_set_link_up(&g_mynetif);
+
+    /* bring an interface up and set the flag of netif as NETIF_FLAG_UP */
     netif_set_up(&g_mynetif);
 }
 
 /*!
-    \brief      called when a frame is received
+    \brief      called when a farme is received from the interface
     \param[in]  none
     \param[out] none
     \retval     none
 */
-void lwip_pkt_handle(void)
+void lwip_frame_recv(void)
 {
-    /* read a received packet from the Ethernet buffers and send it to the lwIP for handling */
+    /* get frame from the interface and pass it to the LwIP stack */
     ethernetif_input(&g_mynetif);
 }
 
 /*!
-    \brief      LwIP periodic tasks
-    \param[in]  localtime the current LocalTime value
+    \brief      call the time-related function periodicallytasks
+    \param[in]  curtime: the value of current time
     \param[out] none
     \retval     none
 */
-void lwip_periodic_handle(__IO uint32_t localtime)
+void lwip_timeouts_check(__IO uint32_t curtime)
 {
 #if LWIP_TCP
-    /* TCP periodic process every 250 ms */
-    if(localtime - tcp_timer >= TCP_TMR_INTERVAL) {
-        tcp_timer =  localtime;
+    /* called periodically to dispatch TCP timers every 250 ms */
+    if(curtime - tcpcurtime >= TCP_TMR_INTERVAL) {
+        tcpcurtime =  curtime;
         tcp_tmr();
     }
 
 #endif /* LWIP_TCP */
 
-    /* ARP periodic process every 5s */
-    if((localtime - arp_timer) >= ARP_TMR_INTERVAL) {
-        arp_timer = localtime;
+    /* called periodically to dispatch ARP timers every 1s */
+    if((curtime - arpcurtime) >= ARP_TMR_INTERVAL) {
+        arpcurtime = curtime;
         etharp_tmr();
     }
 
 #ifdef USE_DHCP
-    /* fine DHCP periodic process every 500ms */
-    if(localtime - dhcp_fine_timer >= DHCP_FINE_TIMER_MSECS) {
-        dhcp_fine_timer =  localtime;
+    /* called periodically to check whether an outstanding DHCP request is timed out every 500 ms */
+    if(curtime - finecurtime >= DHCP_FINE_TIMER_MSECS) {
+        finecurtime = curtime;
         dhcp_fine_tmr();
-        if((DHCP_ADDRESS_ASSIGNED != dhcp_state) && (DHCP_TIMEOUT != dhcp_state)) {
+        if((DHCP_ADDR_GOT != dhcp_addr_status) && (DHCP_ADDR_FAIL != dhcp_addr_status)) {
             /* process DHCP state machine */
-            lwip_dhcp_process_handle();
+            lwip_dhcp_address_get();
         }
     }
 
-    /* DHCP coarse periodic process every 60s */
-    if(localtime - dhcp_coarse_timer >= DHCP_COARSE_TIMER_MSECS) {
-        dhcp_coarse_timer =  localtime;
+    /* called periodically to check for lease renewal/rebind timeouts every 60s */
+    if(curtime - coarsecurtime >= DHCP_COARSE_TIMER_MSECS) {
+        coarsecurtime = curtime;
         dhcp_coarse_tmr();
     }
 
+#ifdef LWIP_ACD
+if((curtime - acdcurtime) >= ACD_TMR_INTERVAL) {
+        acdcurtime = curtime;
+        acd_tmr();
+    }
+#endif /* LWIP_ACD */
 #endif /* USE_DHCP */
+
 }
 
 #ifdef USE_DHCP
 /*!
-    \brief      lwip_dhcp_process_handle
+    \brief      get IP address through DHCP function
     \param[in]  none
     \param[out] none
     \retval     none
 */
-void lwip_dhcp_process_handle(void)
+void lwip_dhcp_address_get(void)
 {
-    ip_addr_t ipaddr;
-    ip_addr_t netmask;
-    ip_addr_t gw;
+    ip_addr_t gd_ipaddr;
+    ip_addr_t gd_netmask;
+    ip_addr_t gd_gw;
     struct dhcp *dhcp_client;
 
-    switch(dhcp_state) {
-    case DHCP_START:
+    switch(dhcp_addr_status) {
+    case DHCP_ADDR_NONE:
         dhcp_start(&g_mynetif);
 
-        dhcp_state = DHCP_WAIT_ADDRESS;
+        dhcp_addr_status = DHCP_ADDR_BEGIN;
         break;
 
-    case DHCP_WAIT_ADDRESS:
-        /* read the new IP address */
+    case DHCP_ADDR_BEGIN:
+        /* got the IP address */
         ip_address.addr = g_mynetif.ip_addr.addr;
 
         if(0 != ip_address.addr) {
-            dhcp_state = DHCP_ADDRESS_ASSIGNED;
+            dhcp_addr_status = DHCP_ADDR_GOT;
 
             printf("\r\nDHCP -- eval board ip address: %d.%d.%d.%d \r\n", ip4_addr1_16(&ip_address), \
                    ip4_addr2_16(&ip_address), ip4_addr3_16(&ip_address), ip4_addr4_16(&ip_address));
         } else {
             /* DHCP timeout */
             dhcp_client = netif_dhcp_data(&g_mynetif);
-            if(dhcp_client->tries > MAX_DHCP_TRIES) {
-                dhcp_state = DHCP_TIMEOUT;
+            if(dhcp_client->tries > DHCP_TRIES_MAX_TIMES) {
+                dhcp_addr_status = DHCP_ADDR_FAIL;
                 /* stop DHCP */
                 dhcp_stop(&g_mynetif);
 
-                /* static address used */
-                IP4_ADDR(&ipaddr, IP_ADDR0, IP_ADDR1, IP_ADDR2, IP_ADDR3);
-                IP4_ADDR(&netmask, NETMASK_ADDR0, NETMASK_ADDR1, NETMASK_ADDR2, NETMASK_ADDR3);
-                IP4_ADDR(&gw, GW_ADDR0, GW_ADDR1, GW_ADDR2, GW_ADDR3);
-                netif_set_addr(&g_mynetif, &ipaddr, &netmask, &gw);
+                /* use static address as IP address */
+                IP4_ADDR(&gd_ipaddr, BOARD_IP_ADDR0, BOARD_IP_ADDR1, BOARD_IP_ADDR2, BOARD_IP_ADDR3);
+                IP4_ADDR(&gd_netmask, BOARD_NETMASK_ADDR0, BOARD_NETMASK_ADDR1, BOARD_NETMASK_ADDR2, BOARD_NETMASK_ADDR3);
+                IP4_ADDR(&gd_gw, BOARD_GW_ADDR0, BOARD_GW_ADDR1, BOARD_GW_ADDR2, BOARD_GW_ADDR3);
+                netif_set_addr(&g_mynetif, &gd_ipaddr, &gd_netmask, &gd_gw);
             }
         }
         break;

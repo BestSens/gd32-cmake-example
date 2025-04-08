@@ -2,7 +2,7 @@
     \file    main.c
     \brief   this file realizes HID host(usbfs) and MSC host(usbhs)
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -33,11 +33,11 @@ OF SUCH DAMAGE.
 */
 
 #include "drv_usb_hw.h"
-#include "drv_usb_core.h"
 #include "usbh_msc_usr.h"
 #include "usbh_msc_core.h"
 #include "usbh_hid_usr.h"
 #include "usbh_hid_core.h"
+#include <stdio.h>
 
 usbh_host usb_host_hid;
 usbh_host usb_host_msc;
@@ -65,23 +65,23 @@ int main(void)
     /* register USBFS port device class */
     usbh_class_register(&usb_host_hid, &usbh_hid);
 
-    usbh_init(&usb_host_hid,
-              &usbfs_core,
-              USB_CORE_ENUM_FS,
+    usbh_init(&usb_host_hid, \
+              &usbfs_core, \
+              USB_CORE_ENUM_FS, \
               &hid_usr_cb);
 
     /* register USBHS port device class */
     usbh_class_register(&usb_host_msc, &usbh_msc);
 
-    usbh_init(&usb_host_msc,
-              &usbhs_core,
-              USB_CORE_ENUM_HS,
+    usbh_init(&usb_host_msc, \
+              &usbhs_core, \
+              USB_CORE_ENUM_HS, \
               &msc_usr_cb);
 
     /* enable interrupts */
     usb_intr_config();
 
-    while(1){
+    while(1) {
         /* Host state handler */
         usbh_core_task(&usb_host_msc);
 

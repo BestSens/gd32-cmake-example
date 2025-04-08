@@ -2,7 +2,7 @@
     \file    gd32f4xx_hw.c
     \brief   USB hardware configuration for GD32F4xx
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -58,12 +58,12 @@ void usb_rcu_config(void)
 
     rcu_periph_clock_enable(RCU_USBFS);
 #elif defined(USE_USB_HS)
-    #ifdef USE_EMBEDDED_PHY
-        rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLQ);
-        rcu_ck48m_clock_config(RCU_CK48MSRC_PLL48M);
-    #elif defined(USE_ULPI_PHY)
-        rcu_periph_clock_enable(RCU_USBHSULPI);
-    #endif /* USE_EMBEDDED_PHY */
+#ifdef USE_EMBEDDED_PHY
+    rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLQ);
+    rcu_ck48m_clock_config(RCU_CK48MSRC_PLL48M);
+#elif defined(USE_ULPI_PHY)
+    rcu_periph_clock_enable(RCU_USBHSULPI);
+#endif /* USE_EMBEDDED_PHY */
 
     rcu_periph_clock_enable(RCU_USBHS);
 #endif /* USB_USBFS */
@@ -155,38 +155,38 @@ void usb_intr_config(void)
     nvic_priority_group_set(NVIC_PRIGROUP_PRE2_SUB2);
 
 #ifdef USE_USB_FS
-    nvic_irq_enable((uint8_t)USBFS_IRQn, 2U, 0U);
+    nvic_irq_enable(USBFS_IRQn, 2U, 0U);
 
-    #if USBFS_LOW_POWER
-        /* enable the power module clock */
-        rcu_periph_clock_enable(RCU_PMU);
+#if USBFS_LOW_POWER
+    /* enable the power module clock */
+    rcu_periph_clock_enable(RCU_PMU);
 
-        /* USB wakeup EXTI line configuration */
-        exti_interrupt_flag_clear(EXTI_18);
-        exti_init(EXTI_18, EXTI_INTERRUPT, EXTI_TRIG_RISING);
-        exti_interrupt_enable(EXTI_18);
+    /* USB wakeup EXTI line configuration */
+    exti_interrupt_flag_clear(EXTI_18);
+    exti_init(EXTI_18, EXTI_INTERRUPT, EXTI_TRIG_RISING);
+    exti_interrupt_enable(EXTI_18);
 
-        nvic_irq_enable((uint8_t)USBFS_WKUP_IRQn, 0U, 0U);
-    #endif /* USBFS_LOW_POWER */
+    nvic_irq_enable(USBFS_WKUP_IRQn, 0U, 0U);
+#endif /* USBFS_LOW_POWER */
 #elif defined(USE_USB_HS)
-    nvic_irq_enable((uint8_t)USBHS_IRQn, 2U, 0U);
+    nvic_irq_enable(USBHS_IRQn, 2U, 0U);
 
-    #if USBHS_LOW_POWER
-        /* enable the power module clock */
-        rcu_periph_clock_enable(RCU_PMU);
+#if USBHS_LOW_POWER
+    /* enable the power module clock */
+    rcu_periph_clock_enable(RCU_PMU);
 
-        /* USB wakeup EXTI line configuration */
-        exti_interrupt_flag_clear(EXTI_20);
-        exti_init(EXTI_20, EXTI_INTERRUPT, EXTI_TRIG_RISING);
-        exti_interrupt_enable(EXTI_20);
+    /* USB wakeup EXTI line configuration */
+    exti_interrupt_flag_clear(EXTI_20);
+    exti_init(EXTI_20, EXTI_INTERRUPT, EXTI_TRIG_RISING);
+    exti_interrupt_enable(EXTI_20);
 
-        nvic_irq_enable((uint8_t)USBHS_WKUP_IRQn, 0U, 0U);
-    #endif /* USBHS_LOW_POWER */
+    nvic_irq_enable(USBHS_WKUP_IRQn, 0U, 0U);
+#endif /* USBHS_LOW_POWER */
 #endif /* USE_USB_FS */
 
 #ifdef USB_HS_DEDICATED_EP1_ENABLED
-    nvic_irq_enable(USBHS_EP1_Out_IRQn, 1, 0);
-    nvic_irq_enable(USBHS_EP1_In_IRQn, 1, 0);
+    nvic_irq_enable(USBHS_EP1_Out_IRQn, 1U, 0U);
+    nvic_irq_enable(USBHS_EP1_In_IRQn, 1U, 0U);
 #endif /* USB_HS_DEDICATED_EP1_ENABLED */
 }
 
@@ -202,7 +202,7 @@ void usb_timer_init(void)
     nvic_priority_group_set(NVIC_PRIGROUP_PRE2_SUB2);
 
     /* enable the TIMER2 global interrupt */
-    nvic_irq_enable((uint8_t)TIMER2_IRQn, 1U, 0U);
+    nvic_irq_enable(TIMER2_IRQn, 1U, 0U);
 
     rcu_periph_clock_enable(RCU_TIMER2);
 }
@@ -237,7 +237,7 @@ void usb_mdelay(const uint32_t msec)
 */
 void usb_timer_irq(void)
 {
-    if (RESET != timer_interrupt_flag_get(TIMER2, TIMER_INT_FLAG_UP)) {
+    if(RESET != timer_interrupt_flag_get(TIMER2, TIMER_INT_FLAG_UP)) {
         timer_interrupt_flag_clear(TIMER2, TIMER_INT_FLAG_UP);
 
         if(delay_time > 0x00U) {
@@ -277,7 +277,7 @@ static void hw_time_set(uint8_t unit)
 {
     timer_parameter_struct  timer_basestructure;
 
-    timer_prescaler = ((rcu_clock_freq_get(CK_APB1)/1000000*2)/12) - 1;
+    timer_prescaler = ((rcu_clock_freq_get(CK_APB1) / 1000000U * 2U) / 12U) - 1U;
 
     timer_disable(TIMER2);
     timer_interrupt_disable(TIMER2, TIMER_INT_UP);

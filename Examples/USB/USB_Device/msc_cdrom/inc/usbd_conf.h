@@ -2,7 +2,7 @@
     \file    usbd_conf.h
     \brief   the header file of USB device configuration
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,11 +32,12 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __USBD_CONF_H
-#define __USBD_CONF_H
+#ifndef USBD_CONF_H
+#define USBD_CONF_H
 
 #include "usb_conf.h"
 
+/* USB configure exported defines */
 #define USBD_CFG_MAX_NUM                1U
 #define USBD_ITF_MAX_NUM                1U
 #define USB_STR_DESC_MAX_SIZE           64U
@@ -63,4 +64,4 @@ OF SUCH DAMAGE.
 
 #define USB_STRING_COUNT                4U
 
-#endif /* __USBD_CONF_H */
+#endif /* USBD_CONF_H */

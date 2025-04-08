@@ -2,7 +2,7 @@
     \file    nand_flash_if.c
     \brief   USB DFU device nand flash interface functions
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -36,15 +36,14 @@ OF SUCH DAMAGE.
 #include "exmc_nandflash.h"
 
 /* local function prototypes ('static') */
-static uint8_t nand_flash_if_init (void);
-static uint8_t nand_flash_if_deinit (void);
-static uint8_t nand_flash_if_erase (uint32_t addr);
-static uint8_t nand_flash_if_write (uint8_t *buf, uint32_t addr, uint32_t len);
-static uint8_t* nand_flash_if_read (uint8_t *buf, uint32_t addr, uint32_t len);
-static uint8_t nand_flash_if_checkaddr (uint32_t addr);
+static uint8_t nand_flash_if_init(void);
+static uint8_t nand_flash_if_deinit(void);
+static uint8_t nand_flash_if_erase(uint32_t addr);
+static uint8_t nand_flash_if_write(uint8_t *buf, uint32_t addr, uint32_t len);
+static uint8_t *nand_flash_if_read(uint8_t *buf, uint32_t addr, uint32_t len);
+static uint8_t nand_flash_if_checkaddr(uint32_t addr);
 
-dfu_mem_prop dfu_nand_flash_cb =
-{
+dfu_mem_prop dfu_nand_flash_cb = {
     (const uint8_t *)NAND_FLASH_IF_STR,
 
     nand_flash_if_init,
@@ -53,8 +52,8 @@ dfu_mem_prop dfu_nand_flash_cb =
     nand_flash_if_write,
     nand_flash_if_read,
     nand_flash_if_checkaddr,
-    20, /* flash erase timeout in ms */
-    40  /* flash programming timeout in ms */
+    20U, /* flash erase timeout in ms */
+    40U  /* flash programming timeout in ms */
 };
 
 /*!
@@ -63,7 +62,7 @@ dfu_mem_prop dfu_nand_flash_cb =
     \param[out] none
     \retval     MEM_OK if the operation is right, MEM_FAIL else
 */
-static uint8_t nand_flash_if_init (void)
+static uint8_t nand_flash_if_init(void)
 {
     /* configure the EXMC access mode */
     exmc_nandflash_init(EXMC_BANK1_NAND);
@@ -77,7 +76,7 @@ static uint8_t nand_flash_if_init (void)
     \param[out] none
     \retval     MEM_OK if the operation is right, MEM_FAIL else
 */
-static uint8_t nand_flash_if_deinit (void)
+static uint8_t nand_flash_if_deinit(void)
 {
     return MEM_OK;
 }
@@ -88,7 +87,7 @@ static uint8_t nand_flash_if_deinit (void)
     \param[out] none
     \retval     MEM_OK if the operation is right, MEM_FAIL else
 */
-static uint8_t nand_flash_if_erase (uint32_t addr)
+static uint8_t nand_flash_if_erase(uint32_t addr)
 {
     return MEM_OK;
 }
@@ -101,15 +100,15 @@ static uint8_t nand_flash_if_erase (uint32_t addr)
     \param[out] none
     \retval     MEM_OK if the operation is right, MEM_FAIL else
 */
-static uint8_t nand_flash_if_write (uint8_t *buf, uint32_t addr, uint32_t len)
+static uint8_t nand_flash_if_write(uint8_t *buf, uint32_t addr, uint32_t len)
 {
     /* calculate actual address */
     uint32_t addr_actual = addr - NAND_FLASH_START_ADDR;
 
     /* write block of data to the flash */
-    if(NAND_OK == nand_write(addr_actual, buf, len)){
+    if(NAND_OK == nand_write(addr_actual, buf, len)) {
         return MEM_OK;
-    }else{
+    } else {
         return MEM_FAIL;
     }
 }
@@ -122,7 +121,7 @@ static uint8_t nand_flash_if_write (uint8_t *buf, uint32_t addr, uint32_t len)
     \param[out] none
     \retval     pointer to the physical address where data should be read
 */
-static uint8_t *nand_flash_if_read (uint8_t *buf, uint32_t addr, uint32_t len)
+static uint8_t *nand_flash_if_read(uint8_t *buf, uint32_t addr, uint32_t len)
 {
     /* calculate actual address */
     uint32_t addr_actual = addr - NAND_FLASH_START_ADDR;
@@ -138,9 +137,9 @@ static uint8_t *nand_flash_if_read (uint8_t *buf, uint32_t addr, uint32_t len)
     \param[out] none
     \retval     MEM_OK if the operation is right, MEM_FAIL else
 */
-static uint8_t nand_flash_if_checkaddr (uint32_t addr)
+static uint8_t nand_flash_if_checkaddr(uint32_t addr)
 {
-    if ((addr >= NAND_FLASH_START_ADDR) && (addr < NAND_FLASH_END_ADDR)) {
+    if((addr >= NAND_FLASH_START_ADDR) && (addr < NAND_FLASH_END_ADDR)) {
         return MEM_OK;
     } else {
         return MEM_FAIL;

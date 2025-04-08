@@ -2,7 +2,7 @@
     \file    app.c
     \brief   main routine
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -56,14 +56,14 @@ int main(void)
     /* configure tamper key to run firmware */
     gd_eval_key_init(KEY_TAMPER, KEY_MODE_GPIO);
 
-    if(1U == gd_eval_key_state_get(KEY_TAMPER)){
+    if(1U == gd_eval_key_state_get(KEY_TAMPER)) {
         /* test if user code is programmed starting from address APP_LOADED_ADDR */
-        if((sram_sect >= SRAM_BASE_ADDR) && (sram_sect < SRAM_END_ADDR)){
-            app_addr = *(__IO uint32_t*) (APP_LOADED_ADDR + 4U);
+        if((sram_sect >= SRAM_BASE_ADDR) && (sram_sect < SRAM_END_ADDR)) {
+            app_addr = *(__IO uint32_t *)(APP_LOADED_ADDR + 4U);
             application = (app_func) app_addr;
 
             /* initialize user application's stack pointer */
-            __set_MSP(*(__IO uint32_t*) APP_LOADED_ADDR);
+            __set_MSP(*(__IO uint32_t *) APP_LOADED_ADDR);
 
             /* jump to user application */
             application();
@@ -75,7 +75,7 @@ int main(void)
     usb_timer_init();
 
     /* USB device stack configuration */
-    usbd_init(&usb_dfu_dev, 
+    usbd_init(&usb_dfu_dev,
 #ifdef USE_USB_FS
               USB_CORE_ENUM_FS,
 #elif defined(USE_USB_HS)
@@ -83,14 +83,14 @@ int main(void)
 #endif
               &dfu_desc,
               &dfu_class
-    );
+             );
 
     usb_intr_config();
 
     /* check whether USB device is enumerated successfully */
-    while (USBD_CONFIGURED != usb_dfu_dev.dev.cur_status) {
+    while(USBD_CONFIGURED != usb_dfu_dev.dev.cur_status) {
     }
 
-    while (1) {
+    while(1) {
     }
 }

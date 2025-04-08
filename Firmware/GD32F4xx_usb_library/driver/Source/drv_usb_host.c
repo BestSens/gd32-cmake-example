@@ -2,7 +2,7 @@
     \file    drv_usb_host.c
     \brief   USB host mode low level driver
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -33,7 +33,6 @@ OF SUCH DAMAGE.
 */
 
 #include "drv_usb_hw.h"
-#include "drv_usb_core.h"
 #include "drv_usb_host.h"
 
 const uint32_t PIPE_DPID[2] = {
@@ -47,7 +46,7 @@ const uint32_t PIPE_DPID[2] = {
     \param[out] none
     \retval     operation status
 */
-usb_status usb_host_init (usb_core_driver *udev)
+usb_status usb_host_init(usb_core_driver *udev)
 {
     uint32_t i = 0U, inten = 0U;
 
@@ -57,11 +56,11 @@ usb_status usb_host_init (usb_core_driver *udev)
     /* restart the PHY Clock */
     *udev->regs.PWRCLKCTL = 0U;
 
-    /* initialize host configuration register */
-    if (USB_ULPI_PHY == udev->bp.phy_itf) {
-        usb_phyclock_config (udev, HCTL_30_60MHZ); 
+    /* configure USB clock of PHY */
+    if(USB_ULPI_PHY == udev->bp.phy_itf) {
+        usb_phyclock_config(udev, HCTL_30_60MHZ);
     } else {
-        usb_phyclock_config (udev, HCTL_48MHZ);
+        usb_phyclock_config(udev, HCTL_48MHZ);
     }
 
     /* support FS/LS only */
@@ -69,53 +68,51 @@ usb_status usb_host_init (usb_core_driver *udev)
 
     /* configure data FIFOs size */
 #ifdef USB_FS_CORE
-    if (USB_CORE_ENUM_FS == udev->bp.core_enum) {
-        /* set Rx FIFO size */
+    if(USB_CORE_ENUM_FS == udev->bp.core_enum) {
+        /* set RX FIFO size */
         udev->regs.gr->GRFLEN = USB_RX_FIFO_FS_SIZE;
 
-        /* set non-periodic Tx FIFO size and address */
+        /* set non-periodic TX FIFO size and address */
         nptxfifolen |= USB_RX_FIFO_FS_SIZE;
-        nptxfifolen |= USB_HTX_NPFIFO_FS_SIZE << 16U;
+        nptxfifolen |= USB_HTX_NPFIFO_FS_SIZE << 16;
         udev->regs.gr->DIEP0TFLEN_HNPTFLEN = nptxfifolen;
 
-        /* set periodic Tx FIFO size and address */
+        /* set periodic TX FIFO size and address */
         ptxfifolen |= USB_RX_FIFO_FS_SIZE + USB_HTX_NPFIFO_FS_SIZE;
-        ptxfifolen |= USB_HTX_PFIFO_FS_SIZE << 16U;
+        ptxfifolen |= USB_HTX_PFIFO_FS_SIZE << 16;
         udev->regs.gr->HPTFLEN = ptxfifolen;
     }
 #endif /* USB_FS_CORE */
 
 #ifdef USB_HS_CORE
-    if (USB_CORE_ENUM_HS == udev->bp.core_enum) {
-        /* set Rx FIFO size */
+    if(USB_CORE_ENUM_HS == udev->bp.core_enum) {
+        /* set RX FIFO size */
         udev->regs.gr->GRFLEN = USB_RX_FIFO_HS_SIZE;
 
-        /* set non-periodic Tx FIFO size and address */
+        /* set non-periodic TX FIFO size and address */
         nptxfifolen |= USB_RX_FIFO_HS_SIZE;
-        nptxfifolen |= USB_HTX_NPFIFO_HS_SIZE << 16U;
+        nptxfifolen |= USB_HTX_NPFIFO_HS_SIZE << 16;
         udev->regs.gr->DIEP0TFLEN_HNPTFLEN = nptxfifolen;
 
-        /* set periodic Tx FIFO size and address */
+        /* set periodic TX FIFO size and address */
         ptxfifolen |= USB_RX_FIFO_HS_SIZE + USB_HTX_NPFIFO_HS_SIZE;
-        ptxfifolen |= USB_HTX_PFIFO_HS_SIZE << 16U;
+        ptxfifolen |= USB_HTX_PFIFO_HS_SIZE << 16;
         udev->regs.gr->HPTFLEN = ptxfifolen;
     }
 #endif /* USB_HS_CORE */
 
 #ifdef USE_OTG_MODE
-
     /* clear host set HNP enable in the usb_otg control register */
     udev->regs.gr->GOTGCS &= ~GOTGCS_HHNPEN;
-
 #endif /* USE_OTG_MODE */
 
     /* make sure the FIFOs are flushed */
 
-    /* flush all Tx FIFOs in device or host mode */
-    usb_txfifo_flush (&udev->regs, 0x10U);
+    /* flush all TX FIFOs in device or host mode */
+    usb_txfifo_flush(&udev->regs, 0x10U);
 
-    /* flush the entire Rx FIFO */
-    usb_rxfifo_flush (&udev->regs);
+    /* flush the entire RX FIFO */
+    usb_rxfifo_flush(&udev->regs);
 
     /* disable all interrupts */
     udev->regs.gr->GINTEN = 0U;
@@ -127,19 +124,19 @@ usb_status usb_host_init (usb_core_driver *udev)
     udev->regs.gr->GINTF = 0xBFFFFFFFU;
 
     /* clear all pending host channel interrupts */
-    for (i = 0U; i < udev->bp.num_pipe; i++) {
+    for(i = 0U; i < udev->bp.num_pipe; i++) {
         udev->regs.pr[i]->HCHINTF = 0xFFFFFFFFU;
         udev->regs.pr[i]->HCHINTEN = 0U;
     }
 
 #ifndef USE_OTG_MODE
-    usb_portvbus_switch (udev, 1U);
+    usb_portvbus_switch(udev, 1U);
 #endif /* USE_OTG_MODE */
 
     udev->regs.gr->GINTEN = GINTEN_WKUPIE | GINTEN_SPIE;
 
     /* enable host_mode-related interrupts */
-    if (USB_USE_FIFO == udev->bp.transfer_mode) {
+    if(USB_USE_FIFO == udev->bp.transfer_mode) {
         inten = GINTEN_RXFNEIE;
     }
 
@@ -156,32 +153,32 @@ usb_status usb_host_init (usb_core_driver *udev)
 
 /*!
     \brief      control the VBUS to power
-    \param[in]  udev: pointer to selected usb host
+    \param[in]  udev: pointer to selected USB host
     \param[in]  state: VBUS state
     \param[out] none
     \retval     none
 */
-void usb_portvbus_switch (usb_core_driver *udev, uint8_t state)
+void usb_portvbus_switch(usb_core_driver *udev, uint8_t state)
 {
     uint32_t port = 0U;
 
     /* enable or disable the external charge pump */
-    usb_vbus_drive (state);
+    usb_vbus_drive(state);
 
     /* turn on the host port power. */
-    port = usb_port_read (udev);
+    port = usb_port_read(udev);
 
-    if (!(port & HPCS_PP) && (1U == state)) {
+    if(!(port & HPCS_PP) && (1U == state)) {
         port |= HPCS_PP;
     }
 
-    if ((port & HPCS_PP) && (0U == state)) {
+    if((port & HPCS_PP) && (0U == state)) {
         port &= ~HPCS_PP;
     }
 
     *udev->regs.HPCS = port;
 
-    usb_mdelay (200U);
+    usb_mdelay(200U);
 }
 
 /*!
@@ -190,9 +187,9 @@ void usb_portvbus_switch (usb_core_driver *udev, uint8_t state)
     \param[out] none
     \retval     operation status
 */
-uint32_t usb_port_reset (usb_core_driver *udev)
+uint32_t usb_port_reset(usb_core_driver *udev)
 {
-    __IO uint32_t port = usb_port_read (udev);
+    __IO uint32_t port = usb_port_read(udev);
 
     *udev->regs.HPCS = port | HPCS_PRST;
 
@@ -212,7 +209,7 @@ uint32_t usb_port_reset (usb_core_driver *udev)
     \param[out] none
     \retval     operation status
 */
-usb_status usb_pipe_init (usb_core_driver *udev, uint8_t pipe_num)
+usb_status usb_pipe_init(usb_core_driver *udev, uint8_t pipe_num)
 {
     usb_status status = USB_OK;
 
@@ -224,23 +221,23 @@ usb_status usb_pipe_init (usb_core_driver *udev, uint8_t pipe_num)
     /* clear old interrupt conditions for this host channel */
     udev->regs.pr[pipe_num]->HCHINTF = 0xFFFFFFFFU;
 
-    if (USB_USE_DMA == udev->bp.transfer_mode) {
+    if(USB_USE_DMA == udev->bp.transfer_mode) {
         pp_inten |= HCHINTEN_DMAERIE;
     }
 
-    if (pp->ep.dir) {
+    if(pp->ep.dir) {
         pp_inten |= HCHINTEN_BBERIE;
     }
 
     /* enable channel interrupts required for this transfer */
-    switch (pp->ep.type) {
+    switch(pp->ep.type) {
     case USB_EPTYPE_CTRL:
     case USB_EPTYPE_BULK:
         pp_inten |= HCHINTEN_STALLIE | HCHINTEN_USBERIE \
                     | HCHINTEN_DTERIE | HCHINTEN_NAKIE;
 
-        if (!pp->ep.dir) {
-            if (PORT_SPEED_HIGH == pp->dev_speed) {
+        if(!pp->ep.dir) {
+            if(PORT_SPEED_HIGH == pp->dev_speed) {
                 pp_inten |= HCHINTEN_NYETIE;
                 pp_inten |= HCHINTEN_ACKIE;
             }
@@ -249,13 +246,13 @@ usb_status usb_pipe_init (usb_core_driver *udev, uint8_t pipe_num)
 
     case USB_EPTYPE_INTR:
         pp_inten |= HCHINTEN_STALLIE | HCHINTEN_USBERIE | HCHINTEN_DTERIE \
-                     | HCHINTEN_NAKIE | HCHINTEN_REQOVRIE;
+                    | HCHINTEN_NAKIE | HCHINTEN_REQOVRIE;
         break;
 
     case USB_EPTYPE_ISOC:
         pp_inten |= HCHINTEN_REQOVRIE | HCHINTEN_ACKIE;
 
-        if (pp->ep.dir) {
+        if(pp->ep.dir) {
             pp_inten |= HCHINTEN_USBERIE;
         }
         break;
@@ -277,10 +274,10 @@ usb_status usb_pipe_init (usb_core_driver *udev, uint8_t pipe_num)
     pp_ctl |= PIPE_CTL_EPNUM(pp->ep.num);
     pp_ctl |= PIPE_CTL_EPDIR(pp->ep.dir);
     pp_ctl |= PIPE_CTL_EPTYPE(pp->ep.type);
-    pp_ctl |= PIPE_CTL_LSD(pp->dev_speed == PORT_SPEED_LOW);
+    pp_ctl |= PIPE_CTL_LSD(PORT_SPEED_LOW == pp->dev_speed);
 
     pp_ctl |= pp->ep.mps;
-    pp_ctl |= ((uint32_t)(pp->ep.type == USB_EPTYPE_INTR) << 29U) & HCHCTL_ODDFRM;
+    pp_ctl |= ((uint32_t)(USB_EPTYPE_INTR == pp->ep.type) << 29) & HCHCTL_ODDFRM;
 
     udev->regs.pr[pipe_num]->HCHCTL = pp_ctl;
 
@@ -294,7 +291,7 @@ usb_status usb_pipe_init (usb_core_driver *udev, uint8_t pipe_num)
     \param[out] none
     \retval     operation status
 */
-usb_status usb_pipe_xfer (usb_core_driver *udev, uint8_t pipe_num)
+usb_status usb_pipe_xfer(usb_core_driver *udev, uint8_t pipe_num)
 {
     usb_status status = USB_OK;
 
@@ -308,10 +305,10 @@ usb_status usb_pipe_xfer (usb_core_driver *udev, uint8_t pipe_num)
     uint16_t max_packet_len = pp->ep.mps;
 
     /* compute the expected number of packets associated to the transfer */
-    if (pp->xfer_len > 0U) {
+    if(pp->xfer_len > 0U) {
         packet_count = (uint16_t)((pp->xfer_len + max_packet_len - 1U) / max_packet_len);
 
-        if (packet_count > HC_MAX_PACKET_COUNT) {
+        if(packet_count > HC_MAX_PACKET_COUNT) {
             packet_count = HC_MAX_PACKET_COUNT;
             pp->xfer_len = (uint16_t)(packet_count * max_packet_len);
         }
@@ -319,20 +316,20 @@ usb_status usb_pipe_xfer (usb_core_driver *udev, uint8_t pipe_num)
         packet_count = 1U;
     }
 
-    if (pp->ep.dir) {
+    if(pp->ep.dir) {
         pp->xfer_len = (uint16_t)(packet_count * max_packet_len);
     }
 
     /* initialize the host channel transfer information */
     udev->regs.pr[pipe_num]->HCHLEN = pp->xfer_len | pp->DPID | PIPE_XFER_PCNT(packet_count);
 
-    if (USB_USE_DMA == udev->bp.transfer_mode) {
+    if(USB_USE_DMA == udev->bp.transfer_mode) {
         udev->regs.pr[pipe_num]->HCHDMAADDR = (unsigned int)pp->xfer_buf;
     }
 
     pp_ctl = udev->regs.pr[pipe_num]->HCHCTL;
 
-    if (usb_frame_even(udev)) {
+    if(usb_frame_even(udev)) {
         pp_ctl |= HCHCTL_ODDFRM;
     } else {
         pp_ctl &= ~HCHCTL_ODDFRM;
@@ -344,16 +341,16 @@ usb_status usb_pipe_xfer (usb_core_driver *udev, uint8_t pipe_num)
 
     udev->regs.pr[pipe_num]->HCHCTL = pp_ctl;
 
-    if (USB_USE_FIFO == udev->bp.transfer_mode) {
-        if ((0U == pp->ep.dir) && (pp->xfer_len > 0U)) {
-            switch (pp->ep.type) {
+    if(USB_USE_FIFO == udev->bp.transfer_mode) {
+        if((0U == pp->ep.dir) && (pp->xfer_len > 0U)) {
+            switch(pp->ep.type) {
             /* non-periodic transfer */
             case USB_EPTYPE_CTRL:
             case USB_EPTYPE_BULK:
                 dword_len = (uint16_t)((pp->xfer_len + 3U) / 4U);
 
                 /* check if there is enough space in FIFO space */
-                if (dword_len > (udev->regs.gr->HNPTFQSTAT & HNPTFQSTAT_NPTXFS)) {
+                if(dword_len > (udev->regs.gr->HNPTFQSTAT & HNPTFQSTAT_NPTXFS)) {
                     /* need to process data in nptxfempty interrupt */
                     udev->regs.gr->GINTEN |= GINTEN_NPTXFEIE;
                 }
@@ -364,8 +361,8 @@ usb_status usb_pipe_xfer (usb_core_driver *udev, uint8_t pipe_num)
             case USB_EPTYPE_ISOC:
                 dword_len = (uint16_t)((pp->xfer_len + 3U) / 4U);
 
-                /* check if there is enough space in fifo space */
-                if (dword_len > (udev->regs.hr->HPTFQSTAT & HPTFQSTAT_PTXFS)) {
+                /* check if there is enough space in FIFO space */
+                if(dword_len > (udev->regs.hr->HPTFQSTAT & HPTFQSTAT_PTXFS)) {
                     /* need to process data in ptxfempty interrupt */
                     udev->regs.gr->GINTEN |= GINTEN_PTXFEIE;
                 }
@@ -375,8 +372,8 @@ usb_status usb_pipe_xfer (usb_core_driver *udev, uint8_t pipe_num)
                 break;
             }
 
-            /* write packet into the Tx fifo. */
-            usb_txfifo_write (&udev->regs, pp->xfer_buf, pipe_num, (uint16_t)pp->xfer_len);
+            /* write packet into the TX FIFO */
+            usb_txfifo_write(&udev->regs, pp->xfer_buf, pipe_num, (uint16_t)pp->xfer_len);
         }
     }
 
@@ -390,7 +387,7 @@ usb_status usb_pipe_xfer (usb_core_driver *udev, uint8_t pipe_num)
     \param[out] none
     \retval     operation status
 */
-usb_status usb_pipe_halt (usb_core_driver *udev, uint8_t pipe_num)
+usb_status usb_pipe_halt(usb_core_driver *udev, uint8_t pipe_num)
 {
     __IO uint32_t pp_ctl = udev->regs.pr[pipe_num]->HCHCTL;
 
@@ -398,17 +395,17 @@ usb_status usb_pipe_halt (usb_core_driver *udev, uint8_t pipe_num)
 
     pp_ctl |= HCHCTL_CEN | HCHCTL_CDIS;
 
-    switch (ep_type) {
+    switch(ep_type) {
     case USB_EPTYPE_CTRL:
     case USB_EPTYPE_BULK:
-        if (0U == (udev->regs.gr->HNPTFQSTAT & HNPTFQSTAT_NPTXFS)) {
+        if(0U == (udev->regs.gr->HNPTFQSTAT & HNPTFQSTAT_NPTXFS)) {
             pp_ctl &= ~HCHCTL_CEN;
         }
         break;
 
     case USB_EPTYPE_INTR:
     case USB_EPTYPE_ISOC:
-        if (0U == (udev->regs.hr->HPTFQSTAT & HPTFQSTAT_PTXFS)) {
+        if(0U == (udev->regs.hr->HPTFQSTAT & HPTFQSTAT_PTXFS)) {
             pp_ctl &= ~HCHCTL_CEN;
         }
         break;
@@ -425,11 +422,11 @@ usb_status usb_pipe_halt (usb_core_driver *udev, uint8_t pipe_num)
 /*!
     \brief      configure host pipe to do ping operation
     \param[in]  udev: pointer to USB device
-    \param[in]  pipe_num: host pipe number which is in (0..7)
+    \param[in]  pipe_num: host pipe number which is in (0..7 or 0..11)
     \param[out] none
     \retval     operation status
 */
-usb_status usb_pipe_ping (usb_core_driver *udev, uint8_t pipe_num)
+usb_status usb_pipe_ping(usb_core_driver *udev, uint8_t pipe_num)
 {
     uint32_t pp_ctl = 0U;
 
@@ -451,7 +448,7 @@ usb_status usb_pipe_ping (usb_core_driver *udev, uint8_t pipe_num)
     \param[out] none
     \retval     none
 */
-void usb_host_stop (usb_core_driver *udev)
+void usb_host_stop(usb_core_driver *udev)
 {
     uint32_t i;
     __IO uint32_t pp_ctl = 0U;
@@ -460,7 +457,7 @@ void usb_host_stop (usb_core_driver *udev)
     udev->regs.hr->HACHINT = 0xFFFFFFFFU;
 
     /* flush out any leftover queued requests. */
-    for (i = 0U; i < udev->bp.num_pipe; i++) {
+    for(i = 0U; i < udev->bp.num_pipe; i++) {
         pp_ctl = udev->regs.pr[i]->HCHCTL;
 
         pp_ctl &= ~(HCHCTL_CEN | HCHCTL_EPDIR);
@@ -470,6 +467,6 @@ void usb_host_stop (usb_core_driver *udev)
     }
 
     /* flush the FIFO */
-    usb_rxfifo_flush (&udev->regs);
-    usb_txfifo_flush (&udev->regs, 0x10U);
+    usb_rxfifo_flush(&udev->regs);
+    usb_txfifo_flush(&udev->regs, 0x10U);
 }

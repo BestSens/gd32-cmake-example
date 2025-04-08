@@ -2,7 +2,7 @@
     \file    netconf.h
     \brief   the header file of netconf 
     
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -37,11 +37,12 @@ OF SUCH DAMAGE.
 #include "main.h"
 
 #ifdef USE_DHCP
-void lwip_dhcp_process_handle(void);
+void lwip_dhcp_address_get(void);
 #endif /* USE_DHCP */
 
 void lwip_stack_init(void);
-void lwip_pkt_handle(void);
-void lwip_periodic_handle(__IO uint32_t localtime);
+void lwip_frame_recv(void);
+void lwip_timeouts_check(__IO uint32_t localtime);
+void lwip_netif_status_callback(struct netif *netif);
 
 #endif /* NETCONF_H */

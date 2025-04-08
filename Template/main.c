@@ -2,7 +2,7 @@
     \file    main.c
     \brief   led spark with systick
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -70,10 +70,38 @@ void led_spark(void)
 */
 int main(void)
 {
+#ifdef __FIRMWARE_VERSION_DEFINE
+    uint32_t fw_ver = 0;
+#endif
 
     gd_eval_led_init(LED1);
     systick_config();
 
+#ifdef __FIRMWARE_VERSION_DEFINE
+    fw_ver = gd32f4xx_firmware_version_get();
+    /* print firmware version */
+    printf("\r\nGD32F4xx series firmware version: V%d.%d.%d", (uint8_t)(fw_ver >> 24), (uint8_t)(fw_ver >> 16), (uint8_t)(fw_ver >> 8));
+#endif /* __FIRMWARE_VERSION_DEFINE */
+
     while(1) {
     }
 }
+
+#ifdef GD_ECLIPSE_GCC
+/* retarget the C library printf function to the USART, in Eclipse GCC environment */
+int __io_putchar(int ch)
+{
+    usart_data_transmit(EVAL_COM0, (uint8_t)ch);
+    while(RESET == usart_flag_get(EVAL_COM0, USART_FLAG_TBE));
+    return ch;
+}
+#else
+/* retarget the C library printf function to the USART */
+int fputc(int ch, FILE *f)
+{
+    usart_data_transmit(EVAL_COM0, (uint8_t)ch);
+    while(RESET == usart_flag_get(EVAL_COM0, USART_FLAG_TBE));
+
+    return ch;
+}
+#endif /* GD_ECLIPSE_GCC */

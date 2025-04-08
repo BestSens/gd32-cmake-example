@@ -2,7 +2,7 @@
     \file    wave_data.h
     \brief   wave data content
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,8 +32,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __WAVE_DATA_H
-#define __WAVE_DATA_H
+#ifndef WAVE_DATA_H
+#define WAVE_DATA_H
 
 /* wave data */
 const char wavetestdata[] = {
@@ -3534,4 +3534,4 @@ const char wavetestdata[] = {
 0x10 , 0x00 , 0x10 , 0x00 , 0x0A , 0x00 , 0x0A , 0x00 , 0x00 , 0x00 , 0x00 , 0x00 
 };
 
-#endif /* __WAVE_DATA_H */
+#endif /* WAVE_DATA_H */

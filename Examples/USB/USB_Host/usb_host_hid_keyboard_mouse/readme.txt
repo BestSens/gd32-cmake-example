@@ -2,7 +2,7 @@
     \file    readme.txt
     \brief   description of the usb host mode to control hid device
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -48,13 +48,13 @@ pressing the button will show the magenta color rectangle in the LCD screen.
   If a keyboard has been attached, pressing the keyboard will print the the char of the button
 in the LCD screen.
 
-Note: In the USB Host HID class, two layouts are defined in the usbh_hid_keybd.h file
+Note: In the USB Host HID class, two layouts are defined in the usbh_standard_hid.h file
       and could be used (Azerty and Querty)
-        //#define QWERTY_KEYBOARD
-        #define AZERTY_KEYBOARD
+        #define QWERTY_KEYBOARD
+        //#define AZERTY_KEYBOARD
 
      The User can eventually add his own layout by editing the HID_KEYBRD_Key array
-   in the usbh_hid_keybd.c file.
+   in the usbh_standard_hid.c file.
 
   The demo support the functions of host suspend and wakeup. The macro of USBFS_LOW_POWER/USBHS_LOW_POWER 
 can be set to 1 to test the suspend and wakeup. User can press Tamper key to make the USB host enter the 

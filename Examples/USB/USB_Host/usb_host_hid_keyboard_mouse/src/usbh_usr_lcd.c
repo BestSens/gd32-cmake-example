@@ -2,7 +2,7 @@
     \file    usbh_usr_lcd.c
     \brief   some user routines for LCD
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -33,7 +33,6 @@ OF SUCH DAMAGE.
 */
 
 #include "usbh_usr_lcd.h"
-#include "usb_conf.h"
 #include "lcd_log.h"
 
 int16_t XLoc = 0, YLoc = 0;
@@ -91,31 +90,31 @@ void hid_mouse_update_position (int8_t X, int8_t Y)
 void hid_mouse_button_pressed(uint8_t button_idx)
 {
     /* change the color of button pressed to indicate button press*/
-    switch (button_idx){
+    switch(button_idx) {
     /* left button pressed */
     case HID_MOUSE_LEFTBUTTON:
         lcd_text_color_set(LCD_COLOR_MAGENTA);
-        lcd_rectangle_fill(MOUSE_BUTTON_XCHORD, 
-                           MOUSE_BUTTON2_YCHORD, 
-                           MOUSE_BUTTON_WIDTH, 
+        lcd_rectangle_fill(MOUSE_BUTTON_XCHORD, \
+                           MOUSE_BUTTON2_YCHORD, \
+                           MOUSE_BUTTON_WIDTH, \
                            MOUSE_BUTTON_HEIGHT);
         break;
 
     /* right button pressed */
     case HID_MOUSE_RIGHTBUTTON:
         lcd_text_color_set(LCD_COLOR_MAGENTA);
-        lcd_rectangle_fill(MOUSE_BUTTON_XCHORD, 
-                           MOUSE_BUTTON1_YCHORD, 
-                           MOUSE_BUTTON_WIDTH, 
+        lcd_rectangle_fill(MOUSE_BUTTON_XCHORD, \
+                           MOUSE_BUTTON1_YCHORD, \
+                           MOUSE_BUTTON_WIDTH, \
                            MOUSE_BUTTON_HEIGHT);
         break;
 
     /* middle button pressed */
     case HID_MOUSE_MIDDLEBUTTON:
         lcd_text_color_set(LCD_COLOR_MAGENTA);
-        lcd_rectangle_fill(MOUSE_BUTTON_XCHORD, 
-                           MOUSE_BUTTON3_YCHORD, 
-                           MOUSE_BUTTON_WIDTH, 
+        lcd_rectangle_fill(MOUSE_BUTTON_XCHORD, \
+                           MOUSE_BUTTON3_YCHORD, \
+                           MOUSE_BUTTON_WIDTH, \
                            MOUSE_BUTTON_HEIGHT);
         break;
 
@@ -134,31 +133,31 @@ void hid_mouse_button_pressed(uint8_t button_idx)
 void hid_mouse_button_released(uint8_t button_idx)
 {
     /* change the color of button released to default button color*/
-    switch (button_idx){
+    switch(button_idx) {
     /* left button released */
     case HID_MOUSE_LEFTBUTTON:
         lcd_text_color_set(LCD_COLOR_GREY);
-        lcd_rectangle_fill(MOUSE_BUTTON_XCHORD, 
-                           MOUSE_BUTTON2_YCHORD, 
-                           MOUSE_BUTTON_WIDTH, 
+        lcd_rectangle_fill(MOUSE_BUTTON_XCHORD, \
+                           MOUSE_BUTTON2_YCHORD, \
+                           MOUSE_BUTTON_WIDTH, \
                            MOUSE_BUTTON_HEIGHT);
         break;
 
-    /* right button released */  
+    /* right button released */
     case HID_MOUSE_RIGHTBUTTON:
         lcd_text_color_set(LCD_COLOR_GREY);
-        lcd_rectangle_fill(MOUSE_BUTTON_XCHORD, 
-                           MOUSE_BUTTON1_YCHORD, 
-                           MOUSE_BUTTON_WIDTH, 
+        lcd_rectangle_fill(MOUSE_BUTTON_XCHORD, \
+                           MOUSE_BUTTON1_YCHORD, \
+                           MOUSE_BUTTON_WIDTH, \
                            MOUSE_BUTTON_HEIGHT);
         break;
 
-    /* middle button released */  
+    /* middle button released */
     case HID_MOUSE_MIDDLEBUTTON:
         lcd_text_color_set(LCD_COLOR_GREY);
-        lcd_rectangle_fill(MOUSE_BUTTON_XCHORD, 
-                           MOUSE_BUTTON3_YCHORD, 
-                           MOUSE_BUTTON_WIDTH, 
+        lcd_rectangle_fill(MOUSE_BUTTON_XCHORD, \
+                           MOUSE_BUTTON3_YCHORD, \
+                           MOUSE_BUTTON_WIDTH, \
                            MOUSE_BUTTON_HEIGHT);
         break;
 

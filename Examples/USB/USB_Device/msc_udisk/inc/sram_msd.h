@@ -2,7 +2,7 @@
     \file    sram_msd.h
     \brief   the header file of sram_msd.c
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,24 +32,24 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __SRAM_MSD_H
-#define __SRAM_MSD_H
+#ifndef SRAM_MSD_H
+#define SRAM_MSD_H
 
-#include "stdlib.h"
+#include "usbd_conf.h"
 
 #define ISRAM_BLOCK_SIZE         512U
 #define ISRAM_BLOCK_NUM          80U
 
 /* function declarations */
 /* read data from multiple blocks of SRAM */
-uint32_t SRAM_ReadMultiBlocks  (uint8_t* pBuf,
-                                 uint32_t ReadAddr,
-                                 uint16_t BlkSize,
-                                 uint32_t BlkNum);
+uint32_t sram_read_multi_blocks(uint8_t* pbuf, \
+                                uint32_t read_addr, \
+                                uint16_t blk_size, \
+                                uint32_t blk_num);
 /* write data to multiple blocks of SRAM */
-uint32_t SRAM_WriteMultiBlocks (uint8_t* pBuf,
-                                 uint32_t WriteAddr,
-                                 uint16_t BlkSize,
-                                 uint32_t BlkNum);
+uint32_t sram_write_multi_blocks(uint8_t* pbuf, \
+                                 uint32_t write_addr, \
+                                 uint16_t blk_size, \
+                                 uint32_t blk_num);
 
-#endif /* __SRAM_MSD_H */
+#endif /* SRAM_MSD_H */

@@ -2,7 +2,7 @@
     \file    usbh_usr.c
     \brief   USB host user callbacks
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,23 +32,19 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __USBH_MSC_USR_H
-#define __USBH_MSC_USR_H
+#ifndef USBH_MSC_USR_H
+#define USBH_MSC_USR_H
 
-#include "ff.h"
 #include "usbh_core.h"
-#include "usb_conf.h"
-#include "usbh_core.h"
-#include <stdio.h>
 
 extern usbh_user_cb msc_usr_cb;
 extern uint8_t USBH_USR_ApplicationState;
 
 /* state machine for the USBH_USR_ApplicationState */
-#define USBH_USR_FS_INIT             0
-#define USBH_USR_FS_READLIST         1
-#define USBH_USR_FS_WRITEFILE        2
-#define USBH_USR_FS_DRAW             3
-#define USBH_USR_FS_DEMOEND          4
+#define USBH_USR_FS_INIT             0U
+#define USBH_USR_FS_READLIST         1U
+#define USBH_USR_FS_WRITEFILE        2U
+#define USBH_USR_FS_DRAW             3U
+#define USBH_USR_FS_DEMOEND          4U
 
-#endif /*__USBH_MSC_USR_H */
+#endif /* USBH_MSC_USR_H */

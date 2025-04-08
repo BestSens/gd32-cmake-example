@@ -2,7 +2,7 @@
     \file    i2c1_ie.c
     \brief   i2c1 slave transmitter interrupt program
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*

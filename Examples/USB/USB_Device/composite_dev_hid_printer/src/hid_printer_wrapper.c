@@ -2,7 +2,7 @@
     \file    hid_printer_wrapper.c
     \brief   this file calls to the separate HID and printer class layer handlers
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -34,13 +34,12 @@ OF SUCH DAMAGE.
 
 #include "hid_printer_wrapper.h"
 
-#define USBD_VID                        0x28E9
-#define USBD_PID                        0x325A
+#define USBD_VID                        0x28E9U
+#define USBD_PID                        0x325AU
 
 /* Note:it should use the C99 standard when compiling the below codes */
 /* USB standard device descriptor */
-__ALIGN_BEGIN const usb_desc_dev hid_printer_dev_desc __ALIGN_END =
-{
+__ALIGN_BEGIN const usb_desc_dev hid_printer_dev_desc __ALIGN_END = {
     .header =
     {
         .bLength          = USB_DEV_DESC_LEN,
@@ -57,17 +56,16 @@ __ALIGN_BEGIN const usb_desc_dev hid_printer_dev_desc __ALIGN_END =
     .iManufacturer         = STR_IDX_MFC,
     .iProduct              = STR_IDX_PRODUCT,
     .iSerialNumber         = STR_IDX_SERIAL,
-    .bNumberConfigurations = USBD_CFG_MAX_NUM,
+    .bNumberConfigurations = USBD_CFG_MAX_NUM
 };
 
-__ALIGN_BEGIN const usb_hid_printer_desc_config_set hid_printer_config_desc __ALIGN_END = 
-{
-    .config = 
+__ALIGN_BEGIN const usb_hid_printer_desc_config_set hid_printer_config_desc __ALIGN_END = {
+    .config =
     {
         .header =
         {
             .bLength         = sizeof(usb_desc_config),
-            .bDescriptorType = USB_DESCTYPE_CONFIG,
+            .bDescriptorType = USB_DESCTYPE_CONFIG
         },
         .wTotalLength         = sizeof(usb_hid_printer_desc_config_set),
         .bNumInterfaces       = 0x02U,
@@ -77,7 +75,7 @@ __ALIGN_BEGIN const usb_hid_printer_desc_config_set hid_printer_config_desc __AL
         .bMaxPower            = 0x32U
     },
 
-    .hid_interface = 
+    .hid_interface =
     {
         .header =
         {
@@ -93,9 +91,9 @@ __ALIGN_BEGIN const usb_hid_printer_desc_config_set hid_printer_config_desc __AL
         .iInterface           = 0x00U
     },
 
-    .hid_vendorhid = 
+    .hid_vendorhid =
     {
-        .header = 
+        .header =
         {
             .bLength         = sizeof(usb_desc_hid),
             .bDescriptorType = USB_DESCTYPE_HID
@@ -104,10 +102,10 @@ __ALIGN_BEGIN const usb_hid_printer_desc_config_set hid_printer_config_desc __AL
         .bCountryCode         = 0x00U,
         .bNumDescriptors      = 0x01U,
         .bDescriptorType      = USB_DESCTYPE_REPORT,
-        .wDescriptorLength    = DESC_LEN_REPORT,
+        .wDescriptorLength    = DESC_LEN_REPORT
     },
 
-    .hid_ep_report_in = 
+    .hid_ep_report_in =
     {
         .header =
         {
@@ -120,7 +118,7 @@ __ALIGN_BEGIN const usb_hid_printer_desc_config_set hid_printer_config_desc __AL
         .bInterval            = 0x20U
     },
 
-    .hid_ep_report_out = 
+    .hid_ep_report_out =
     {
         .header =
         {
@@ -149,7 +147,7 @@ __ALIGN_BEGIN const usb_hid_printer_desc_config_set hid_printer_config_desc __AL
         .iInterface           = 0x00U
     },
 
-    .printer_ep_data_in = 
+    .printer_ep_data_in =
     {
         .header =
         {
@@ -162,7 +160,7 @@ __ALIGN_BEGIN const usb_hid_printer_desc_config_set hid_printer_config_desc __AL
         .bInterval            = 0x00U
     },
 
-    .printer_ep_data_out = 
+    .printer_ep_data_out =
     {
         .header =
         {
@@ -177,77 +175,71 @@ __ALIGN_BEGIN const usb_hid_printer_desc_config_set hid_printer_config_desc __AL
 };
 
 /* USB language ID Descriptor */
-static __ALIGN_BEGIN const usb_desc_LANGID usbd_language_id_desc __ALIGN_END = 
-{
+static __ALIGN_BEGIN const usb_desc_LANGID usbd_language_id_desc __ALIGN_END = {
     .header =
     {
         .bLength         = sizeof(usb_desc_LANGID),
-        .bDescriptorType = USB_DESCTYPE_STR,
+        .bDescriptorType = USB_DESCTYPE_STR
     },
     .wLANGID              = ENG_LANGID
 };
 
 /* USB manufacture string */
-static __ALIGN_BEGIN const usb_desc_str manufacturer_string __ALIGN_END = 
-{
+static __ALIGN_BEGIN const usb_desc_str manufacturer_string __ALIGN_END = {
     .header =
     {
         .bLength         = USB_STRING_LEN(10),
-        .bDescriptorType = USB_DESCTYPE_STR,
+        .bDescriptorType = USB_DESCTYPE_STR
     },
     .unicode_string = {'G', 'i', 'g', 'a', 'D', 'e', 'v', 'i', 'c', 'e'}
 };
 
 /* USB product string */
-static __ALIGN_BEGIN const usb_desc_str product_string __ALIGN_END = 
-{
+static __ALIGN_BEGIN const usb_desc_str product_string __ALIGN_END = {
     .header =
     {
         .bLength         = USB_STRING_LEN(16),
-        .bDescriptorType = USB_DESCTYPE_STR,
+        .bDescriptorType = USB_DESCTYPE_STR
     },
     .unicode_string = {'G', 'D', '3', '2', '-', 'H', 'I', 'D', '_', 'P', 'R', 'I', 'N', 'T', 'E', 'R'}
 };
 
 /* USBD serial string */
-static __ALIGN_BEGIN usb_desc_str serial_string __ALIGN_END = 
-{
+static __ALIGN_BEGIN usb_desc_str serial_string __ALIGN_END = {
     .header =
     {
         .bLength         = USB_STRING_LEN(12),
-        .bDescriptorType = USB_DESCTYPE_STR,
+        .bDescriptorType = USB_DESCTYPE_STR
     }
 };
 
 /* USB string descriptor set */
-void *const usbd_cdc_hid_strings[] = 
-{
-    [STR_IDX_LANGID]  = (uint8_t *)&usbd_language_id_desc,
-    [STR_IDX_MFC]     = (uint8_t *)&manufacturer_string,
-    [STR_IDX_PRODUCT] = (uint8_t *)&product_string,
-    [STR_IDX_SERIAL]  = (uint8_t *)&serial_string
+void *const usbd_cdc_hid_strings[] = {
+    [STR_IDX_LANGID]  = (uint8_t *) &usbd_language_id_desc,
+    [STR_IDX_MFC]     = (uint8_t *) &manufacturer_string,
+    [STR_IDX_PRODUCT] = (uint8_t *) &product_string,
+    [STR_IDX_SERIAL]  = (uint8_t *) &serial_string
 };
 
-usb_desc hid_printer_desc = 
-{
-    .dev_desc    = (uint8_t *)&hid_printer_dev_desc,
-    .config_desc = (uint8_t *)&hid_printer_config_desc,
+usb_desc hid_printer_desc = {
+    .dev_desc    = (uint8_t *) &hid_printer_dev_desc,
+    .config_desc = (uint8_t *) &hid_printer_config_desc,
     .strings     = usbd_cdc_hid_strings
 };
 
 /* local function prototypes ('static') */
-static uint8_t hid_printer_init (usb_dev *udev, uint8_t config_index);
-static uint8_t hid_printer_deinit (usb_dev *udev, uint8_t config_index);
-static uint8_t hid_printer_req_handler (usb_dev *udev, usb_req *req);
-static uint8_t hid_printer_data_in (usb_dev *udev, uint8_t ep_num);
-static uint8_t hid_printer_data_out (usb_dev *udev, uint8_t ep_num);
+static uint8_t hid_printer_init(usb_dev *udev, uint8_t config_index);
+static uint8_t hid_printer_deinit(usb_dev *udev, uint8_t config_index);
+static uint8_t hid_printer_req_handler(usb_dev *udev, usb_req *req);
+static uint8_t hid_printer_data_in(usb_dev *udev, uint8_t ep_num);
+static uint8_t hid_printer_data_out(usb_dev *udev, uint8_t ep_num);
 
 usb_class_core usbd_hid_printer_cb = {
     .init      = hid_printer_init,
     .deinit    = hid_printer_deinit,
     .req_proc  = hid_printer_req_handler,
     .data_in   = hid_printer_data_in,
-    .data_out  = hid_printer_data_out,
+    .data_out  = hid_printer_data_out
 };
 
 /*!
@@ -257,7 +249,7 @@ usb_class_core usbd_hid_printer_cb = {
     \param[out] none
     \retval     USB device operation status
 */
-static uint8_t hid_printer_init (usb_dev *udev, uint8_t config_index)
+static uint8_t hid_printer_init(usb_dev *udev, uint8_t config_index)
 {
     /* HID initialization */
     usbd_custom_hid_cb.init(udev, config_index);
@@ -275,13 +267,13 @@ static uint8_t hid_printer_init (usb_dev *udev, uint8_t config_index)
     \param[out] none
     \retval     USB device operation status
 */
-static uint8_t hid_printer_deinit (usb_dev *udev, uint8_t config_index)
+static uint8_t hid_printer_deinit(usb_dev *udev, uint8_t config_index)
 {
     /* HID De-initialization */
-    usbd_custom_hid_cb.deinit (udev, config_index);
+    usbd_custom_hid_cb.deinit(udev, config_index);
 
     /* printer De-initialization */
-    usbd_printer_cb.deinit (udev, config_index);
+    usbd_printer_cb.deinit(udev, config_index);
 
     return USBD_OK;
 }
@@ -293,9 +285,9 @@ static uint8_t hid_printer_deinit (usb_dev *udev, uint8_t config_index)
     \param[out] none
     \retval     USB device operation status
 */
-static uint8_t hid_printer_req_handler (usb_dev *udev, usb_req *req)
+static uint8_t hid_printer_req_handler(usb_dev *udev, usb_req *req)
 {
-    if (HID_INTERFACE == (req->wIndex & 0xFF)) {
+    if(HID_INTERFACE == (req->wIndex & 0xFFU)) {
         return usbd_custom_hid_cb.req_proc(udev, req);
     } else {
         return usbd_printer_cb.req_proc(udev, req);
@@ -309,9 +301,9 @@ static uint8_t hid_printer_req_handler (usb_dev *udev, usb_req *req)
     \param[out] none
     \retval     USB device operation status
 */
-static uint8_t hid_printer_data_in (usb_dev *udev, uint8_t ep_num)
+static uint8_t hid_printer_data_in(usb_dev *udev, uint8_t ep_num)
 {
-    if ((CUSTOMHID_IN_EP & 0x7F) == ep_num) {
+    if((CUSTOMHID_IN_EP & 0x7FU) == ep_num) {
         return usbd_custom_hid_cb.data_in(udev, ep_num);
     } else {
         return usbd_printer_cb.data_in(udev, ep_num);
@@ -325,9 +317,9 @@ static uint8_t hid_printer_data_in (usb_dev *udev, uint8_t ep_num)
     \param[out] none
     \retval     USB device operation status
 */
-static uint8_t hid_printer_data_out (usb_dev *udev, uint8_t ep_num)
+static uint8_t hid_printer_data_out(usb_dev *udev, uint8_t ep_num)
 {
-    if ((CUSTOMHID_OUT_EP & 0x7F) == ep_num) {
+    if((CUSTOMHID_OUT_EP & 0x7FU) == ep_num) {
         return usbd_custom_hid_cb.data_out(udev, ep_num);
     } else {
         return usbd_printer_cb.data_out(udev, ep_num);

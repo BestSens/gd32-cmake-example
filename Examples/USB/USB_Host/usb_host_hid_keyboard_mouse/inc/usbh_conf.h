@@ -2,7 +2,7 @@
     \file    usbh_conf.h
     \brief   USB host driver configuration
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,8 +32,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __USBH_CONF_H
-#define __USBH_CONF_H
+#ifndef USBH_CONF_H
+#define USBH_CONF_H
 
 #define USBH_MAX_EP_NUM                         4U
 #define USBH_MAX_INTERFACES_NUM                 4U
@@ -43,4 +43,4 @@ OF SUCH DAMAGE.
 #define USBH_DATA_BUF_MAX_LEN                   0x200U
 #define USBH_CFGSET_MAX_LEN                     0x200U
 
-#endif /* __USBH_CONF_H */
+#endif /* USBH_CONF_H */

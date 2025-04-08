@@ -2,7 +2,7 @@
     \file    usbh_usr.c
     \brief   some user routines
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -35,22 +35,18 @@ OF SUCH DAMAGE.
 #include "lcd_log.h"
 #include "usbh_usr.h"
 #include "usbh_standard_hid.h"
-#include "usb_lcd_conf.h"
-#include "drv_usb_hw.h"
-#include <string.h>
 
 extern int16_t XLoc, YLoc;
 extern __IO int16_t PrevX, PrevY;
 
-uint16_t keyboard_char_xpos = 0;
-uint16_t keyboard_char_ypos = 0;
+uint16_t keyboard_char_xpos = 0U;
+uint16_t keyboard_char_ypos = 0U;
 
 extern usbh_host usb_host;
 extern usb_core_driver usb_hid_core;
 
 /* points to the usbh_user_cb structure */
-usbh_user_cb usr_cb =
-{
+usbh_user_cb usr_cb = {
     usbh_user_init,
     usbh_user_deinit,
     usbh_user_device_connected,
@@ -85,12 +81,12 @@ void usbh_user_init(void)
     static uint8_t startup = 0U;
 
 #if USBFS_LOW_POWER || USBHS_LOW_POWER
-    if(usb_host.wakeup_mode){
-        startup = 0;
+    if(usb_host.wakeup_mode) {
+        startup = 0U;
     }
 #endif /* USBFS_LOW_POWER || USBHS_LOW_POWER */
 
-    if(0U == startup){
+    if(0U == startup) {
         startup = 1U;
 
         /* configure the User key */
@@ -101,11 +97,11 @@ void usbh_user_init(void)
 
         lcd_log_init();
 
-        lcd_log_header_set((uint8_t *)MSG_HOST_HEADER, 50);
+        lcd_log_header_set((uint8_t *)MSG_HOST_HEADER, 50U);
 
         LCD_UsrLog("USB host library started\n");
 
-        lcd_log_footer_set((uint8_t *)MSG_HOST_FOOTER, 40);
+        lcd_log_footer_set((uint8_t *)MSG_HOST_FOOTER, 40U);
     }
 }
 
@@ -136,7 +132,7 @@ void usbh_user_device_connected(void)
     \param[out] none
     \retval     none
 */
-void usbh_user_unrecovered_error (void)
+void usbh_user_unrecovered_error(void)
 {
     LCD_ErrLog("> UNRECOVERED ERROR STATE.\n");
 }
@@ -147,15 +143,15 @@ void usbh_user_unrecovered_error (void)
     \param[out] none
     \retval     none
 */
-void usbh_user_device_disconnected (void)
+void usbh_user_device_disconnected(void)
 {
     lcd_background_color_set(LCD_COLOR_BLACK);
     lcd_text_color_set(LCD_COLOR_BLACK);
 
-    lcd_log_textzone_clear (LCD_TEXT_ZONE_X, 
-                            LCD_TEXT_ZONE_Y, 
-                            LCD_TEXT_ZONE_WIDTH, 
-                            LCD_TEXT_ZONE_HEIGHT);
+    lcd_log_textzone_clear(LCD_TEXT_ZONE_X, \
+                           LCD_TEXT_ZONE_Y, \
+                           LCD_TEXT_ZONE_WIDTH, \
+                           LCD_TEXT_ZONE_HEIGHT);
 
     LCD_UsrLog("> Device Disconnected.\n");
 }
@@ -180,7 +176,7 @@ void usbh_user_device_reset(void)
 */
 void usbh_user_device_speed_detected(uint32_t device_speed)
 {
-    if (PORT_SPEED_HIGH == device_speed) {
+    if(PORT_SPEED_HIGH == device_speed) {
         LCD_UsrLog("> High speed device detected.\r\n");
     } else if(PORT_SPEED_FULL == device_speed) {
         LCD_UsrLog("> Full speed device detected.\r\n");
@@ -223,22 +219,22 @@ void usbh_user_device_address_assigned(void)
     \param[out] none
     \retval     none
 */
-void usbh_user_configuration_descavailable(usb_desc_config *cfg_desc,
-                                           usb_desc_itf *itf_desc,
+void usbh_user_configuration_descavailable(usb_desc_config *cfg_desc, \
+                                           usb_desc_itf *itf_desc, \
                                            usb_desc_ep *ep_desc)
 {
     usb_desc_itf *id = itf_desc;
 
-    if (0x08U == (*id).bInterfaceClass) {
+    if(0x08U == (*id).bInterfaceClass) {
         LCD_UsrLog("> Mass storage device connected.\n");
-    } else if (0x03U == (*id).bInterfaceClass) {
+    } else if(0x03U == (*id).bInterfaceClass) {
         LCD_UsrLog("> HID device connected.\n");
     }
 }
 
 /*!
     \brief      user operation when manufacturer string exists
-    \param[in]  manufacturer_string: manufacturer string of usb device
+    \param[in]  manufacturer_string: manufacturer string of USB device
     \param[out] none
     \retval     none
 */
@@ -280,10 +276,10 @@ void usbh_user_enumeration_finish(void)
     LCD_UsrLog("> Enumeration completed.\n");
 
     lcd_text_color_set(LCD_COLOR_RED);
-    lcd_vertical_string_display(LCD_HINT_LINE0, 0, (uint8_t *)"---------------------------------------");
+    lcd_vertical_string_display(LCD_HINT_LINE0, 0U, (uint8_t *)"---------------------------------------");
     lcd_text_color_set(LCD_COLOR_GREEN);
-    lcd_vertical_string_display(LCD_HINT_LINE1, 0, (uint8_t *)"To start the HID class operations:  ");
-    lcd_vertical_string_display(LCD_HINT_LINE2, 0, (uint8_t *)"Press User Key...             ");
+    lcd_vertical_string_display(LCD_HINT_LINE1, 0U, (uint8_t *)"To start the HID class operations:  ");
+    lcd_vertical_string_display(LCD_HINT_LINE2, 0U, (uint8_t *)"Press User Key...             ");
 }
 
 /*!
@@ -309,39 +305,39 @@ usbh_user_status usbh_user_userinput(void)
 
 #if USBFS_LOW_POWER || USBHS_LOW_POWER
 
-    if(usb_host.suspend_flag){
+    if(usb_host.suspend_flag) {
         LCD_UsrLog("\n> Pls press Tamper key to make the USB host enter the suspended state.\n");
         LCD_UsrLog("\n> To wake up the USB host, pls press WAKEUP key (General wakeup) or operate device (Remote wakeup).\n");
 
         /* wait for Tamper key pressed */
         while(SET == gd_eval_key_state_get(KEY_TAMPER));
-    }else{
-        if(usb_host.wakeup_mode == GENERAL_WAKEUP){
+    } else {
+        if(GENERAL_WAKEUP == usb_host.wakeup_mode) {
             usb_host.wakeup_mode = NORMAL_WORK;
             LCD_UsrLog("> General wakeup success.\n");
-            
+
             lcd_text_color_set(LCD_COLOR_RED);
-            lcd_vertical_string_display(LCD_HINT_LINE0, 0, (uint8_t *)"---------------------------------------");
+            lcd_vertical_string_display(LCD_HINT_LINE0, 0U, (uint8_t *)"---------------------------------------");
             lcd_text_color_set(LCD_COLOR_GREEN);
-            lcd_vertical_string_display(LCD_HINT_LINE1, 0, (uint8_t *)"To start the HID class operations:  ");
-            lcd_vertical_string_display(LCD_HINT_LINE2, 0, (uint8_t *)"Press User Key...             ");
-        }else if(usb_host.wakeup_mode == REMOTE_WAKEUP){
+            lcd_vertical_string_display(LCD_HINT_LINE1, 0U, (uint8_t *)"To start the HID class operations:  ");
+            lcd_vertical_string_display(LCD_HINT_LINE2, 0U, (uint8_t *)"Press User Key...             ");
+        } else if(REMOTE_WAKEUP == usb_host.wakeup_mode) {
             usb_host.wakeup_mode = NORMAL_WORK;
             LCD_UsrLog("> Remote wakeup success.\n");
 
             lcd_text_color_set(LCD_COLOR_RED);
-            lcd_vertical_string_display(LCD_HINT_LINE0, 0, (uint8_t *)"---------------------------------------");
+            lcd_vertical_string_display(LCD_HINT_LINE0, 0U, (uint8_t *)"---------------------------------------");
             lcd_text_color_set(LCD_COLOR_GREEN);
-            lcd_vertical_string_display(LCD_HINT_LINE1, 0, (uint8_t *)"To start the HID class operations:  ");
-            lcd_vertical_string_display(LCD_HINT_LINE2, 0, (uint8_t *)"Press User Key...             ");
-        }else{
+            lcd_vertical_string_display(LCD_HINT_LINE1, 0U, (uint8_t *)"To start the HID class operations:  ");
+            lcd_vertical_string_display(LCD_HINT_LINE2, 0U, (uint8_t *)"Press User Key...             ");
+        } else {
         }
     }
 
 #endif /* USBFS_LOW_POWER || USBHS_LOW_POWER */
 
     /*key USER is in polling mode to detect user action */
-    if(RESET == gd_eval_key_state_get(KEY_USER)){
+    if(RESET == gd_eval_key_state_get(KEY_USER)) {
         usbh_usr_status = USR_IN_RESP_OK;
     }
 
@@ -354,7 +350,7 @@ usbh_user_status usbh_user_userinput(void)
     \param[out] none
     \retval     none
 */
-void usbh_user_over_current_detected (void)
+void usbh_user_over_current_detected(void)
 {
     LCD_ErrLog("> Over current detected.\n");
 }
@@ -365,16 +361,16 @@ void usbh_user_over_current_detected (void)
     \param[out] none
     \retval     none
 */
-void usr_mouse_init (void)
+void usr_mouse_init(void)
 {
     LCD_UsrLog("> HID Demo Device : Mouse.\n");
 
     lcd_text_color_set(LCD_COLOR_BLACK);
 
-    lcd_log_textzone_clear (LCD_TEXT_ZONE_X, 
-                            LCD_TEXT_ZONE_Y, 
-                            LCD_TEXT_ZONE_WIDTH, 
-                            LCD_TEXT_ZONE_HEIGHT);
+    lcd_log_textzone_clear(LCD_TEXT_ZONE_X, \
+                           LCD_TEXT_ZONE_Y, \
+                           LCD_TEXT_ZONE_WIDTH, \
+                           LCD_TEXT_ZONE_HEIGHT);
 
     lcd_text_color_set(LCD_COLOR_GREY);
     lcd_rectangle_fill(MOUSE_WINDOW_X, MOUSE_WINDOW_Y, MOUSE_WINDOW_WIDTH, MOUSE_WINDOW_HEIGHT);
@@ -387,14 +383,14 @@ void usr_mouse_init (void)
     lcd_background_color_set(LCD_COLOR_WHITE);
     lcd_vertical_char_display(MOUSE_SPL_X, MOUSE_SPL_Y, 'x');
 
-    hid_mouse_button_released(0);
-    hid_mouse_button_released(1);
-    hid_mouse_button_released(2);
+    hid_mouse_button_released(0U);
+    hid_mouse_button_released(1U);
+    hid_mouse_button_released(2U);
 
-    XLoc  = 0;
-    YLoc  = 0; 
-    PrevX = 0;
-    PrevY = 0;
+    XLoc  = 0U;
+    YLoc  = 0U;
+    PrevX = 0U;
+    PrevY = 0U;
 }
 
 /*!
@@ -403,14 +399,14 @@ void usr_mouse_init (void)
     \param[out] none
     \retval     none
 */
-void usr_mouse_process_data (hid_mouse_info *data)
+void usr_mouse_process_data(mouse_report_data *data)
 {
-    if ((0U != data->x) && (0U != data->y)) {
+    if((0U != data->x) && (0U != data->y)) {
         hid_mouse_update_position(data->x, data->y);
     }
 
-    for (uint8_t index = 0U; index < 3U; index++) {
-        if (data->buttons[index]) {
+    for(uint8_t index = 0U; index < 3U; index++) {
+        if(data->buttons[index]) {
             hid_mouse_button_pressed(index);
         } else {
             hid_mouse_button_released(index);
@@ -424,17 +420,17 @@ void usr_mouse_process_data (hid_mouse_info *data)
     \param[out] none
     \retval     none
 */
-void usr_keybrd_init (void)
+void usr_keybrd_init(void)
 {
     LCD_UsrLog("> HID Demo Device : Keyboard.\n");
     LCD_UsrLog("> Use Keyboard to tape characters: \n");
 
     lcd_text_color_set(LCD_COLOR_BLACK);
 
-    lcd_log_textzone_clear (LCD_TEXT_ZONE_X, 
-                            LCD_TEXT_ZONE_Y, 
-                            LCD_TEXT_ZONE_WIDTH, 
-                            LCD_TEXT_ZONE_HEIGHT);
+    lcd_log_textzone_clear(LCD_TEXT_ZONE_X, \
+                           LCD_TEXT_ZONE_Y, \
+                           LCD_TEXT_ZONE_WIDTH, \
+                           LCD_TEXT_ZONE_HEIGHT);
 
     lcd_text_color_set(LCD_COLOR_GREY);
     lcd_rectangle_fill(KYBRD_WINDOW_X, KYBRD_WINDOW_Y, KYBRD_WINDOW_WIDTH, KYBRD_WINDOW_HEIGHT);
@@ -449,31 +445,31 @@ void usr_keybrd_init (void)
     \param[out] none
     \retval     none
 */
-void usr_keybrd_process_data (uint8_t data)
+void usr_keybrd_process_data(uint8_t data)
 {
-    if('\n' == data){
+    if('\n' == data) {
         keyboard_char_ypos = KYBRD_FIRST_COLUMN;
 
         /* increment char X position */
         UPDATE_XP(keyboard_char_xpos);
-    }else if('\r' == data) {
+    } else if('\r' == data) {
         /* manage deletion of character and update cursor location */
-        if(KYBRD_FIRST_COLUMN == keyboard_char_ypos){
+        if(KYBRD_FIRST_COLUMN == keyboard_char_ypos) {
             /* first character of first line to be deleted */
-            if(KYBRD_FIRST_LINE == keyboard_char_xpos){
+            if(KYBRD_FIRST_LINE == keyboard_char_xpos) {
                 keyboard_char_ypos = KYBRD_FIRST_COLUMN;
-            }else{
+            } else {
                 UPDATE_XP(keyboard_char_xpos);
-                keyboard_char_ypos =(KYBRD_LAST_COLUMN + SMALL_FONT_COLUMN_WIDTH); 
+                keyboard_char_ypos = (KYBRD_LAST_COLUMN + SMALL_FONT_COLUMN_WIDTH);
             }
-        }else{
+        } else {
             UPDATE_YP(keyboard_char_ypos);
         }
 
         lcd_text_color_set(LCD_COLOR_BLACK);
         lcd_background_color_set(LCD_COLOR_WHITE);
         lcd_vertical_char_display(CHAR_CURSOR(keyboard_char_xpos, keyboard_char_ypos), '\0');
-    }else{
+    } else {
         lcd_text_color_set(LCD_COLOR_BLACK);
         lcd_background_color_set(LCD_COLOR_WHITE);
         lcd_vertical_char_display(CHAR_CURSOR(keyboard_char_xpos, keyboard_char_ypos), data);
@@ -484,7 +480,7 @@ void usr_keybrd_process_data (uint8_t data)
         UPDATE_YP(keyboard_char_ypos);
 
         /* check if the Y position has reached the last column */
-        if(KYBRD_LAST_COLUMN == keyboard_char_ypos){
+        if(KYBRD_LAST_COLUMN == keyboard_char_ypos) {
             keyboard_char_ypos = KYBRD_FIRST_COLUMN;
 
             /* increment char X position */
@@ -492,7 +488,7 @@ void usr_keybrd_process_data (uint8_t data)
         }
     }
 
-    if(KYBRD_LINE_LIMIT(keyboard_char_xpos)){
+    if(KYBRD_LINE_LIMIT(keyboard_char_xpos)) {
         lcd_text_color_set(LCD_COLOR_GREY);
         lcd_rectangle_fill(KYBRD_WINDOW_X, KYBRD_WINDOW_Y, KYBRD_WINDOW_WIDTH, KYBRD_WINDOW_HEIGHT);
 

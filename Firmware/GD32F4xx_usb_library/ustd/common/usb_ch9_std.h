@@ -2,7 +2,7 @@
     \file    usb_ch9_std.h
     \brief   USB 2.0 standard defines
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,8 +32,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __USB_CH9_STD_H
-#define __USB_CH9_STD_H
+#ifndef USB_CH9_STD_H
+#define USB_CH9_STD_H
 
 #include "usb_conf.h"
 
@@ -45,7 +45,7 @@ OF SUCH DAMAGE.
 #define USB_IAD_DESC_LEN             0x08U       /*!< USB IAD descriptor length */
 #define USB_OTG_DESC_LEN             0x03U       /*!< USB device OTG descriptor length */
 
-#define USB_SETUP_PACKET_LEN         0x08U       /*!< USB setup packet length */
+#define USB_SETUP_PACKET_LEN         0x08U       /*!< USB SETUP packet length */
 
 /* bit 7 of bmRequestType: data phase transfer direction */
 #define USB_TRX_MASK                 0x80U       /*!< USB transfer direction mask */
@@ -135,10 +135,10 @@ enum _usbx_type {
 #define FEATURE_SELECTOR_REMOTEWAKEUP       0x01U        /*!< USB feature selector remote wakeup */
 
 #define BYTE_SWAP(addr)      (((uint16_t)(*((uint8_t *)(addr)))) + \
-                             (uint16_t)(((uint16_t)(*(((uint8_t *)(addr)) + 1U))) << 8U))
+                             (uint16_t)(((uint16_t)(*(((uint8_t *)(addr)) + 1U))) << 8))
 
 #define BYTE_LOW(x)          ((uint8_t)((x) & 0x00FFU))
-#define BYTE_HIGH(x)         ((uint8_t)(((x) & 0xFF00U) >> 8U))
+#define BYTE_HIGH(x)         ((uint8_t)(((x) & 0xFF00U) >> 8))
 
 #define USB_MIN(a, b)        (((a) < (b)) ? (a) : (b))
 
@@ -149,7 +149,7 @@ enum _usbx_type {
 #define USB_CLASS_MSC                       0x08U       /*!< USB MSC class */
 
 /* use the following values when USB host need to get descriptor  */
-#define USBH_DESC(x)                        (((x)<< 8U) & 0xFF00U)
+#define USBH_DESC(x)                        (((x)<< 8) & 0xFF00U)
 
 /* as per USB specs 9.2.6.4 :standard request with data request timeout: 5sec
    standard request with no data stage timeout : 50ms */
@@ -160,18 +160,18 @@ enum _usbx_type {
 
 /* USB standard device request structure */
 typedef struct _usb_req {
-    uint8_t           bmRequestType;  /*!< type of request */
-    uint8_t           bRequest;       /*!< request of setup packet */
-    uint16_t          wValue;         /*!< value of setup packet */
-    uint16_t          wIndex;         /*!< index of setup packet */
-    uint16_t          wLength;        /*!< length of setup packet */
+    uint8_t           bmRequestType;      /*!< type of request */
+    uint8_t           bRequest;           /*!< request of SETUP packet */
+    uint16_t          wValue;             /*!< value of SETUP packet */
+    uint16_t          wIndex;             /*!< index of SETUP packet */
+    uint16_t          wLength;            /*!< length of SETUP packet */
 } usb_req;
 
-/* USB setup packet define */
+/* USB SETUP packet define */
 typedef union _usb_setup {
-    uint8_t data[8];
+    uint8_t data[8];                      /*!< the data of USB SETUP packet */
 
-    usb_req req;
+    usb_req req;                          /*!< USB standard device request */
 } usb_setup;
 
 /* USB descriptor defines */
@@ -237,12 +237,12 @@ typedef struct _usb_desc_LANGID {
 
 typedef struct _usb_desc_str {
     usb_desc_header header;               /*!< descriptor header, including type and size. */
-    uint16_t unicode_string[128];          /*!< unicode string data */
+    uint16_t unicode_string[128];         /*!< unicode string data */
 } usb_desc_str;
 
 #pragma pack()
 
 /* compute string descriptor length */
-#define USB_STRING_LEN(unicode_chars) (sizeof(usb_desc_header) + ((unicode_chars) << 1U))
+#define USB_STRING_LEN(unicode_chars) (sizeof(usb_desc_header) + ((unicode_chars) << 1))
 
-#endif /* __USB_CH9_STD_H */
+#endif /* USB_CH9_STD_H */

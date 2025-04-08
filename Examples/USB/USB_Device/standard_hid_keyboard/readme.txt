@@ -2,7 +2,7 @@
     \file    readme.txt
     \brief   description of the USB HID device(USB-Keyboard) demo
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -47,16 +47,11 @@ wakeup source.
 
   In order to test USB remote wakeup function, you can do as follows:
     - Manually switch PC to standby mode
-
     - Wait for PC to fully enter the standby mode
-
     - Push the wakeup key
-
     - If PC is ON, remote wakeup is OK, else failed
 
   In order to make the program work, you must do the following:
-    - Open your preferred tool-chain 
-
+    - Open your preferred tool-chain
     - Rebuild all files and load your image into target memory
-
     - Run the application

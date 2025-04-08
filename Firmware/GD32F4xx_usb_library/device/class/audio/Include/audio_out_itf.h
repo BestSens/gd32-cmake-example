@@ -2,7 +2,7 @@
     \file    audio_out_itf.h
     \brief   audio OUT (playback) interface header file
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,18 +32,17 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __AUDIO_OUT_ITF_H
-#define __AUDIO_OUT_ITF_H
+#ifndef AUDIO_OUT_ITF_H
+#define AUDIO_OUT_ITF_H
 
 #include "usbd_conf.h"
-#include "string.h"
 
 typedef struct {
-    uint8_t  (*audio_init)        (uint32_t audio_freq, uint32_t volume);
-    uint8_t  (*audio_deinit)      (void);
-    uint8_t  (*audio_cmd)         (uint8_t* pbuf, uint32_t size, uint8_t cmd);
+    uint8_t (*audio_init)(uint32_t audio_freq, uint32_t volume);
+    uint8_t (*audio_deinit)(void);
+    uint8_t (*audio_cmd)(uint8_t* pbuf, uint32_t size, uint8_t cmd);
 } audio_fops_struct;
 
 extern audio_fops_struct audio_out_fops;
 
-#endif /* __AUDIO_OUT_ITF_H */
+#endif /* AUDIO_OUT_ITF_H */

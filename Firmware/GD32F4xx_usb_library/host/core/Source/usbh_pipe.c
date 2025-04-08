@@ -2,7 +2,7 @@
     \file    usbh_pipe.c
     \brief   USB host mode pipe operation driver
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -35,7 +35,7 @@ OF SUCH DAMAGE.
 #include "usbh_pipe.h"
 
 /* local function prototypes ('static') */
-static uint16_t usbh_freepipe_get (usb_core_driver *udev);
+static uint16_t usbh_freepipe_get(usb_core_driver *udev);
 
 /*!
     \brief      create a pipe
@@ -47,11 +47,11 @@ static uint16_t usbh_freepipe_get (usb_core_driver *udev);
     \param[out] none
     \retval     operation status
 */
-uint8_t usbh_pipe_create (usb_core_driver *udev,
-                          usb_dev_prop *dev,
-                          uint8_t  pp_num,
-                          uint8_t  ep_type,
-                          uint16_t ep_mpl)
+uint8_t usbh_pipe_create(usb_core_driver *udev, \
+                         usb_dev_prop *dev, \
+                         uint8_t  pp_num, \
+                         uint8_t  ep_type, \
+                         uint16_t ep_mpl)
 {
     usb_pipe *pp = &udev->host.pipe[pp_num];
 
@@ -60,11 +60,11 @@ uint8_t usbh_pipe_create (usb_core_driver *udev,
     pp->ep.type = ep_type;
     pp->ep.mps = ep_mpl;
 
-    if (((USB_EPTYPE_BULK == pp->ep.type) || (USB_EPTYPE_CTRL == pp->ep.type))) {
+    if((USB_EPTYPE_BULK == pp->ep.type) || (USB_EPTYPE_CTRL == pp->ep.type)) {
         pp->supp_ping = (uint8_t)(pp->dev_speed == PORT_SPEED_HIGH);
     }
 
-    usb_pipe_init (udev, pp_num);
+    usb_pipe_init(udev, pp_num);
 
     return HP_OK;
 }
@@ -79,31 +79,31 @@ uint8_t usbh_pipe_create (usb_core_driver *udev,
     \param[out] none
     \retval     operation status
 */
-uint8_t usbh_pipe_update (usb_core_driver *udev,
-                          uint8_t  pp_num,
-                          uint8_t  dev_addr,
-                          uint32_t dev_speed,
-                          uint16_t ep_mpl)
+uint8_t usbh_pipe_update(usb_core_driver *udev, \
+                         uint8_t  pp_num, \
+                         uint8_t  dev_addr, \
+                         uint32_t dev_speed, \
+                         uint16_t ep_mpl)
 {
     usb_pipe *pp = &udev->host.pipe[pp_num];
 
-    if ((pp->dev_addr != dev_addr) && (dev_addr)) {
+    if((pp->dev_addr != dev_addr) && (dev_addr)) {
         pp->dev_addr = dev_addr;
     }
 
-    if ((pp->dev_speed != dev_speed) && (dev_speed)) {
+    if((pp->dev_speed != dev_speed) && (dev_speed)) {
         pp->dev_speed = dev_speed;
 
-        if (((USB_EPTYPE_BULK == pp->ep.type) || (USB_EPTYPE_CTRL == pp->ep.type))) {
+        if((USB_EPTYPE_BULK == pp->ep.type) || (USB_EPTYPE_CTRL == pp->ep.type)) {
             pp->supp_ping = (uint8_t)(pp->dev_speed == PORT_SPEED_HIGH);
         }
     }
 
-    if ((pp->ep.mps != ep_mpl) && (ep_mpl)) {
-        pp->ep.mps = ep_mpl; 
+    if((pp->ep.mps != ep_mpl) && (ep_mpl)) {
+        pp->ep.mps = ep_mpl;
     }
 
-    usb_pipe_init (udev, pp_num);
+    usb_pipe_init(udev, pp_num);
 
     return HP_OK;
 }
@@ -115,11 +115,11 @@ uint8_t usbh_pipe_update (usb_core_driver *udev,
     \param[out] none
     \retval     operation status
 */
-uint8_t usbh_pipe_allocate (usb_core_driver *udev, uint8_t ep_addr)
+uint8_t usbh_pipe_allocate(usb_core_driver *udev, uint8_t ep_addr)
 {
-    uint16_t pp_num = usbh_freepipe_get (udev);
+    uint16_t pp_num = usbh_freepipe_get(udev);
 
-    if (HP_ERROR != pp_num) {
+    if(HP_ERROR != pp_num) {
         udev->host.pipe[pp_num].in_used = 1U;
         udev->host.pipe[pp_num].ep.dir = EP_DIR(ep_addr);
         udev->host.pipe[pp_num].ep.num = EP_ID(ep_addr);
@@ -135,9 +135,9 @@ uint8_t usbh_pipe_allocate (usb_core_driver *udev, uint8_t ep_addr)
     \param[out] none
     \retval     operation status
 */
-uint8_t usbh_pipe_free (usb_core_driver *udev, uint8_t pp_num)
+uint8_t usbh_pipe_free(usb_core_driver *udev, uint8_t pp_num)
 {
-    if (pp_num < HP_MAX) {
+    if(pp_num < HP_MAX) {
         udev->host.pipe[pp_num].in_used = 0U;
     }
 
@@ -150,11 +150,11 @@ uint8_t usbh_pipe_free (usb_core_driver *udev, uint8_t pp_num)
     \param[out] none
     \retval     operation status
 */
-uint8_t usbh_pipe_delete (usb_core_driver *udev)
+uint8_t usbh_pipe_delete(usb_core_driver *udev)
 {
     uint8_t pp_num = 0U;
 
-    for (pp_num = 2U; pp_num < HP_MAX; pp_num++) {
+    for(pp_num = 2U; pp_num < HP_MAX; pp_num++) {
         udev->host.pipe[pp_num] = (usb_pipe) {0};
     }
 
@@ -167,12 +167,12 @@ uint8_t usbh_pipe_delete (usb_core_driver *udev)
     \param[out] none
     \retval     operation status
 */
-static uint16_t usbh_freepipe_get (usb_core_driver *udev)
+static uint16_t usbh_freepipe_get(usb_core_driver *udev)
 {
     uint8_t pp_num = 0U;
 
-    for (pp_num = 0U; pp_num < HP_MAX; pp_num++) {
-        if (0U == udev->host.pipe[pp_num].in_used) {
+    for(pp_num = 0U; pp_num < HP_MAX; pp_num++) {
+        if(0U == udev->host.pipe[pp_num].in_used) {
             return (uint16_t)pp_num;
         }
     }

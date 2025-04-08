@@ -2,7 +2,7 @@
     \file    msc_bbb.h
     \brief   definitions for the USB MSC BBB(bulk/bulk/bulk) protocol
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,38 +32,38 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __MSC_BBB_H
-#define __MSC_BBB_H
+#ifndef MSC_BBB_H
+#define MSC_BBB_H
 
 #include "usb_ch9_std.h"
 
-#define BBB_CBW_SIGNATURE                 0x43425355U
-#define BBB_CSW_SIGNATURE                 0x53425355U
-#define BBB_CBW_LENGTH                    31U
-#define BBB_CSW_LENGTH                    13U
+#define BBB_CBW_SIGNATURE                 0x43425355U             /*!< MSC BBB CBW signature */
+#define BBB_CSW_SIGNATURE                 0x53425355U             /*!< MSC BBB CSW signature */
+#define BBB_CBW_LENGTH                    31U                     /*!< MSC BBB CBW length */
+#define BBB_CSW_LENGTH                    13U                     /*!< MSC BBB CSW length */
 
 typedef struct {
-    uint32_t dCBWSignature;
-    uint32_t dCBWTag;
-    uint32_t dCBWDataTransferLength;
-    uint8_t  bmCBWFlags;
-    uint8_t  bCBWLUN;
-    uint8_t  bCBWCBLength;
-    uint8_t  CBWCB[16];
+    uint32_t dCBWSignature;                /*!< CBW signature */
+    uint32_t dCBWTag;                      /*!< CBW tag */
+    uint32_t dCBWDataTransferLength;       /*!< CBW signature */
+    uint8_t  bmCBWFlags;                   /*!< CBW flags */
+    uint8_t  bCBWLUN;                      /*!< CBW LUN */
+    uint8_t  bCBWCBLength;                 /*!< CBW length */
+    uint8_t  CBWCB[16];                    /*!< CBW CB */
 } msc_bbb_cbw;
 
 typedef struct {
-    uint32_t dCSWSignature;
-    uint32_t dCSWTag;
-    uint32_t dCSWDataResidue;
-    uint8_t  bCSWStatus;
+    uint32_t dCSWSignature;                /*!< CSW signature  */
+    uint32_t dCSWTag;                      /*!< CSW tag */
+    uint32_t dCSWDataResidue;              /*!< CSW data residue */
+    uint8_t  bCSWStatus;                   /*!< CSW status */
 } msc_bbb_csw;
 
 /* CSW command status */
 enum msc_csw_status {
-    CSW_CMD_PASSED = 0,
-    CSW_CMD_FAILED,
-    CSW_PHASE_ERROR
+    CSW_CMD_PASSED = 0U,                  /*!< CSW passed command status */
+    CSW_CMD_FAILED,                       /*!< CSW failed command status */
+    CSW_PHASE_ERROR                       /*!< CSW phase error status */
 };
 
-#endif /* __MSC_BBB_H */
+#endif /* MSC_BBB_H */

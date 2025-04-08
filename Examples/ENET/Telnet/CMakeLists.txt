@@ -3,12 +3,12 @@ cmake_minimum_required(VERSION 3.17.0)
 include(example_set_name)
 
 set(LWIP_INCLUDE_DIRS
-	${CMAKE_CURRENT_LIST_DIR}/lwip-2.1.2/src/include
-	${CMAKE_CURRENT_LIST_DIR}/lwip-2.1.2/port/GD32F4xx
+	${CMAKE_CURRENT_LIST_DIR}/lwip-2.2.0/src/include
+	${CMAKE_CURRENT_LIST_DIR}/lwip-2.2.0/port/GD32F4xx
 	${CMAKE_CURRENT_LIST_DIR}/inc
 )
 
-add_subdirectory(lwip-2.1.2)
+add_subdirectory(lwip-2.2.0)
 
 add_executable(${EXEC_NAME}
 	src/gd32f4xx_enet_eval.c
@@ -24,13 +24,13 @@ target_include_directories(${EXEC_NAME} PRIVATE
 )
 
 add_library(lwip_port
-	lwip-2.1.2/port/GD32F4xx/Basic/ethernetif.c
+	lwip-2.2.0/port/GD32F4xx/Basic/ethernetif.c
 )
 
 target_include_directories(lwip_port PUBLIC
 	${LWIP_INCLUDE_DIRS}
-	lwip-2.1.2/src/include/lwip
-	lwip-2.1.2/port/GD32F4xx/Basic
+	lwip-2.2.0/src/include/lwip
+	lwip-2.2.0/port/GD32F4xx/Basic
 )
 target_link_libraries(lwip_port lwipcore ${EXEC_NAME}_standard_peripherals)
 

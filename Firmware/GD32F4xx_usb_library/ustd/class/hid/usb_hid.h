@@ -2,7 +2,7 @@
     \file    usb_hid.h
     \brief   definitions for the USB HID class
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,34 +32,33 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __USB_HID_H
-#define __USB_HID_H
+#ifndef USB_HID_H
+#define USB_HID_H
 
 #include "usb_ch9_std.h"
 
-#define USB_HID_CLASS               0x03U
+#define USB_HID_CLASS               0x03U          /*!< HID class code */
 
-#define USB_DESCTYPE_HID            0x21U
-#define USB_DESCTYPE_REPORT         0x22U
+#define USB_DESCTYPE_HID            0x21U          /*!< HID descriptor type */
+#define USB_DESCTYPE_REPORT         0x22U          /*!< report descriptor type */
 
 /* HID subclass code */
 #define USB_HID_SUBCLASS_BOOT_ITF   0x01U
 
 /* HID protocol codes */
-#define USB_HID_PROTOCOL_KEYBOARD   0x01U
-#define USB_HID_PROTOCOL_MOUSE      0x02U
+#define USB_HID_PROTOCOL_KEYBOARD   0x01U         /*!< HID keyboard protocol */
+#define USB_HID_PROTOCOL_MOUSE      0x02U         /*!< HID mouse protocol */
 
-#define GET_REPORT                  0x01U
-#define GET_IDLE                    0x02U
-#define GET_PROTOCOL                0x03U
-#define SET_REPORT                  0x09U
-#define SET_IDLE                    0x0AU
-#define SET_PROTOCOL                0x0BU
+#define GET_REPORT                  0x01U         /*!< get report request */
+#define GET_IDLE                    0x02U         /*!< get idle request */
+#define GET_PROTOCOL                0x03U         /*!< get protocol request */
+#define SET_REPORT                  0x09U         /*!< set report request */
+#define SET_IDLE                    0x0AU         /*!< set idle request */
+#define SET_PROTOCOL                0x0BU         /*!< set protocol request */
 
 #pragma pack(1)
 
-typedef struct
-{
+typedef struct {
     usb_desc_header header;     /*!< regular descriptor header containing the descriptor's type and length */
 
     uint16_t bcdHID;            /*!< BCD encoded version that the HID descriptor and device complies to */
@@ -71,13 +70,12 @@ typedef struct
 
 #pragma pack()
 
-typedef struct
-{
-    usb_desc_config         config;
-    usb_desc_itf            hid_itf;
-    usb_desc_hid            hid_vendor;
-    usb_desc_ep             hid_epin;
-    usb_desc_ep             hid_epout;
-} usb_hid_desc_config_set;
+typedef struct {
+    usb_desc_config         config;             /*!< configure descriptor */
+    usb_desc_itf            hid_itf;            /*!< HID interface descriptor */
+    usb_desc_hid            hid_vendor;         /*!< HID vendor descriptor */
+    usb_desc_ep             hid_epin;           /*!< HID IN endpoint descriptor */
+    usb_desc_ep             hid_epout;          /*!< HID OUT endpoint descriptor */
+}usb_hid_desc_config_set;
 
-#endif /* __USB_HID_H */
+#endif /* USB_HID_H */

@@ -2,7 +2,7 @@
     \file    gd32f4xx_it.h
     \brief   the header file of the ISR
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -54,28 +54,28 @@ void SVC_Handler(void);
 void DebugMon_Handler(void);
 /* this function handles PendSV exception */
 void PendSV_Handler(void);
-/* this function handles TIMER2 IRQ Handler */
+/* this function handles TIMER2 interrupt request */
 void TIMER2_IRQHandler(void);
-/* this function handles EXTI0_IRQ Handler */
+/* this function handles EXTI0_IRQ interrupt request */
 void  EXTI0_IRQHandler (void);
-/* this function handles EXTI10_15_IRQ Handler */
+/* this function handles EXTI10_15_IRQ interrupt request */
 void  EXTI10_15_IRQHandler (void);
 #ifdef USE_USB_FS
-/* this function handles USB wakeup interrupt handler */
+/* this function handles USBFS wakeup interrupt request */
 void USBFS_WKUP_IRQHandler(void);
-/* this function handles USBFS IRQ Handler */
+/* this function handles USBFS global interrupt request */
 void USBFS_IRQHandler(void);
 #endif /* USE_USB_FS */
 #ifdef USE_USB_HS
-/* this function handles USB wakeup interrupt handler */
+/* this function handles USBHS wakeup interrupt request */
 void USBHS_WKUP_IRQHandler(void);
-/* this function handles USBHS IRQ Handler */
+/* this function handles USBHS global interrupt request */
 void USBHS_IRQHandler(void);
 #endif /* USE_USB_HS */
 #ifdef USB_HS_DEDICATED_EP1_ENABLED
-/* this function handles EP1_IN IRQ Handler */
+/* this function handles EP1_IN IRQ interrupt request */
 void USBHS_EP1_In_IRQHandler(void);
-/* this function handles EP1_OUT IRQ Handler */
+/* this function handles EP1_OUT IRQ interrupt request */
 void USBHS_EP1_Out_IRQHandler(void);
 #endif /* USB_HS_DEDICATED_EP1_ENABLED */
 

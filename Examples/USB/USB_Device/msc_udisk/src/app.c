@@ -2,7 +2,7 @@
     \file    app.c
     \brief   main routine
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -37,7 +37,7 @@ OF SUCH DAMAGE.
 
 usb_core_driver msc_udisk;
 
-unsigned char SRAM[40 * 1024];
+unsigned char sram_data[40 * 1024];
 
 /*!
     \brief      main routine will construct a USB MSC device
@@ -62,6 +62,6 @@ int main(void)
 
     usb_intr_config();
 
-    while (1) {
+    while(1) {
     }
 }

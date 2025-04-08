@@ -2,7 +2,7 @@
     \file    lwipopts.h
     \brief   LwIP options configuration 
     
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -112,8 +112,8 @@ OF SUCH DAMAGE.
 #define LWIP_PROVIDE_ERRNO      1
 
 /* checksum options */
-#define CHECKSUM_BY_HARDWARE                             /* computing and verifying the IP, UDP, TCP and ICMP
-                                                            checksums by hardware */
+//#define CHECKSUM_BY_HARDWARE                             /* computing and verifying the IP, UDP, TCP and ICMP
+//                                                            checksums by hardware */
 
 /* sequential layer options */
 #define LWIP_NETCONN            0                        /* set to 1 to enable netconn API (require to use api_lib.c) */
@@ -127,7 +127,7 @@ OF SUCH DAMAGE.
                                                             SO_RCVTIMEO processing */
                                                             
 /* Lwip debug options */
-#define LWIP_DEBUG              1
+#define LWIP_DEBUG              0
 
 
 

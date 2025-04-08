@@ -2,7 +2,7 @@
     \file    usb_lcd_conf.h
     \brief   LCD driver configuration
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,8 +32,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __USB_LCD_CONF_H
-#define __USB_LCD_CONF_H
+#ifndef USB_LCD_CONF_H
+#define USB_LCD_CONF_H
 
 #include <stdio.h>
 #include "usb_conf.h"
@@ -55,7 +55,7 @@ OF SUCH DAMAGE.
 
 #define LCD_TEXT_ZONE_X               LCD_FLAG_WIDTH
 #define LCD_TEXT_ZONE_Y               0U
-#define LCD_TEXT_ZONE_WIDTH           LCD_PIXEL_WIDTH - 2 * LCD_FLAG_WIDTH
+#define LCD_TEXT_ZONE_WIDTH           LCD_PIXEL_WIDTH - 2U * LCD_FLAG_WIDTH
 #define LCD_TEXT_ZONE_HEIGHT          LCD_PIXEL_HEIGHT
 
 #define LCD_TEXT_OFFSET               8U
@@ -76,4 +76,4 @@ OF SUCH DAMAGE.
     #define LCD_LOG_PUTCHAR int fputc(int ch, FILE *f)
 #endif /* __GNUC__ */
 
-#endif /* __USB_LCD_CONF_H */
+#endif /* USB_LCD_CONF_H */

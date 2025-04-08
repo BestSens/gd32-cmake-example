@@ -2,7 +2,7 @@
     \file    gd32f4xx_enet.c
     \brief   ENET driver
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -3440,7 +3440,7 @@ static void enet_default_init(void)
     reg_value &= MAC_CFG_MASK;
     reg_value |= ENET_WATCHDOG_ENABLE | ENET_JABBER_ENABLE | ENET_INTERFRAMEGAP_96BIT \
                  | ENET_SPEEDMODE_10M | ENET_MODE_HALFDUPLEX | ENET_LOOPBACKMODE_DISABLE \
-                 | ENET_CARRIERSENSE_ENABLE | ENET_RECEIVEOWN_ENABLE \
+                 | ENET_CARRIERSENSE_DISABLE | ENET_RECEIVEOWN_ENABLE \
                  | ENET_RETRYTRANSMISSION_ENABLE | ENET_BACKOFFLIMIT_10 \
                  | ENET_DEFERRALCHECK_DISABLE \
                  | ENET_TYPEFRAME_CRC_DROP_DISABLE \

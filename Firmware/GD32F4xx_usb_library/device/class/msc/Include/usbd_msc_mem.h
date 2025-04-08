@@ -2,7 +2,7 @@
     \file    usbd_msc_mem.h
     \brief   header file for storage memory
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -32,28 +32,27 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 */
 
-#ifndef __USBD_MSC_MEM_H
-#define __USBD_MSC_MEM_H
+#ifndef USBD_MSC_MEM_H
+#define USBD_MSC_MEM_H
 
 #include "usbd_conf.h"
 
-#define USBD_STD_INQUIRY_LENGTH     36U
+#define USBD_STD_INQUIRY_LENGTH          36U               /*!< standard inquiry length */
 
-typedef struct
-{
-    int8_t (*mem_init)         (uint8_t lun);
-    int8_t (*mem_ready)        (uint8_t lun);
-    int8_t (*mem_protected)    (uint8_t lun);
-    int8_t (*mem_read)         (uint8_t lun, uint8_t *buf, uint32_t block_addr, uint16_t block_len);
-    int8_t (*mem_write)        (uint8_t lun, uint8_t *buf, uint32_t block_addr, uint16_t block_len);
-    int8_t (*mem_maxlun)       (void);
+typedef struct {
+    int8_t (*mem_init)(uint8_t lun);
+    int8_t (*mem_ready)(uint8_t lun);
+    int8_t (*mem_protected)(uint8_t lun);
+    int8_t (*mem_read)(uint8_t lun, uint8_t *buf, uint32_t block_addr, uint16_t block_len);
+    int8_t (*mem_write)(uint8_t lun, uint8_t *buf, uint32_t block_addr, uint16_t block_len);
+    int8_t (*mem_maxlun)(void);
 
-    uint8_t *mem_toc_data;
-    uint8_t *mem_inquiry_data[MEM_LUN_NUM];
-    uint32_t mem_block_size[MEM_LUN_NUM];
-    uint32_t mem_block_len[MEM_LUN_NUM];
-} usbd_mem_cb;
+    uint8_t *mem_toc_data;                                 /*!< memory TOC command data pointer */
+    uint8_t *mem_inquiry_data[MEM_LUN_NUM];                /*!< memory inquiry data buff */
+    uint32_t mem_block_size[MEM_LUN_NUM];                  /*!< memory block size buff */
+    uint32_t mem_block_len[MEM_LUN_NUM];                   /*!< memory block length buff */
+}usbd_mem_cb;
 
 extern usbd_mem_cb *usbd_mem_fops;
 
-#endif /* __USBD_MSC_MEM_H */
+#endif /* USBD_MSC_MEM_H */

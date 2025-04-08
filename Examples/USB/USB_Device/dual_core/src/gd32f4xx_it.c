@@ -2,7 +2,7 @@
     \file    gd32f4xx_it.c
     \brief   main interrupt service routines
 
-    \version 2024-01-15, V3.2.0, firmware for GD32F4xx
+    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
 */
 
 /*
@@ -34,16 +34,15 @@ OF SUCH DAMAGE.
 
 #include "gd32f4xx_it.h"
 #include "drv_usbd_int.h"
-#include "usbd_core.h"
 #include "custom_hid_core.h"
 
-uint8_t send_buffer1[4] = {0x00, 0x01, 0x00, 0x00};
-uint8_t send_buffer2[4] = {0x00, 0x01, 0x00, 0x00};
+uint8_t send_buffer1[4] = {0x00U, 0x01U, 0x00U, 0x00U};
+uint8_t send_buffer2[4] = {0x00U, 0x01U, 0x00U, 0x00U};
 
 extern usb_core_driver usbhs_cdc_acm;
 extern usb_core_driver usbfs_custom_hid;
 
-void usb_timer_irq (void);
+extern void usb_timer_irq(void);
 
 /* local function prototypes ('static') */
 static void resume_mcu_clk(void);
@@ -153,18 +152,18 @@ void PendSV_Handler(void)
 }
 
 /*!
-    \brief      this function handles EXTI0_IRQ Handler.
+    \brief      this function handles EXTI0_IRQ interrupt request
     \param[in]  none
     \param[out] none
     \retval     none
 */
-void EXTI0_IRQHandler (void)
+void EXTI0_IRQHandler(void)
 {
-    if (RESET != exti_interrupt_flag_get(WAKEUP_KEY_EXTI_LINE)) {
-        if (USBD_CONFIGURED == usbfs_custom_hid.dev.cur_status) {
-            send_buffer1[0] = 0x15U; 
+    if(RESET != exti_interrupt_flag_get(WAKEUP_KEY_EXTI_LINE)) {
+        if(USBD_CONFIGURED == usbfs_custom_hid.dev.cur_status) {
+            send_buffer1[0] = 0x15U;
 
-            if (RESET == gd_eval_key_state_get(KEY_WAKEUP)) {
+            if(RESET == gd_eval_key_state_get(KEY_WAKEUP)) {
                 if(send_buffer1[1]) {
                     send_buffer1[1] = 0x00U;
                 } else {
@@ -172,7 +171,7 @@ void EXTI0_IRQHandler (void)
                 }
             }
 
-            custom_hid_report_send (&usbfs_custom_hid, send_buffer1, 2U);
+            custom_hid_report_send(&usbfs_custom_hid, send_buffer1, 2U);
         }
 
         /* clear the EXTI line interrupt flag */
@@ -181,18 +180,18 @@ void EXTI0_IRQHandler (void)
 }
 
 /*!
-    \brief      this function handles EXTI10_15_IRQ Handler.
+    \brief      this function handles EXTI10_15_IRQ interrupt request
     \param[in]  none
     \param[out] none
     \retval     none
 */
-void EXTI10_15_IRQHandler (void)
+void EXTI10_15_IRQHandler(void)
 {
-    if (RESET != exti_interrupt_flag_get(TAMPER_KEY_EXTI_LINE)) {
-        if (USBD_CONFIGURED == usbfs_custom_hid.dev.cur_status) {
+    if(RESET != exti_interrupt_flag_get(TAMPER_KEY_EXTI_LINE)) {
+        if(USBD_CONFIGURED == usbfs_custom_hid.dev.cur_status) {
             send_buffer2[0] = 0x16U;
 
-            if (RESET == gd_eval_key_state_get(KEY_TAMPER)) {
+            if(RESET == gd_eval_key_state_get(KEY_TAMPER)) {
                 if(send_buffer2[1]) {
                     send_buffer2[1] = 0x00U;
                 } else {
@@ -200,7 +199,7 @@ void EXTI10_15_IRQHandler (void)
                 }
             }
 
-            custom_hid_report_send (&usbfs_custom_hid, send_buffer2, 2U);
+            custom_hid_report_send(&usbfs_custom_hid, send_buffer2, 2U);
         }
 
         /* clear the EXTI line interrupt flag */
@@ -209,7 +208,7 @@ void EXTI10_15_IRQHandler (void)
 }
 
 /*!
-    \brief      this function handles timer2 Handler
+    \brief      this function handles timer2 handler
     \param[in]  none
     \param[out] none
     \retval     none
@@ -222,14 +221,14 @@ void TIMER2_IRQHandler(void)
 #ifdef USE_USB_FS
 
 /*!
-    \brief      this function handles USBFS wakeup interrupt handler
+    \brief      this function handles USBFS wakeup interrupt request
     \param[in]  none
     \param[out] none
     \retval     none
 */
 void USBFS_WKUP_IRQHandler(void)
 {
-    if (usbfs_custom_hid.bp.low_power) {
+    if(usbfs_custom_hid.bp.low_power) {
         resume_mcu_clk();
 
         rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLQ);
@@ -248,22 +247,22 @@ void USBFS_WKUP_IRQHandler(void)
 #ifdef USE_USB_HS
 
 /*!
-    \brief      this function handles USBHS wakeup interrupt handler
+    \brief      this function handles USBHS wakeup interrupt request
     \param[in]  none
     \param[out] none
     \retval     none
 */
 void USBHS_WKUP_IRQHandler(void)
 {
-    if (usbhs_cdc_acm.bp.low_power) {
+    if(usbhs_cdc_acm.bp.low_power) {
         resume_mcu_clk();
 
-        #ifdef USE_EMBEDDED_PHY
-            rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLQ);
-            rcu_ck48m_clock_config(RCU_CK48MSRC_PLL48M);
-        #elif defined(USE_ULPI_PHY)
-            rcu_periph_clock_enable(RCU_USBHSULPI);
-        #endif
+#ifdef USE_EMBEDDED_PHY
+        rcu_pll48m_clock_config(RCU_PLL48MSRC_PLLQ);
+        rcu_ck48m_clock_config(RCU_CK48MSRC_PLL48M);
+#elif defined(USE_ULPI_PHY)
+        rcu_periph_clock_enable(RCU_USBHSULPI);
+#endif
 
         rcu_periph_clock_enable(RCU_USBHS);
 
@@ -278,7 +277,7 @@ void USBHS_WKUP_IRQHandler(void)
 #ifdef USE_USB_FS
 
 /*!
-    \brief      this function handles USBFS IRQ Handler
+    \brief      this function handles USBFS global interrupt request
     \param[in]  none
     \param[out] none
     \retval     none
@@ -293,7 +292,7 @@ void USBFS_IRQHandler(void)
 #ifdef USE_USB_HS
 
 /*!
-    \brief      this function handles USBHS IRQ Handler
+    \brief      this function handles USBHS global interrupt request
     \param[in]  none
     \param[out] none
     \retval     none
@@ -308,25 +307,25 @@ void USBHS_IRQHandler(void)
 #ifdef USB_HS_DEDICATED_EP1_ENABLED
 
 /*!
-    \brief      this function handles EP1_IN Handler
+    \brief      this function handles EP1_IN interrupt request
     \param[in]  none
     \param[out] none
     \retval     none
 */
 void USBHS_EP1_In_IRQHandler(void)
 {
-    usbd_int_dedicated_ep1in (&usbhs_cdc_acm);
+    usbd_int_dedicated_ep1in(&usbhs_cdc_acm);
 }
 
 /*!
-    \brief      this function handles EP1_OUT Handler
+    \brief      this function handles EP1_OUT interrupt request
     \param[in]  none
     \param[out] none
     \retval     none
 */
 void USBHS_EP1_Out_IRQHandler(void)
 {
-    usbd_int_dedicated_ep1out (&usbhs_cdc_acm);
+    usbd_int_dedicated_ep1out(&usbhs_cdc_acm);
 }
 
 #endif /* USB_HS_DEDICATED_EP1_ENABLED */
@@ -343,20 +342,20 @@ static void resume_mcu_clk(void)
     rcu_osci_on(RCU_HXTAL);
 
     /* wait till HXTAL is ready */
-    while(RESET == rcu_flag_get(RCU_FLAG_HXTALSTB)){
+    while(RESET == rcu_flag_get(RCU_FLAG_HXTALSTB)) {
     }
 
     /* enable PLL */
     rcu_osci_on(RCU_PLL_CK);
 
     /* wait till PLL is ready */
-    while(RESET == rcu_flag_get(RCU_FLAG_PLLSTB)){
+    while(RESET == rcu_flag_get(RCU_FLAG_PLLSTB)) {
     }
 
     /* select PLL as system clock source */
     rcu_system_clock_source_config(RCU_CKSYSSRC_PLLP);
 
     /* wait till PLL is used as system clock source */
-    while(RCU_SCSS_PLLP != rcu_system_clock_source_get()){
+    while(RCU_SCSS_PLLP != rcu_system_clock_source_get()) {
     }
 }
