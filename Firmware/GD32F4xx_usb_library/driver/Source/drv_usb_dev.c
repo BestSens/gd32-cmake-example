@@ -2,11 +2,11 @@
     \file    drv_usb_dev.c
     \brief   USB device mode low level driver
 
-    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
+    \version 2025-07-31, V3.3.2, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2024, GigaDevice Semiconductor Inc.
+    Copyright (c) 2025, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -212,7 +212,7 @@ usb_status usb_transc0_active(usb_core_driver *udev, usb_transc *transc)
 {
     __IO uint32_t *reg_addr = NULL;
 
-    uint32_t enum_speed = udev->regs.dr->DSTAT & DSTAT_ES;
+    uint32_t enum_speed = ((udev->regs.dr->DSTAT & DSTAT_ES) >> 1);
 
     /* get the endpoint number */
     uint8_t ep_num = transc->ep_addr.num;
@@ -251,7 +251,7 @@ usb_status usb_transc_active(usb_core_driver *udev, usb_transc *transc)
 {
     __IO uint32_t *reg_addr = NULL;
     uint32_t epinten = 0U;
-    uint32_t enum_speed = udev->regs.dr->DSTAT & DSTAT_ES;
+    uint32_t enum_speed = ((udev->regs.dr->DSTAT & DSTAT_ES) >> 1);
 
     /* get the endpoint number */
     uint8_t ep_num = transc->ep_addr.num;

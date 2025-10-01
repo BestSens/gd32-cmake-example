@@ -2,11 +2,11 @@
     \file    main.c
     \brief   SD card read and write demo
 
-    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
+    \version 2025-07-31, V3.3.2, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2024, GigaDevice Semiconductor Inc.
+    Copyright (c) 2025, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -35,10 +35,10 @@ OF SUCH DAMAGE.
 #include "gd32f4xx.h"
 #include "gd32f450i_eval.h"
 #include "sdcard.h"
+#include "main.h"
 #include <stdio.h>
 
 //#define DATA_PRINT                                          /* uncomment the macro to print out the data */
-
 sd_card_info_struct sd_cardinfo;                            /* information of SD card */
 uint32_t buf_write[512];                                    /* store the data written to the card */
 uint32_t buf_read[512];                                     /* store the data read from the card */
@@ -289,13 +289,21 @@ sd_error_enum sd_io_init(void)
     }
     if((SD_OK == status) && (!(cardstate & 0x02000000))) {
         /* set bus mode */
+#ifdef BUSMODE_4BIT
         status = sd_bus_mode_config(SDIO_BUSMODE_4BIT);
-//        status = sd_bus_mode_config(SDIO_BUSMODE_1BIT);
+#endif /* BUSMODE_4BIT */
+#ifdef BUSMODE_1BIT
+        status = sd_bus_mode_config(SDIO_BUSMODE_1BIT);
+#endif /* BUSMODE_1BIT */
     }
     if(SD_OK == status) {
         /* set data transfer mode */
-//        status = sd_transfer_mode_config(SD_DMA_MODE);
+#ifdef DMA_MODE
+        status = sd_transfer_mode_config(SD_DMA_MODE);
+#endif /* DMA_MODE */
+#ifdef POLLING_MODE
         status = sd_transfer_mode_config(SD_POLLING_MODE);
+#endif /* POLLING_MODE */
     }
     return status;
 }

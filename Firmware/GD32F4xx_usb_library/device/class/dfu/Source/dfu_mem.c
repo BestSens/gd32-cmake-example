@@ -2,11 +2,11 @@
     \file    dfu_mem.c
     \brief   USB DFU device media access layer functions
 
-    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
+    \version 2025-07-31, V3.3.2, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2024, GigaDevice Semiconductor Inc.
+    Copyright (c) 2025, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -146,7 +146,7 @@ uint8_t dfu_mem_write(uint8_t *buf, uint32_t addr, uint32_t len)
         return MEM_FAIL;
     }
 
-    if(OB_RDPT0 == (addr & MAL_MASK_OB)) {
+    if(((addr & MAL_MASK_OB) == OB_RDPT0) || ((addr & MAL_MASK_OB) == OB_RDPT1)) {
         option_byte_write(addr, buf);
         NVIC_SystemReset();
 

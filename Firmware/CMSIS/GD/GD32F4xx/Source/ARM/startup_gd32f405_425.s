@@ -2,11 +2,11 @@
 ;    \file    startup_gd32f405_425.s
 ;    \brief   start up file
 ;
-;    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
+;    \version 2025-07-31, V3.3.2, firmware for GD32F4xx
 ;*/
 ;
 ;/*  Copyright (c) 2012 ARM LIMITED
-;    Copyright (c) 2024, GigaDevice Semiconductor Inc.
+;    Copyright (c) 2025, GigaDevice Semiconductor Inc.
 ;
 ;   All rights reserved.
 ;   Redistribution and use in source and binary forms, with or without

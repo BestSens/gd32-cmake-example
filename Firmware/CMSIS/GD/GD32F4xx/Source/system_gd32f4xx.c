@@ -5,7 +5,7 @@
 */
 
 /* Copyright (c) 2012 ARM LIMITED
-   Copyright (c) 2024, GigaDevice Semiconductor Inc.
+   Copyright (c) 2025, GigaDevice Semiconductor Inc.
 
    All rights reserved.
    Redistribution and use in source and binary forms, with or without
@@ -47,9 +47,12 @@
 //#define __SYSTEM_CLOCK_120M_PLL_IRC16M          (uint32_t)(120000000)
 //#define __SYSTEM_CLOCK_120M_PLL_8M_HXTAL        (uint32_t)(120000000)
 //#define __SYSTEM_CLOCK_120M_PLL_25M_HXTAL       (uint32_t)(120000000)
+
+#if defined (GD32F405) || defined (GD32F407)
 //#define __SYSTEM_CLOCK_168M_PLL_IRC16M          (uint32_t)(168000000)
 //#define __SYSTEM_CLOCK_168M_PLL_8M_HXTAL        (uint32_t)(168000000)
-//#define __SYSTEM_CLOCK_168M_PLL_25M_HXTAL       (uint32_t)(168000000)
+#define __SYSTEM_CLOCK_168M_PLL_25M_HXTAL       (uint32_t)(168000000)
+#endif
 
 #if defined (GD32F450) || defined (GD32F425) || defined (GD32F427)
 //#define __SYSTEM_CLOCK_200M_PLL_IRC16M          (uint32_t)(200000000)
@@ -187,10 +190,10 @@ void SystemInit (void)
     if(((RCU_CFG0 & RCU_CFG0_SCSS) == RCU_SCSS_PLLP)){
         RCU_MODIFY_4(0x50);
     }
-    _soft_delay_(200);
-    
+
     RCU_CFG0 &= ~RCU_CFG0_SCS;
-    
+    _soft_delay_(200);
+
     /* Reset HXTALEN, CKMEN and PLLEN bits */
     RCU_CTL &= ~(RCU_CTL_PLLEN | RCU_CTL_CKMEN | RCU_CTL_HXTALEN);
 

@@ -2,11 +2,11 @@
     \file    sdcard.c
     \brief   SD card driver
 
-    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
+    \version 2025-07-31, V3.3.2, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2024, GigaDevice Semiconductor Inc.
+    Copyright (c) 2025, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -526,7 +526,7 @@ sd_error_enum sd_block_read(uint32_t *preadbuffer, uint32_t readaddr, uint16_t b
             status = SD_RX_OVERRUN_ERROR;
             sdio_flag_clear(SDIO_FLAG_RXORE);
             return status;
-        } else if(RESET != sdio_flag_get(SDIO_FLAG_STBITE)) {
+        } else if((RESET != sdio_flag_get(SDIO_FLAG_STBITE)) && (RESET == sdio_flag_get(SDIO_FLAG_DTEND))){
             status = SD_START_BIT_ERROR;
             sdio_flag_clear(SDIO_FLAG_STBITE);
             return status;
@@ -665,7 +665,7 @@ sd_error_enum sd_multiblocks_read(uint32_t *preadbuffer, uint32_t readaddr, uint
                 status = SD_RX_OVERRUN_ERROR;
                 sdio_flag_clear(SDIO_FLAG_RXORE);
                 return status;
-            } else if(RESET != sdio_flag_get(SDIO_FLAG_STBITE)) {
+            } else if((RESET != sdio_flag_get(SDIO_FLAG_STBITE)) && (RESET == sdio_flag_get(SDIO_FLAG_DTEND))) {
                 status = SD_START_BIT_ERROR;
                 sdio_flag_clear(SDIO_FLAG_STBITE);
                 return status;

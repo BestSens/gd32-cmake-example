@@ -2,11 +2,11 @@
     \file    main.c
     \brief   ADC1 resolution oversample
     
-    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
+    \version 2025-07-31, V3.3.2, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2024, GigaDevice Semiconductor Inc.
+    Copyright (c) 2025, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -69,7 +69,7 @@ int main(void)
         /* ADC resolusion 12B */
         printf("\r\n resolusion 12B:\r\n");
         adc_resolution_config(ADC1,ADC_RESOLUTION_12B);
-        adc_oversample_mode_config(ADC1,ADC_OVERSAMPLING_ALL_CONVERT,ADC_OVERSAMPLING_SHIFT_NONE,ADC_OVERSAMPLING_SHIFT_NONE);
+        adc_oversample_mode_config(ADC1,ADC_OVERSAMPLING_ALL_CONVERT,ADC_OVERSAMPLING_SHIFT_NONE,ADC_OVERSAMPLING_RATIO_MUL2);
         adc_oversample_mode_disable(ADC1);
         /* 1 time sample */
         adc_enable(ADC1);
@@ -101,7 +101,7 @@ int main(void)
         /* ADC resolusion 6B */
         printf("\r\n resolusion 6B:\r\n");
         adc_resolution_config(ADC1,ADC_RESOLUTION_6B);
-        adc_oversample_mode_config(ADC1,ADC_OVERSAMPLING_ALL_CONVERT,ADC_OVERSAMPLING_SHIFT_NONE,ADC_OVERSAMPLING_SHIFT_NONE);
+        adc_oversample_mode_config(ADC1,ADC_OVERSAMPLING_ALL_CONVERT,ADC_OVERSAMPLING_SHIFT_NONE,ADC_OVERSAMPLING_RATIO_MUL2);
         adc_oversample_mode_disable(ADC1);
         /* 1 time sample */
         adc_enable(ADC1);
@@ -142,6 +142,8 @@ void rcu_config(void)
 {
     /* enable GPIOC clock */
     rcu_periph_clock_enable(RCU_GPIOA);
+    /* enable ADC clock */
+    rcu_periph_clock_enable(RCU_ADC0);
     /* enable ADC clock */
     rcu_periph_clock_enable(RCU_ADC1);
     /* config ADC clock */

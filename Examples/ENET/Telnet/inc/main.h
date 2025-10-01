@@ -2,11 +2,11 @@
     \file    main.h
     \brief   the header file of main 
     
-    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
+    \version 2025-07-31, V3.3.2, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2024, GigaDevice Semiconductor Inc.
+    Copyright (c) 2025, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -44,12 +44,12 @@ OF SUCH DAMAGE.
 //#define USE_ENET_INTERRUPT
 //#define TIMEOUT_CHECK_USE_LWIP
 /* MAC address: BOARD_MAC_ADDR0:BOARD_MAC_ADDR1:BOARD_MAC_ADDR2:BOARD_MAC_ADDR3:BOARD_MAC_ADDR4:BOARD_MAC_ADDR5 */
-#define BOARD_MAC_ADDR0   0x20
-#define BOARD_MAC_ADDR1   0x40
-#define BOARD_MAC_ADDR2   0x60
-#define BOARD_MAC_ADDR3   0x80
-#define BOARD_MAC_ADDR4   0xA0
-#define BOARD_MAC_ADDR5   0xC0
+#define BOARD_MAC_ADDR0   0x2
+#define BOARD_MAC_ADDR1   0x2
+#define BOARD_MAC_ADDR2   0x2
+#define BOARD_MAC_ADDR3   0x2
+#define BOARD_MAC_ADDR4   0x2
+#define BOARD_MAC_ADDR5   0x2
  
 /* static IP address: BOARD_IP_ADDR0.BOARD_IP_ADDR1.BOARD_IP_ADDR2.BOARD_IP_ADDR3 */
 #define BOARD_IP_ADDR0   10

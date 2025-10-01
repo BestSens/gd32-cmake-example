@@ -2,11 +2,11 @@
     \file    netconf.c
     \brief   network connection configuration
 
-    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
+    \version 2025-07-31, V3.3.2, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2024, GigaDevice Semiconductor Inc.
+    Copyright (c) 2025, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -58,13 +58,15 @@ typedef enum {
 #ifdef USE_DHCP
 uint32_t finecurtime = 0;
 uint32_t coarsecurtime = 0;
+#if LWIP_DHCP_DOES_ACD_CHECK
+uint32_t acdcurtime = 0;
+#endif /* LWIP_DHCP_DOES_ACD_CHECK */
 dhcp_addr_status_enum dhcp_addr_status = DHCP_ADDR_NONE;
 #endif /* USE_DHCP */
 
 struct netif g_mynetif;
 uint32_t tcpcurtime = 0;
 uint32_t arpcurtime = 0;
-uint32_t acdcurtime = 0;
 ip_addr_t ip_address = {0};
 
 void lwip_dhcp_address_get(void);
@@ -167,13 +169,13 @@ void lwip_timeouts_check(__IO uint32_t curtime)
         coarsecurtime = curtime;
         dhcp_coarse_tmr();
     }
-
-#ifdef LWIP_ACD
-if((curtime - acdcurtime) >= ACD_TMR_INTERVAL) {
+#if LWIP_DHCP_DOES_ACD_CHECK
+    /* called periodically to dispatch ACD timers every 100ms */
+    if((curtime - acdcurtime) >= ACD_TMR_INTERVAL) {
         acdcurtime = curtime;
         acd_tmr();
     }
-#endif /* LWIP_ACD */
+#endif /* LWIP_DHCP_DOES_ACD_CHECK */
 #endif /* USE_DHCP */
 
 }

@@ -2,11 +2,11 @@
     \file    gd32f4xx_enet.h
     \brief   definitions for the ENET
 
-    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
+    \version 2025-07-31, V3.3.2, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2024, GigaDevice Semiconductor Inc.
+    Copyright (c) 2025, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -66,6 +66,9 @@ OF SUCH DAMAGE.
 #ifndef _PHY_H_
 #define DP83848                          0
 #define LAN8700                          1
+#define SR8201F                          2
+#define RTL8201F                         2
+#define YT8512                           3
 #define PHY_TYPE                         DP83848
 
 #define PHY_ADDRESS                      ((uint16_t)1U)                         /*!< phy address determined by the hardware */
@@ -107,6 +110,14 @@ OF SUCH DAMAGE.
 #define PHY_SR                           16U                                    /*!< tranceiver status register */
 #define PHY_SPEED_STATUS                 ((uint16_t)0x0002)                     /*!< configured information of speed: 10Mbit/s */
 #define PHY_DUPLEX_STATUS                ((uint16_t)0x0004)                     /*!< configured information of duplex: full-duplex */
+#elif(PHY_TYPE == SR8201F)
+#define PHY_SR                           PHY_REG_BCR                            /*!< tranceiver status register */
+#define PHY_SPEED_STATUS                 ((uint16_t)0x2000)                     /*!< configured information of speed: 100Mbit/s */
+#define PHY_DUPLEX_STATUS                ((uint16_t)0x0100)                     /*!< configured information of duplex: full-duplex */
+#elif(PHY_TYPE == YT8512)
+#define PHY_SR                           17U                                    /*!< tranceiver status register */
+#define PHY_SPEED_STATUS                 ((uint16_t)0x4000)                     /*!< configured information of speed: 100Mbit/s */
+#define PHY_DUPLEX_STATUS                ((uint16_t)0x2000)                     /*!< configured information of duplex: full-duplex */
 #endif /* PHY_TYPE */
 
 #endif /* _PHY_H_ */

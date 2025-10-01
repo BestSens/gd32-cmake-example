@@ -2,11 +2,11 @@
     \file    inter_flash_if.c
     \brief   USB DFU device flash interface functions
 
-    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
+    \version 2025-07-31, V3.3.2, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2024, GigaDevice Semiconductor Inc.
+    Copyright (c) 2025, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -119,9 +119,6 @@ fmc_state_enum option_byte_write(uint32_t Mem_Add, uint8_t *data)
 
         ob_security_protection_config(data[1]);
 
-        reg0 = FMC_OBCTL0;
-        reg1 = FMC_OBCTL1;
-
         if(0U == ((data[0] >> 2U) & 0x03U)) {
             BOR_TH = OB_BOR_TH_VALUE3;
         } else if(1U == ((data[0] >> 2U) & 0x03U)) {
@@ -139,6 +136,9 @@ fmc_state_enum option_byte_write(uint32_t Mem_Add, uint8_t *data)
             BB = OB_BB_DISABLE;
         }
         ob_boot_mode_config(BB);
+
+        reg0 = FMC_OBCTL0;
+        reg1 = FMC_OBCTL1;
 
         WP0 = (data[8] | (data[9] << 8U)) & 0x0FFFU;
         WP1 = (data[24] | (data[25] << 8U)) & 0x0FFFU;

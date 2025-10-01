@@ -2,11 +2,11 @@
     \file    main.c
     \brief   USART half-duplex transmitter and receiver
 
-    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
+    \version 2025-07-31, V3.3.2, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2024, GigaDevice Semiconductor Inc.
+    Copyright (c) 2025, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -75,12 +75,12 @@ int main(void)
     gpio_af_set(GPIOA, GPIO_AF_7, GPIO_PIN_2);
     gpio_af_set(GPIOA, GPIO_AF_7, GPIO_PIN_9);
 
-    /* configure USART0 TX as alternate function push-pull */
+    /* configure USART0 TX as alternate function open-drain */
     gpio_mode_set(GPIOA, GPIO_MODE_AF, GPIO_PUPD_PULLUP, GPIO_PIN_9);
-    gpio_output_options_set(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_9);
-    /* configure USART1 TX as alternate function push-pull */
+    gpio_output_options_set(GPIOA, GPIO_OTYPE_OD, GPIO_OSPEED_50MHZ, GPIO_PIN_9);
+    /* configure USART1 TX as alternate function open-drain */
     gpio_mode_set(GPIOA, GPIO_MODE_AF, GPIO_PUPD_PULLUP, GPIO_PIN_2);
-    gpio_output_options_set(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO_PIN_2);
+    gpio_output_options_set(GPIOA, GPIO_OTYPE_OD, GPIO_OSPEED_50MHZ, GPIO_PIN_2);
 
     /* USART0 and USART1 baudrate configuration */
     usart_baudrate_set(USART0, 115200);

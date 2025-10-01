@@ -154,6 +154,10 @@ static err_t low_level_output(struct netif *netif, struct pbuf *p)
     int framelength = 0;
     uint8_t *buffer;
 
+#ifdef USE_ENET_INTERRUPT
+    /* disable global interrupts to prevent the transmission process from being interrupted. */
+    __disable_irq();
+#endif /* USE_ENET_INTERRUPT */
     while((uint32_t)RESET != (dma_current_txdesc->status & ENET_TDES0_DAV)){
     }  
     buffer = (uint8_t *)(enet_desc_information_get(dma_current_txdesc, TXDESC_BUFFER_1_ADDR));
@@ -175,6 +179,11 @@ static err_t low_level_output(struct netif *netif, struct pbuf *p)
     
     ENET_NOCOPY_FRAME_TRANSMIT(framelength);
 #endif /* SELECT_DESCRIPTORS_ENHANCED_MODE */
+    
+#ifdef USE_ENET_INTERRUPT
+    /* enable global interrupts */
+    __enable_irq();
+#endif /* USE_ENET_INTERRUPT */
 
     return ERR_OK;
 }

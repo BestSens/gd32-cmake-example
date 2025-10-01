@@ -2,11 +2,11 @@
     \file    drv_usbh_int.c
     \brief   USB host mode interrupt handler file
 
-    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
+    \version 2025-07-31, V3.3.2, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2024, GigaDevice Semiconductor Inc.
+    Copyright (c) 2025, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -441,7 +441,6 @@ static uint32_t usbh_int_pipe_out(usb_core_driver *udev, uint32_t pp_num)
         } else {
             pp_reg->HCHINTF = HCHINTF_NAK;
         }
-        usb_pp_halt(udev, (uint8_t)pp_num, HCHINTF_NAK, PIPE_NAK);
     } else if(intr_pp & HCHINTF_USBER) {
         pp->err_count++;
         usb_pp_halt(udev, (uint8_t)pp_num, HCHINTF_USBER, PIPE_TRACERR);

@@ -2,11 +2,11 @@
     \file    main.c
     \brief   ADC0_software_trigger_routine_channel_polling
     
-    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
+    \version 2025-07-31, V3.3.2, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2024, GigaDevice Semiconductor Inc.
+    Copyright (c) 2025, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -82,8 +82,6 @@ void rcu_config(void)
     rcu_periph_clock_enable(RCU_GPIOA);
     /* enable ADC clock */
     rcu_periph_clock_enable(RCU_ADC0);
-    /* config ADC clock */
-    adc_clock_config(ADC_ADCCK_PCLK2_DIV8);
 }
 
 /*!
@@ -111,6 +109,8 @@ void adc_config(void)
 {
     /* reset ADC */
     adc_deinit();
+    /* config ADC clock */
+    adc_clock_config(ADC_ADCCK_PCLK2_DIV8);
     /* ADC mode config */
     adc_sync_mode_config(ADC_SYNC_MODE_INDEPENDENT);
     /* ADC contineous function disable */

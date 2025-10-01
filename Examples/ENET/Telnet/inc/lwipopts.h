@@ -2,11 +2,11 @@
     \file    lwipopts.h
     \brief   LwIP options configuration 
     
-    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
+    \version 2025-07-31, V3.3.2, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2024, GigaDevice Semiconductor Inc.
+    Copyright (c) 2025, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -128,6 +128,10 @@ OF SUCH DAMAGE.
                                                             
 /* Lwip debug options */
 #define LWIP_DEBUG              0
+
+/* ACD options */
+#define LWIP_DHCP_DOES_ACD_CHECK            0
+#define LWIP_ACD                            0
 
 
 

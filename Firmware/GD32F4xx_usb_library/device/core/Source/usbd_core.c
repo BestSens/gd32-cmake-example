@@ -2,11 +2,11 @@
     \file    usbd_core.c
     \brief   USB device mode core functions
 
-    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
+    \version 2025-07-31, V3.3.2, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2024, GigaDevice Semiconductor Inc.
+    Copyright (c) 2025, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification, 
 are permitted provided that the following conditions are met:
@@ -62,6 +62,9 @@ void usbd_init(usb_core_driver *udev, usb_core_enum core, usb_desc *desc, usb_cl
 
     /* create serial string */
     serial_string_get(udev->dev.desc->strings[STR_IDX_SERIAL]);
+
+    /* configure power management */
+    udev->dev.pm.power_mode = (udev->dev.desc->config_desc[7] & BIT(6)) >> 6;
 
     /* configure USB capabilities */
     (void)usb_basic_init(&udev->bp, &udev->regs, core);

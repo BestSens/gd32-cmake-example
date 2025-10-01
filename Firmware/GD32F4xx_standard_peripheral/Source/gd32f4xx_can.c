@@ -2,11 +2,11 @@
     \file    gd32f4xx_can.c
     \brief   CAN driver
 
-    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
+    \version 2025-07-31, V3.3.2, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2024, GigaDevice Semiconductor Inc.
+    Copyright (c) 2025, GigaDevice Semiconductor Inc.
 
     Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -452,6 +452,12 @@ uint8_t can_message_transmit(uint32_t can_periph, can_trasnmit_message_struct *t
     }
     /* set the data length */
     CAN_TMP(can_periph, mailbox_number) &= ~CAN_TMP_DLENC;
+    
+    /* Classic CAN frame data lenth does not exceed 8 */
+    if (transmit_message->tx_dlen > 8U) {
+        transmit_message->tx_dlen = 8U;
+    }
+    
     CAN_TMP(can_periph, mailbox_number) |= transmit_message->tx_dlen;
     /* set the data */
     CAN_TMDATA0(can_periph, mailbox_number) = TMDATA0_DB3(transmit_message->tx_data[3]) | \

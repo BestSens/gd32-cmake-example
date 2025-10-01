@@ -2,11 +2,11 @@
     \file    gd32f4xx_enet.c
     \brief   ENET driver
 
-    \version 2024-12-20, V3.3.1, firmware for GD32F4xx
+    \version 2025-07-31, V3.3.2, firmware for GD32F4xx
 */
 
 /*
-    Copyright (c) 2024, GigaDevice Semiconductor Inc.
+    Copyright (c) 2025, GigaDevice Semiconductor Inc.
     Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
 
@@ -389,6 +389,8 @@ ErrStatus enet_init(enet_mediamode_enum mediamode, enet_chksumconf_enum checksum
 
         /* read the result of the auto-negotiation */
         enet_phy_write_read(ENET_PHY_READ, PHY_ADDRESS, PHY_SR, &phy_value);
+
+#if(PHY_TYPE == SR8201F || PHY_TYPE == YT8512)
         /* configure the duplex mode of MAC following the auto-negotiation result */
         if((uint16_t)RESET != (phy_value & PHY_DUPLEX_STATUS)) {
             media_temp = ENET_MODE_FULLDUPLEX;
@@ -396,11 +398,25 @@ ErrStatus enet_init(enet_mediamode_enum mediamode, enet_chksumconf_enum checksum
             media_temp = ENET_MODE_HALFDUPLEX;
         }
         /* configure the communication speed of MAC following the auto-negotiation result */
-        if((uint16_t)RESET != (phy_value & PHY_SPEED_STATUS)) {
+        if((uint16_t)RESET !=(phy_value & PHY_SPEED_STATUS)){
+            media_temp |= ENET_SPEEDMODE_100M;
+        }else{
             media_temp |= ENET_SPEEDMODE_10M;
+        }
+#elif (PHY_TYPE == DP83848 || PHY_TYPE == LAN8700)
+        /* configure the duplex mode of MAC following the auto-negotiation result */
+        if((uint16_t)RESET != (phy_value & PHY_DUPLEX_STATUS)) {
+            media_temp = ENET_MODE_FULLDUPLEX;
         } else {
+            media_temp = ENET_MODE_HALFDUPLEX;
+        }
+        /* configure the communication speed of MAC following the auto-negotiation result */
+        if((uint16_t)RESET !=(phy_value & PHY_SPEED_STATUS)){
+            media_temp |= ENET_SPEEDMODE_10M;
+        }else{
             media_temp |= ENET_SPEEDMODE_100M;
         }
+#endif /* PHY_TYPE == SR8201F || PHY_TYPE == YT8512 */
     } else {
         phy_value = (uint16_t)((media_temp & ENET_MAC_CFG_DPM) >> 3);
         phy_value |= (uint16_t)((media_temp & ENET_MAC_CFG_SPD) >> 1);
